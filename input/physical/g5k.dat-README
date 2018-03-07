@@ -1,0 +1,10 @@
+O arquivo de entrada g5k.dat foi inspirado na conexão de produção do cluster de grenoble centro da Grid5000 na França.
+O mapa de conexões utilizado foi a versão da figura 800px-G5K-grenoble-network.png datado de 2013-05-14.
+O mapeamento do arquivo desconsiderou o cluster Adonis, pois ele foi retirado em meados de 2016.
+Os nós 0 a 17 correspondem a Edel [1-18] e estão conectados através do switch id 108 (edel-swge-1).
+Os nós 18 a 35 correspondem a Edel [19-36] e estão conectados através do switch id 109 (edel-swge-2).
+Os nós 36 a 53 correspondem a Edel [37-54] e estão conectados através do switch id 110 (edel-swge-3).
+Os nós 54 a 71 correspondem a Edel [55-72] e estão conectados através do switch id 111 (edel-swge-4).
+Os nós 72 a 106 correspondem a Genepi [1-34] e estão conectados através do switch id 107 (genepi-sw).
+Considerei conexão de switch em anel, embora a figura não deixe claro a forma de conexão física entre eles.
+Considerou-se ainda, que os clusters são homogêneos e possuem a "nossa" configuração.

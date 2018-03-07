@@ -1,0 +1,913 @@
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:13
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE0 turned ON
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE0, cpu:1.04166666667 ram:1.04166666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE0, for: i-99EE4489 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE0, cpu:1.20833333333 ram:1.20833333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE0, for: i-ABC443B3 with tax:1.125
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE0, cpu:1.54166666667 ram:1.54166666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE0, for: i-B2C24314 with tax:1.29166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE0, cpu:1.875 ram:1.875
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE0, for: i-BD4940CA with tax:1.29166666667
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE1 turned ON
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.16666666667 ram:1.16666666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-387545DD with tax:1.16666666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.5 ram:1.5
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-5842434A with tax:1.16666666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE0, cpu:1.95833333333 ram:1.95833333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE0, for: i-796244E3 with tax:1.04166666667
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-796244E3, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:2999, lastCicle:4000, len(op_dict):18327
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:31
+[INFO] 	main.py->run_test_chave: 	 New max host on: 2011 at 2999 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B9184208, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-5521424F, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:4766, lastCicle:6000, len(op_dict):18324
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:32
+[INFO] 	main.py->run_test_chave: 	 New max host on: 2111 at 4766 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3447420E, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-6A01454E, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:6565, lastCicle:8000, len(op_dict):18320
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:34
+[INFO] 	main.py->run_test_chave: 	 New max host on: 2311 at 6565 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-A3994159, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3E704225, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:8365, lastCicle:10000, len(op_dict):18316
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:36
+[INFO] 	main.py->run_test_chave: 	 New max host on: 2511 at 8365 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-BED34065, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-367C4239, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:10165, lastCicle:12000, len(op_dict):18312
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:38
+[INFO] 	main.py->run_test_chave: 	 New max host on: 2711 at 10165 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-AB963FAD, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9FA13D05, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:12239, lastCicle:14000, len(op_dict):18306
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:42
+[INFO] 	main.py->run_test_chave: 	 New max host on: 3111 at 12239 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-EB9141F7, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-1A49423C, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:14072, lastCicle:16000, len(op_dict):18302
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:44
+[INFO] 	main.py->run_test_chave: 	 New max host on: 3311 at 14072 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-DFB943C8, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-27EA462D, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-A1E445B5, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:16683, lastCicle:18000, len(op_dict):18297
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:46
+[INFO] 	main.py->run_test_chave: 	 New max host on: 3511 at 16683 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FFBC417D, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-6D7B4719, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:18423, lastCicle:20000, len(op_dict):18293
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:48
+[INFO] 	main.py->run_test_chave: 	 New max host on: 3711 at 18423 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-91F241F8, from NODE0
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE0, cpu:2.0 ram:2.0
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE0, for: i-E0A63F0C with tax:1.04166666667
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-014044CB, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:20283, lastCicle:22000, len(op_dict):18287
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:52
+[INFO] 	main.py->run_test_chave: 	 New max host on: 4111 at 20283 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-0A2D4082, from NODE0
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.75 ram:1.75
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-912B3FAC with tax:1.08333333333
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.79166666667 ram:1.79166666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-54F140A5 with tax:1.04166666667
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-54F140A5, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:22083, lastCicle:24000, len(op_dict):18283
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:54
+[INFO] 	main.py->run_test_chave: 	 New max host on: 4311 at 22083 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-912B3FAC, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-648A423A, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-465941F8, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:24565, lastCicle:26000, len(op_dict):18278
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:56
+[INFO] 	main.py->run_test_chave: 	 New max host on: 4511 at 24565 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-209E424E, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-2E87448C, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:26365, lastCicle:28000, len(op_dict):18274
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:58
+[INFO] 	main.py->run_test_chave: 	 New max host on: 4711 at 26365 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-29524322, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:28198, lastCicle:30000, len(op_dict):18271
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:60
+[INFO] 	main.py->run_test_chave: 	 New max host on: 4911 at 28198 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-23CA477D, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-78AE3F63, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:30097, lastCicle:32000, len(op_dict):18266
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:63
+[INFO] 	main.py->run_test_chave: 	 New max host on: 5211 at 30097 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9F5040A5, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-7C41409C, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:32080, lastCicle:34000, len(op_dict):18262
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:65
+[INFO] 	main.py->run_test_chave: 	 New max host on: 5411 at 32080 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F0FC3FBC, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C32F4391, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9A8E40C4, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:35398, lastCicle:36000, len(op_dict):18257
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:67
+[INFO] 	main.py->run_test_chave: 	 New max host on: 5611 at 35398 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C4E14192, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:36310, lastCicle:38000, len(op_dict):18255
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:68
+[INFO] 	main.py->run_test_chave: 	 New max host on: 5711 at 36310 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F382429A, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-01FD416C, from NODE1
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.83333333333 ram:1.83333333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-5F4E4095 with tax:1.04166666667
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-5F4E4095, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:38290, lastCicle:40000, len(op_dict):18248
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:72
+[INFO] 	main.py->run_test_chave: 	 New max host on: 6111 at 38290 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-4F83430E, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D65A429D, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:40090, lastCicle:42000, len(op_dict):18244
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:74
+[INFO] 	main.py->run_test_chave: 	 New max host on: 6311 at 40090 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D1EE3F6B, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-A7C14ADB, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-7D06415D, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:42597, lastCicle:44000, len(op_dict):18239
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:76
+[INFO] 	main.py->run_test_chave: 	 New max host on: 6511 at 42597 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-819541FC, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B534408A, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:44397, lastCicle:46000, len(op_dict):18235
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:78
+[INFO] 	main.py->run_test_chave: 	 New max host on: 6711 at 44397 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8C804577, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-982642A6, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:46197, lastCicle:48000, len(op_dict):18231
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:80
+[INFO] 	main.py->run_test_chave: 	 New max host on: 6911 at 46197 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-7E30486B, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9C9B3EE6, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-E0A63F0C, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-EC7442E2, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:48000, lastCicle:50000, len(op_dict):18224
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:83
+[INFO] 	main.py->run_test_chave: 	 New max host on: 7211 at 48000 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D5E74273, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C4EC40C7, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:50021, lastCicle:52000, len(op_dict):18219
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:86
+[INFO] 	main.py->run_test_chave: 	 New max host on: 7511 at 50021 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-34CA452F, from NODE1
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.875 ram:1.875
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-20204222 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.91666666667 ram:1.91666666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-33A44279 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:1.95833333333 ram:1.95833333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-3BF0418E with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE1, cpu:2.0 ram:2.0
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE1, for: i-702F4252 with tax:1.04166666667
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE2 turned ON
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D45245E6, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-16C44249, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FAAF451B, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3BF0418E, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-5F5043FC, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-11474611, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8A2140A5, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-864043AF, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-AC403FE9, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-E7284134, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-234E46AC, from NODE1
+[DEBUG] 	Physical.py->set_host_off: 	 		NEW STATE:NODE2 turned:OFF
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-2A624828, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:6...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:30 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-702F4252, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-801E3F50, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-990842FE, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B12744BA, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D9973DB7, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:8...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:32 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-0043445E, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:9...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:33 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-28E54001, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-2E004080, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:10...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:34 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-33A44279, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:11...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:35 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-20204222, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-11ED44BD, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-7F654176, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F53045CB, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:52806, lastCicle:54000, len(op_dict):18168
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:111
+[INFO] 	main.py->run_test_chave: 	 New max host on: 9912 at 52806 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-06EC4371, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FA82467E, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-AB563E92, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FA3943BA, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-1AFD42BA, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-4C7E42D0, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-95DE4636, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-264B4310, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-03B343F5, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-711A448D, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8F684263, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B031402F, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FBC845DC, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8C093EEE, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:6...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:30 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-60B745B1, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C2B13DE9, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CB224059, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:8...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:32 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8C054386, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:9...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:33 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-75AA4333, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:10...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:34 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B74640CF, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FFEC3F86, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-1D66435E, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-854F450D, from NODE0
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE2 turned ON
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:54092, lastCicle:56000, len(op_dict):18105
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:151
+[INFO] 	main.py->run_test_chave: 	 New max host on: 14110 at 54092 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-12EC4301, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-EC7042A6, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-0E3A431B, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-197D4269, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-35E63CE0, from NODE1
+[DEBUG] 	Physical.py->set_host_off: 	 		NEW STATE:NODE2 turned:OFF
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-42F83D5A, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-51E849E9, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9BDE4564, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-AED14172, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C3A63EA9, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-E59F3C0C, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-131040CC, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-1F3541AD, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:6...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:30 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-75EE44F6, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9AC54392, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:8...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:32 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-E3973A6B, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:9...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:33 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-281C414D, from NODE1
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE2 turned ON
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-594F41B6, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3B2540B1, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-72D342D1, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8D8E43AA, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-4C384233, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-89283FC0, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-A19F40B8, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CEB13F0B, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:6...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:30 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-E4D241AB, from NODE1
+[DEBUG] 	Physical.py->set_host_off: 	 		NEW STATE:NODE2 turned:OFF
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F19E4199, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-4C124763, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-896B4258, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:8...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:32 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-902E4686, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:9...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:33 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-BC9642FE, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-201644AD, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8B5A3F6C, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:56998, lastCicle:58000, len(op_dict):18054
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:169
+[INFO] 	main.py->run_test_chave: 	 New max host on: 15415 at 56998 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-BC644506, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:58423, lastCicle:60000, len(op_dict):18052
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:170
+[INFO] 	main.py->run_test_chave: 	 New max host on: 15515 at 58423 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-501A4356, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:60598, lastCicle:62000, len(op_dict):18049
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:172
+[INFO] 	main.py->run_test_chave: 	 New max host on: 15715 at 60598 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-82224087, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:62397, lastCicle:64000, len(op_dict):18047
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:173
+[INFO] 	main.py->run_test_chave: 	 New max host on: 15815 at 62397 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-6FC94745, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-BFF745BE, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:64197, lastCicle:66000, len(op_dict):18039
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:179
+[INFO] 	main.py->run_test_chave: 	 New max host on: 16415 at 64197 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-6BE343C8, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:66336, lastCicle:68000, len(op_dict):18036
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:181
+[INFO] 	main.py->run_test_chave: 	 New max host on: 16615 at 66336 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FA8442BE, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:68026, lastCicle:70000, len(op_dict):18032
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:184
+[INFO] 	main.py->run_test_chave: 	 New max host on: 16915 at 68026 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-02EC41E9, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-E2C542B7, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CB0F42D8, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-03CC43A9, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D2C7447D, from NODE0
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE2 turned ON
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-365443D1, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-0C464155, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-74254041, from NODE2
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:70297, lastCicle:72000, len(op_dict):18000
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:208
+[INFO] 	main.py->run_test_chave: 	 New max host on: 19810 at 70297 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-46E33FE6, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-25E43F27, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-2FFB428B, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-87FF411B, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8D69440E, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CFA742A0, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D5AF403D, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D6D4431C, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-DBA84548, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-07F945BF, from NODE0
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-77DB407B, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-94213DB9, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C77C4337, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-DF2E41EA, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-51393EB3, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-55CC3FA7, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-105C4440, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:72370, lastCicle:74000, len(op_dict):17977
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:214
+[INFO] 	main.py->run_test_chave: 	 New max host on: 20410 at 72370 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D33F4001, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B3AD40D2, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-30F63CA6, from NODE0
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:74110, lastCicle:76000, len(op_dict):17971
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:217
+[INFO] 	main.py->run_test_chave: 	 New max host on: 20710 at 74110 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3FCA43D4, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D1484160, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:112524, lastCicle:114000, len(op_dict):17969
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:217
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.04166666667 ram:1.04166666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-EF3F446A with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.08333333333 ram:1.08333333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-F7F8430C with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.125 ram:1.125
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-218B42D4 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.16666666667 ram:1.16666666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-3843472A with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.20833333333 ram:1.20833333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-5F074387 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.25 ram:1.25
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-73E33E7D with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.29166666667 ram:1.29166666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-87654707 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.33333333333 ram:1.33333333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-87FB3F14 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.375 ram:1.375
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-95364207 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.41666666667 ram:1.41666666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-98EF3D7D with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.45833333333 ram:1.45833333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-CB3247DC with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.5 ram:1.5
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-CFBF40DD with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.54166666667 ram:1.54166666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-DEC74429 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.58333333333 ram:1.58333333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-F1B04144 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.625 ram:1.625
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-7EE64336 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.66666666667 ram:1.66666666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-973744D8 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.70833333333 ram:1.70833333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-C0D3421F with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.875 ram:1.875
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-F7E24055 with tax:1.16666666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.91666666667 ram:1.91666666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-A5264398 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:1.95833333333 ram:1.95833333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-AED94470 with tax:1.04166666667
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-98EF3D7D, from NODE2
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE2, cpu:2.0 ram:2.0
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE2, for: i-6F933EC6 with tax:1.04166666667
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE3 turned ON
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-87FB3F14, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-544F4146, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CB3247DC, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C0D3421F, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-80AB4116, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-EF3F446A, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B3C1431F, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-697043C4, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-984A417F, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-75F03F14, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-76124142, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B8EA416D, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C6484678, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-DEC74429, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-E19241A8, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-EA494060, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:6...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:30 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-87654707, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-973744D8, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D84D42C2, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:8...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:32 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3843472A, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-A3544124, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-A9763F45, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B4DF49D3, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:9...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:33 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CFED4293, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:10...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:34 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-FD4742A5, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:11...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:35 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3DEF41A5, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:12...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:36 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-6F933EC6, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:13...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:37 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-73E33E7D, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:14...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:38 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B00B451C, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F02D42D2, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:15...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:39 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F1B04144, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:16...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:40 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-218B42D4, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:17...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:41 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-93E03F80, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:18...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:42 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CCD23F66, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F3DE4572, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:27 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-2341440A, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:19...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:43 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-414A4998, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:20...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:44 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-590D4132, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:21...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:45 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-95364207, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:22...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:46 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9D3144AD, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE2 cpu:23...
+[DEBUG] 	Physical.py->deallocate: 	 		DONE! NODE2 has no overb.
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-A5264398, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-BD4D42EB, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-12D447EE, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-32A140ED, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8A414344, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C74D3DC5, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C9B846C6, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CFBF40DD, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D76741DE, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-F7F8430C, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-0461418D, from NODE0
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-48FD4512, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-60F94384, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-7EE64336, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-89EF3D89, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-5CF43E87, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3BC23FA4, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3C874648, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-5F074387, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:6...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:30 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-686A407A, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-90AE4587, from NODE2
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-AED94470, from NODE2
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-1EF54139, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:114118, lastCicle:116000, len(op_dict):17842
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:280
+[INFO] 	main.py->run_test_chave: 	 New max host on: 2719 at 114118 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-EFC44135, from NODE0
+[DEBUG] 	Physical.py->set_host_off: 	 		NEW STATE:NODE3 turned:OFF
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-DF9943B9, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE0 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-7E8C400F, from NODE0
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:7...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:31 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-6FEB4473, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:116347, lastCicle:118000, len(op_dict):17833
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:285
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-547942AF, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:6...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:30 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-2AB93FA3, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:5...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:29 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-5CE2491D, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3BCA3EBA, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:118194, lastCicle:120000, len(op_dict):17824
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:290
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:4...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:28 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B6F84325, from NODE1
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-5576475A, from NODE1
+[DEBUG] 	Physical.py->force_set_host_on: 	 NEW state:NODE3 turned ON
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-4B4E42EE, from NODE1
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:120112, lastCicle:122000, len(op_dict):17807
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:304
+[INFO] 	main.py->run_test_chave: 	 New max host on: 2959 at 120112 sec.
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE1 cpu:2...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:26 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-C1794333, from NODE1
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-993C42C5, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-ECE941FC, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-18D3414B, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-7F34435E, from NODE3
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:122115, lastCicle:124000, len(op_dict):17788
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:318
+[INFO] 	main.py->run_test_chave: 	 New max host on: 3099 at 122115 sec.
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE3, cpu:1.04166666667 ram:1.04166666667
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE3, for: i-D3404334 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE3, cpu:1.08333333333 ram:1.08333333333
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE3, for: i-D69645F2 with tax:1.04166666667
+[DEBUG] 	Physical.py->can_overbooking: 	 WE can do overb on:NODE3, cpu:1.125 ram:1.125
+[DEBUG] 	Physical.py->do_overbooking: 	 Do Overb on:NODE3, for: i-9BCC408B with tax:1.04166666667
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE3 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-9BCC408B, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE3 cpu:1...
+[DEBUG] 	Physical.py->deallocate: 	 		Not yet:25 still > 24
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-8D6C3E64, from NODE3
+[DEBUG] 	Physical.py->deallocate: 	 Undo overb:NODE3 cpu:3...
+[DEBUG] 	Physical.py->deallocate: 	 		DONE! NODE3 has no overb.
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-3C784349, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-04634278, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-1998443A, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-31CF3D5A, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-609240E1, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-68FB3E63, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-B89D3E84, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-BFBE4225, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-CC4541C0, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D3404334, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-D69645F2, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-2C3A3C06, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-4CA6441C, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-43AA43F0, from NODE3
+[DEBUG] 	main.py->run_test_chave: 	 Final:CHAVE last arrival:124810, lastCicle:126000, len(op_dict):17756
+[ERROR] 	Datacenter.py->each_cycle_get_hosts_on: 	 SIZE OF HOST_LIST:334
+[INFO] 	main.py->run_test_chave: 	 New max host on: 3259 at 124810 sec.
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-ACB5433F, from NODE3
+[DEBUG] 	Datacenter.py->deallocate_on_host: 	 			D:i-DED04537, from NODE3
