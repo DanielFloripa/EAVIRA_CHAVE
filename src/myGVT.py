@@ -12,9 +12,9 @@ from Algorithms import dijkstra
 from Controller import *
 
 ALLOC = 0
-#REALLOC = 1
+REALLOC = 1
 DEALLOC = 2
-#DO_NOTHING = 3
+DO_NOTHING = 3
 
 
 def choose_config(virtual_folder):

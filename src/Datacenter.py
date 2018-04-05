@@ -30,7 +30,7 @@ class Datacenter(object):
         self.host_list = []
         self.rollback_list = []
         #self.total_SLA_violations = 0
-        # @TODO: olha a gambiarra:
+        # @TODO: olha a gambi:
         self.resources = self.host_list
         self.ndelete = 0
         self.ndealloc = 0

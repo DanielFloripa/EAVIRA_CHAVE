@@ -1,23 +1,29 @@
 #!/bin/bash
-
+#
 # Script para backup via SSH usando o rsync. Versão 0.2. Fonte: http://organelas.com/2009/08/07/
-
-## Configuração!!! ##
+#
+## Configurations ##
 # Destino:  IP ou hostname da máquina de destino
-DESTINO="ec2-54-172-187-45.compute-1.amazonaws.com"
-PEM="chave.pem"
+DESTINO="ec2-34-230-18-64.compute-1.amazonaws.com"
+#ec2-52-207-221-202.compute-1.amazonaws.com"
+PEM="../masterChave.pem"
+#
 # Usuário no destino
 USR=ubuntu
+#
 # Diretório de destino
 PYPY="/pypy_portable"
 PROJ="/CHAVE-Sim"
 DIR=/home/ubuntu
+#
 # Origem: arquivos de origem
 SRC="/home/daniel/Dropbox/UDESC/Mestrado/Pratico/simulations"
 FILES="/*"
+#
 # Arquivo log
 LOG=$SRC/.log/aws_backup`date +%Y-%m-%d`.log
-## Fim das Configurações!!! ##
+#
+## End of configurations!!! ##
 
 if [ "$1" == "ssh" ]; then
     ssh -i $PEM $USR@$DESTINO
@@ -68,7 +74,7 @@ exit
 #       - Desligar máquina de destino após o término do backup
 #       - Criar alça para quando a transferência falhar (e.g.,falta de espaço)
 
-Config in AWS instance
+Configs in AWS instance
 
 sudo apt-get update && sudo apt-get upgrade -y
 sudo apt-get install htop python python-numpy

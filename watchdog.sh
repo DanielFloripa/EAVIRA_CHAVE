@@ -1,15 +1,18 @@
 #!/bin/bash 
 
-#NFS_RAIZ=`pwd`
+source chave.conf
+
 #FOLDER_NAME=${PWD##*/}
 
+COUNT=0
 
 while [ true ]; do
-    sleep 1
+    sleep 2
     if [ -e "READY" ]; then
-        TS=`date +%s`
-        echo "Executing at $TS: "
-        bash execute_simulator.sh > log-$TS.log
         rm READY
+        TS=`date ${DP}`
+        echo "Executing at $TS:"
+        bash execute_simulator.sh $TS
+        let "COUNT++"
     fi
 done

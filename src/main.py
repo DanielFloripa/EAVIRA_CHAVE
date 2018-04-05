@@ -307,16 +307,16 @@ if __name__ == '__main__':
     nit = int(args.nit[0]/2)
     pm = args.pm[0]
     ff = args.ff[0]
-    has_overbooking=args.overb[0]
+    has_overbooking = args.overb[0]
     algorithm = str(args.algorithm[0])
     window_time = int(args.wt[0])
     window_size = int(args.ws[0])
 
     availability = float(args.availab[0])
     source_file = args.input[0]
-    n=str(source_file).find("DS")
-    dcid = str(source_file[n:n+3])
-    #dcid = str(source_file[len(source_file) - 13:len(source_file) - 10])
+    ns=str(source_file).rfind("/")
+    ne=str(source_file).rfind("-")
+    dcid = str(source_file[ns+1:ne])
     output = args.output[0].split('.')[0]+"_"+dcid+".log"
     azNodes = int(args.azConf[0].split(':')[0])
     azCores = int(args.azConf[0].split(':')[1])
@@ -326,9 +326,8 @@ if __name__ == '__main__':
 
     #Para os logs de mensagens:
     logging.basicConfig(level=logging.DEBUG)
-    #logging.config.fileConfig('logging.ini')
     logger = logging.getLogger(__name__)
-    hdlr = logging.FileHandler('logs/'+output)
+    hdlr = logging.FileHandler(output)
     formatter = logging.Formatter('[%(levelname)s] \t%(filename)s->%(funcName)s: \t %(message)s')
     hdlr.setFormatter(formatter)
     logger.addHandler(hdlr)
