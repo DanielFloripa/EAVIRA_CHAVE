@@ -4,10 +4,10 @@
 from random import randint
 import math
 from copy import deepcopy
-from Datacenter import *
+from DistributedInfrastructure import *
 
 class Chave(object):
-    def __init__(self, pm_mode, ff_mode, trigger_to_migrate, frag_percentual, window_time, window_size, dc_has_overbooking, logger):
+    def __init__(self, pm_mode, ff_mode, trigger_to_migrate, frag_percentual, window_time, window_size, op_dict, has_ovbkg, logger):
         self.logger = logger
         self.trigger_to_migrate = trigger_to_migrate
         self.frag_percentual = frag_percentual
@@ -15,9 +15,85 @@ class Chave(object):
         self.ff_mode = ff_mode
         self.window_time = window_time
         self.window_size = window_size
-        self.dc_has_overbooking = dc_has_overbooking
+        self.dc_has_overbooking = has_ovbkg
         self.last_number_of_migrations = 0
-        self.dbg = [ ]# "overb", "migr", "probl", "ok"]
+        self.operation_dict = op_dict
+        self.dbg = [ ] #  "overb", "migr", "probl", "ok"]
+
+    def run_test_chave(self, dc, helper):
+        #chave = Chave(pm, ff, trigger_to_migrate, frag_percentual, window_time, window_size, has_overbooking, logger)
+        helper.metrics("init", "ALL", "INIT", nit)
+        requisitions_list = []
+        this_cycle = self.window_time
+        arrival_time = 0
+        req_size, req_size2, energy = 0, 0, 0.0
+        max_host_on = 0
+        req_size_list = []
+        op_dict_temp = self.operation_dict
+        FORCE_PLACE = False
+        # SE O TEMPO DE CHEGADA ESTA NESTE CICLO:
+        while arrival_time < this_cycle and len(op_dict_temp.items()) > 0:
+            new_host_on, off = dc.each_cycle_get_hosts_on()
+            if new_host_on > max_host_on:
+                max_host_on = new_host_on
+                self.logger.info("New max host on:"+str(max_host_on)+str(off)+\
+                                 "at"+str(arrival_time)+"sec.")
+            for op_id, op_vm in op_dict_temp.items():
+                # MIGRATE FIRST
+                #            if pm == "MigrationFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
+                #                dc = chave.migrate(dc)
+                #                print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
+                arrival_time = op_vm.get_timestamp()
+                vm = helper.opdict_to_vmlist(op_vm.get_id())
+                if arrival_time < this_cycle:
+                    this_state = op_id.split('-')[2]
+                    if this_state == "START":
+                        requisitions_list.append(vm)
+                        req_size += 1
+                        req_size2 = len(requisitions_list)
+                        # PLACEMENT
+                        if (self.is_time_to_place(this_cycle) or self.window_size_is_full(
+                                req_size)) or FORCE_PLACE is True:
+                            new_host_list = self.place(requisitions_list, dc.get_host_list())
+                            if new_host_list is not None:
+                                energy = energy + dc.get_total_energy_consumption()
+
+                                # x = metrics('add','energy_ttl',energy, None)
+                                dc.set_host_list(new_host_list)
+                                requisitions_list = []
+                                req_size = 0
+                                FORCE_PLACE = False
+                            else:
+                                self.logger.error("New_host_list problem:" + str(new_host_list))
+                            del op_dict_temp[op_id]
+
+                    elif this_state == "STOP" and vm not in requisitions_list:  # adicionado na ultima janela
+                        dc.deallocate_on_host(vm)
+                        del op_dict_temp[op_id]
+                    else:
+                        self.logger.info("\n\t\t\t\t" + str(op_id) + "STILL IN REQ_LIST, LETS BREAK.")
+                        FORCE_PLACE = True
+                        break
+                else:
+                    # Enquanto não há requisições, incremente o relógio
+                    while arrival_time >= this_cycle:
+                        this_cycle += self.window_time
+                    # print "\nNOVA FILA: ", this_cycle, "[", arrival_time, op_id.split('-')[1], "],[",
+                    req_size_list.append(req_size)
+                    req_size = 0
+                    requisitions_list = []
+                    break
+            # PLACEMENT FIRST
+            #        if pm == "PlacementFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
+            #            dc = chave.migrate(dc)
+            ##            last_host_list = dc.get_host_list()
+            ##            empty_host_list = dc.create_infrastructure()
+            ##            new_host_list = chave.migrate(last_host_list, empty_host_list)
+            ##            dc.set_host_list(new_host_list)
+            #            print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
+            self.logger.debug("Final:" + str(algorithm) + " last arrival:" + str(arrival_time) + ", lastCicle:" + str(
+                this_cycle) + ", len(op_dict):" + str(len(op_dict_temp.items())))
+        return dc, max_host_on
 
     def order_ff_mode(self, host_list):
         if self.ff_mode == "FFD2I": # crescente
@@ -143,39 +219,39 @@ class Chave(object):
         return sumHCPU, tAvHosts
     
     '''
+
     def best_host(self, vm, host_list):
         for host in host_list:
-            if host.get_cpu() >= vm.get_vcpu() and host.get_ram() >= vm.get_vram(): #@TODO: add analise de ram
-                if "ok" in self.dbg:  self.logger.debug("Yes!, Best host for"+str(vm.get_id())+"("+str(vm.get_vcpu())+"vcpu), is"+str(host.get_id())+\
+            if host.get_cpu() >= vm.get_vcpu() and host.get_ram() >= vm.get_vram(): # TODO: add analise de ram
+                self.logger.debug("Yes!, Best host for"+str(vm.get_id())+"("+str(vm.get_vcpu())+"vcpu), is"+str(host.get_id())+\
                                  "("+str(host.get_cpu())+"cpu). OverbCount:"+str(host.overb_count)+"tax:"+str(host.actual_overb)+\
                                  "has?"+str(host.has_overbooking))
-                #if "ok" in self.dbg: print "\tYes!, Best host for", vm.get_id(), "(",vm.get_vcpu(),"vcpu), is", \
-                #    host.get_id(),"(",host.get_cpu(),"cpu). OverbCount:",host.overb_count, "tax:",host.actual_overb,"has?",host.has_overbooking
-                return host
+                return host, True
             else:
                 if self.dc_has_overbooking and host.can_overbooking(vm):
                     if "overb" in self.dbg:  self.logger.debug("Overb. for"+vm.get_id()+"("+str(vm.get_vcpu())+"cpu), is"+\
                         host.get_id()+"("+str(host.get_cpu())+"). Overb:"+str(host.overb_count)+str(host.actual_overb)+str(host.has_overbooking))
                     host.do_overbooking(vm)
-                    return host
-        return None
+                    return host, True
+        return host, False
 
     def place(self, vm_list, host_list):
         vm_list.sort(key=lambda e: e.get_cpu(), reverse=True) # decrescente
-        host_ff_mode = self.order_ff_mode(host_list)
+        host_ff_mode = host_list # TODO: ver se e necessario: self.order_ff_mode(host_list)
         for vm in vm_list:
-            bhost = self.best_host(vm, host_ff_mode)
-            if bhost is None:
-                self.logger.error("PROBLEM: Host is none on place.")
-
+            bhost, state = self.best_host(vm, host_ff_mode)
+            if state is False:
+                self.logger.error("PROBLEM: not found best host for placement.")
             else:
-                vm.set_physical_host(bhost)
+                vm.set_physical_host(bhost.get_id())
                 if bhost.allocate(vm):
                     host_ff_mode.append(bhost)
                 else:
                     self.logger.error("Problem on allocate at placement")
                     return host_list
         return host_ff_mode
+
+
     '''
     def migrate(self, last_host_list, new_host_list):
         vm_list_to_migrate = []
@@ -223,11 +299,12 @@ class Chave(object):
     def migrate(self, dc):
         vm_list_to_migrate = []
 
-        new_dc = Datacenter(dc.get_azNodes(), dc.get_azCores(), dc.get_availability(),
-                            dc.get_id(), dc.get_azRam(), dc.get_algorithm(), dc.get_flag_overbooking())
+        new_dc = AvailabilityZone(dc.get_azNodes(), dc.get_azCores(), dc.get_availability(),
+                                  dc.get_id(), dc.get_azRam(), dc.get_algorithm(), dc.get_flag_overbooking())
         # Criando a lista com todas as mvs em execução:
         for eachHost in dc.get_host_list():
             for vm in eachHost.get_virtual_resources():
+                # TODO porque 'migrate?' Marcacao Transitoria
                 vm.set_physical_host("migrate")
                 vm_list_to_migrate.append(vm)
 
@@ -307,9 +384,6 @@ class Chave(object):
             if self.dbg: print "\tThats OK!"
         else:
             if self.dbg: print "Alguem ficou de fora!!"
-
-
-
 
         if self.dbg: print "Qtdd Hosts inicial:", initHosts, "After migr:", lenHostsMigration, "After placem.:", len(HostsPlacement)
         if self.dbg: print "An overhead of placement: ", (float(len(HostsPlacement)) - float(initHosts)) / float(initHosts) * 100, "%"

@@ -6,8 +6,8 @@ import re
 import math
 import Physical
 
-class VirtualResource(object):
-    def __init__(self, id, vcpu, vram, ha, av, type, host, az, timestamp, lifetime, logger):
+class VirtualMachine(object):
+    def __init__(self, id, vcpu, vram, ha, type, host, timestamp, lifetime, logger):
         self.logger = logger
         self.id = id
         self.state = None # old: id.split('-')[2]
@@ -20,24 +20,24 @@ class VirtualResource(object):
         self.timestamp = timestamp
         self.host = host
         self.ha = float(ha)
-        self.av = float(av)
         self.linked_to = []
-        self.az = az
         self.datacenter = None
         self.energy_table = self.fetch_energy_info()
         self.dbg = False
+        self.host_obj = Physical.PhysicalMachine("asd", 1, 1, "asd", self.logger)
 
     def __repr__(self):
-        return repr(('id:',self.id, 'vcpu:',self.vcpu, 'vram:',self.vram, 'ha:',self.ha,'host:',self.host, 'az,',self.az, 'timestamp:',self.timestamp, 'lifetime:', self.lifetime))
+        return repr(('id:',self.id, 'vcpu:',self.vcpu, 'vram:',self.vram, 'ha:',self.ha,'host:',self.host,'timestamp:',self.timestamp, 'lifetime:', self.lifetime))
+
+    def set_host_object(self, host_obj):
+        self.host_obj = host_obj
+
+    def get_host_object(self):
+        return self.host_obj
 
     def get_parameters(self):
-        return {'id': self.id, 'vcpu': self.vcpu, 'vram': self.vram, 'ha': self.ha, 'av': self.av, 'type': self.type,
-                'host': self.host, 'az': self.az, 'timestamp': self.timestamp, 'lifetime': self.lifetime}
-
-    def require_replication(self):
-        if self.ha > self.av:
-            return True
-        return False
+        return {'id': self.id, 'vcpu': self.vcpu, 'vram': self.vram, 'ha': self.ha, 'type': self.type,
+                'host': self.host, 'timestamp': self.timestamp, 'lifetime': self.lifetime}
 
     ##################################################
     # Input: max_it -> maximum number of iterations
@@ -95,7 +95,7 @@ class VirtualResource(object):
     """
 
     def can_reconfigure(self, vcpu, vram):
-        pnode = self.get_physical_host()
+        pnode = self.get_host_object()
         if self.get_vcpu() + vcpu <= pnode.get_cpu() + self.get_vcpu() and \
                                 self.get_vram() + vram <= pnode.get_ram() + self.get_vram():
             return True
@@ -134,18 +134,12 @@ class VirtualResource(object):
     def get_type(self):
         return self.type
 
-    def get_az(self):
-        return self.az
-
     def set_debug_level(self, dbg_level):
         assert (dbg_level in [0,1,2]), "Debug Level must be" + str([0,1,2])
         self.dbg = dbg_level
 
     def set_state(self, state):
         self.state = state
-
-    def set_az(self, az):
-        self.az = az
 
     def set_datacenter(self, datacenter):
         self.datacenter = datacenter
@@ -156,8 +150,8 @@ class VirtualResource(object):
     def set_vcpu(self, vcpu):
         self.vcpu = vcpu
 
-    def set_physical_host(self, physical_host):
-        self.host = physical_host
+    def set_physical_host(self, physical_host_id):
+        self.host = physical_host_id
 
     def get_energy_consumption_estimate(self, pnode):
         p = float(self.get_vcpu_usage()) / float(pnode.get_total_cpu())
@@ -171,21 +165,18 @@ class VirtualResource(object):
 
         return v
 
-    def get_energy_consumption(self):
-        pnode = self.get_physical_host()
-
+    def get_energy_consumption_virtual(self):
+        pnode = self.get_host_object()
         if pnode == None:
-            self.logger.error("There is something wrong!!!! pnode is None for vm"+str(self.get_id()))
-
+            self.logger.error("There is something wrong!!!! pnode is None for vm "+str(self.get_id()))
         p = float(self.get_vcpu_usage()) / float(pnode.get_total_cpu())
-        U_min = pnode.get_min_energy() * p
-        U_g = pnode.get_management_consumption() * p
-        U_p = self.get_cpu_energy_usage() - pnode.get_min_energy()
-        v = U_min + U_g+ U_p
+        u_min = pnode.get_min_energy() * p
+        u_g = pnode.get_management_consumption() * p
+        u_p = self.get_cpu_energy_usage() - pnode.get_min_energy()
+        v = u_min + u_g + u_p
 
         if v > pnode.get_max_energy():
             return pnode.get_max_energy()
-
         return v
 
     def get_cpu_energy_usage(self):
@@ -245,7 +236,7 @@ class VirtualResource(object):
 #	write the same methods again. Don't
 #	know if it's right, my OOP sucks
 ########################################
-class VirtualMachine(VirtualResource):
-    def __init__(self, id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger):
-        VirtualResource.__init__(self, id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger)
+#class VirtualMachine(VirtualResource):
+#    def __init__(self, id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger):
+#        VirtualResource.__init__(self, id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger)
 

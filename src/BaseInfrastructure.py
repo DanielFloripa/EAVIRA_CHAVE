@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from Physical import MACHINE
+from Physical import MACHINE,SWITCH
 from random import randint
 
 SLA_BASED = 'SLA'

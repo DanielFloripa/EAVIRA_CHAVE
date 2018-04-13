@@ -3,6 +3,9 @@
 
 import traceback
 
+SWITCH=1
+MACHINE=2
+
 class PhysicalMachine(object):
     def __init__(self, id, cpu, ram, algorithm, logger):
         self.logger = logger
@@ -49,7 +52,7 @@ class PhysicalMachine(object):
                 self.force_set_host_on()
             self.cpu -= vnode.get_vcpu()
             self.ram -= vnode.get_vram()
-            vnode.set_physical_host(self)
+            vnode.set_physical_host(self.get_id())
             self.virtual_machine_list.append(vnode)
             return True
 
@@ -187,7 +190,7 @@ class PhysicalMachine(object):
         self.algorithm = type
 
     def get_virtual_resources(self):
-        return list(self.virtual_machine_list)
+        return self.virtual_machine_list
 
     def has_restricted_resources(self):
         for vnode in self.get_virtual_resources():
@@ -240,11 +243,11 @@ class PhysicalMachine(object):
             '''percentual de uso'''
             p = (float(self.default_cpu) - float(self.get_cpu())) / float(self.default_cpu)
 
-            ret = sum([vnode.get_energy_consumption() for vnode in self.get_virtual_resources()]) + (
+            ret = sum([vnode.get_energy_consumption_virtual() for vnode in self.virtual_machine_list]) + (
             self.get_min_energy() * p) + (self.get_management_consumption() * p)
 
             if ret > self.get_max_energy():
-                #self.logger.info("Due to overbooking, energy is breaking our account! Returning just max!")
+                self.logger.info("Due to overbooking, energy is breaking our account! Returning just max! ("+str(ret)+")")
                 return self.get_max_energy()
             return ret
 
@@ -272,7 +275,6 @@ class PhysicalMachine(object):
             return 0.0 # servidor esta desligado
         if not self.has_virtual_resources() and self.state is "on":
             return self.get_min_energy()
-
         if self.actual_overb > 0:
             m_vcpu = 0
         else:

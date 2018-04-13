@@ -1,21 +1,28 @@
+# GVT = Global Virtual Time
+
 import argparse
 import cPickle as pickle
 from copy import deepcopy
 from random import randint, uniform
 from timeit import default_timer
 import numpy as np
+import os
 from BaseInfrastructure import SLA_BASED, VI_BASED
 from Virtual import VirtualMachine
 from Physical import *
-from Datacenter import Datacenter
+from DistributedInfrastructure import AvailabilityZone
 from Algorithms import dijkstra
 from Controller import *
+from collections import OrderedDict
+
+from itertools import permutations
+# TODO: perm = permutations([1, 2, 3])
+# for i in list(perm): print i
 
 ALLOC = 0
 REALLOC = 1
 DEALLOC = 2
 DO_NOTHING = 3
-
 
 def choose_config(virtual_folder):
     # Choose a random virtual file
@@ -153,7 +160,7 @@ def create_profile(nit, dist):
 
         for j in range(op_allocations.count(i)):
             cfg = choose_config(virtual_folder)
-            vi = VirtualInfrastructure(vi_id, cfg)
+            vi = [] # VirtualInfrastructure(vi_id, cfg)
             print ("Must allocate Virtual Infrastructure %d at %d" % (vi.get_id(), i))
             vi_list.append(vi)
             vi_id += 1
@@ -173,9 +180,113 @@ def create_profile(nit, dist):
     return op_log, vi_list
 
 
+
+def createAvailabilityRequisitions(source_file):
+    line = 0
+    avail_az = set_av_for_az(0.999, 0.9999)
+    out_file = source_file.split(".txt")[0] + "-ha.txt"
+    out = open(out_file, "w")
+    out.write(str(avail_az) + "\n")
+    out.close()
+    with open(source_file, 'r') as source:
+        for operation in source:
+            line = line + 1
+            operation = operation.split()
+            state = str(operation[0])
+            timestamp = int(operation[1])
+            vm_id = str(operation[2])
+            #host = str(operation[3])
+            if state == "START":
+                number_of_replicas = 1
+                if monte_carlo():
+                    number_of_replicas = 2
+                # No momento so temos duas AZs: HA da atual varia e a segunda eh fixa
+                ha =  get_required_ha(number_of_replicas, [avail_az, 0.9995])
+                out = open(out_file, "aw")
+                out.write(str(timestamp)+" "+str(vm_id)+" "+str(ha)+"\n")
+                out.close()
+    return True
+
+
+def get_required_ha(replicas, av_azs):
+    prod = 1.0
+    if type(av_azs) is list:
+        if replicas == 1:
+            return av_azs[0]
+        for i in range(0, replicas):
+            prod = prod * float(1.0 - av_azs[i])
+            print av_azs[i], i, prod
+        ha =  1.0 - prod
+    elif type(av_azs) is float:
+        if replicas == 1:
+            return av_azs
+        ha = 1.0 - np.power((1.0 - float(av_azs)), replicas)
+    return ha
+
+def truncate(tax):
+    n = str(tax).count("9")
+    quick_trunc = str(tax).split(".")[:n] # np.round(tax, n)
+    if quick_trunc == 1.0:
+        truncating = quick_trunc
+        while (truncating == 1.0):
+            n+=1
+            truncating = str(tax)[:n] # np.round(tax, n)
+        return truncating
+    return quick_trunc
+
+
+def get_ha_tax(downtime):
+    m = 525600.0 # 365 * 24 * 60
+    av = 1.0 - float(downtime / m)
+    return av
+
+# Valido apenas quando todas as AZs possuem a mesma taxa A
+def get_required_replicas(a, ha=None, downtime=None):
+    if downtime is not None:
+        ha = get_ha_tax(downtime)
+    if ha is None:
+        ha = 0.99999
+    #if type(a) is float:
+    logA = np.log10(1.0 - a)
+    logHA = np.log10(1.0 - ha)
+    r = float(logHA / logA) - 1.0
+    replicas = np.ceil(r)
+    print "For %s min of Downtime is required %s and %s replicas" % (downtime, (ha * 100), replicas)
+    #else:
+    return replicas
+
+
+def set_av_for_az(av_min, av_max):
+    # av_mean = float((av_min + av_max) / 2.0)
+    if monte_carlo():
+        return np.random.uniform(av_min, av_max)
+    return av_min
+
+
+def monte_carlo():
+    radius = 1
+    x = np.random.rand(1)
+    y = np.random.rand(1)
+    # Funcao retorna 21% de probabilidade
+    # Area externa de 1/4 do circulo
+    if x**2 + y**2 >= radius:
+        return True
+    return False
+
+
+def test_ha_on_demand(iterations, av_min, av_max):
+    v = []
+    for i in range(iterations):
+        v.append(set_av_for_az(av_min, av_max))
+    return v
+    #print np.mean(v), np.std(v), np.amin(v), np.amax(v)
+    #print "prob. nao-ha:", 100 * v.count(np.amin(v)) / float(iterations), "prob. ha grater mean:",100*sum(i > np.mean(v) for i in v)/float(iterations)
+
+
 def main(dist):
     print "Creating profile with %s distribution" % (dist)
 
+    createAvailabilityRequisitions(source_file)
     profile, vi_list = create_profile(nit, dist)
 
     out_fname = output_folder + virtual_folder.split('/')[-2]
@@ -228,9 +339,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Elastic Energy-Aware Virtual Infrastructure Realocation Algoritm')
     parser.add_argument('-nit', dest='nit', action='store', nargs=1, type=int, help='Number of iterations: N')
     parser.add_argument('-pr', dest='pr', action='store', nargs='+', help='%% of restricted VMs in decimal')
+    parser.add_argument('-source', dest='source', action='store', nargs=1, help='Source Files')
     parser.add_argument('-virtual', dest='virtual', action='store', nargs=1, help='Virtual infrastructure input folder')
     parser.add_argument('-output', dest='output', action='store', nargs=1, help='Profile output directory')
     parser.add_argument('-distribution', dest='dist', action='store', nargs=1, help='Arrival distribution: poisson or uniform')
+
     args = parser.parse_args()
 
     nit = args.nit[0]
@@ -238,5 +351,6 @@ if __name__ == '__main__':
     virtual_folder = args.virtual[0]
     output_folder = args.output[0]
     dist = args.dist[0]
-
-    main(dist)
+    source_file = args.source[0]
+    createAvailabilityRequisitions(source_file)
+    # main(dist)

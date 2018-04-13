@@ -9,19 +9,79 @@ import re
 import time
 import random
 
-from Datacenter import Datacenter
+from DistributedInfrastructure import AvailabilityZone
 from Algorithms import ksp_yen, dijkstra
 
 """
 Class: Controller
 Description: Controller is the class that manages
 			what operations are performed
+			Have two subclass: global and local
 """
 
 
 class Controller(object):
-    def __init__(self, datacenter):
+    def __init__(self, algorithm, regions, azs, *args):
+        self.main_parameters = args
+        self.algorithm = algorithm
+        self.regions = regions
+        self.availability_zones = azs
+
+    def get_algorithm(self):
+        return self.algorithm
+
+    def get_main_parameters(self):
+        return self.main_parameters
+
+
+#################################################
+#######      CLASS GLOBAL CONTROLLER      #######
+#################################################
+class GlobalController(Controller):
+    def __init__(self, datacenter, main_parameters, algorithm, *args):
+        super(GlobalController, self).__init__(main_parameters, algorithm)
         self.datacenter = datacenter
+
+    def run_test_euca(dc, helper):
+        helper.metrics("init", "ALL", "INIT", -1)
+        requisitions_list = []
+        this_cycle = window_time
+        arrival_time = 0
+        req_size = 0
+        max_host_on = 0
+        req_size_list = []
+        op_dict_temp = operation_dict
+        while (arrival_time < this_cycle) and (len(op_dict_temp.items()) > 0):
+            for op_id, op_vm in op_dict_temp.items():
+                arrival_time = op_vm.get_timestamp()
+                vm = opdict_to_vmlist(op_vm.get_id())
+                if arrival_time < this_cycle:  # TODO: or (req_size < window_size):
+                    this_state = op_id.split('-')[2]
+                    new_host_on, off = dc.each_cycle_get_hosts_on()
+                    if new_host_on > max_host_on:
+                        max_host_on = new_host_on
+                        logger.info(
+                            "New max host on: " + str(max_host_on) + str(off) + " at " + str(arrival_time) + " sec.")
+                    if this_state == "START":
+                        if dc.allocate_on_host(vm):
+                            requisitions_list.append(vm)
+                            req_size += 1
+                    elif this_state == "STOP":
+                        dc.deallocate_on_host(vm)
+                    # Remova do dict temporario
+                    del op_dict_temp[op_id]
+                else:
+                    # Enquanto não há requisições, incremente o relógio
+                    while arrival_time >= this_cycle:
+                        this_cycle += window_time
+                    if req_size >= window_size:
+                        logger.info("req_size" + str(req_size))
+                    req_size_list.append(req_size)
+                    req_size = 0
+                    requisitions_list = []
+                    break
+        #        print "\t\tout: ", arrival_time, thiscycle, len(op_dict_temp.items())
+        return dc, max_host_on
 
     def reallocate_infrastructure_mm(self):
         self.datacenter.reallocate_infrastructure_mm()
@@ -74,3 +134,21 @@ class Controller(object):
 
     def get_datacenter(self):
         return self.datacenter
+
+
+#################################################
+#######       CLASS LOCAL CONTROLLER      #######
+#################################################
+class LocalController(Controller):
+    def __init__(self, allocation, migration, replication, requisitions, violations, hosts, vm_dict):
+        self.allocation = allocation
+        self.migration = migration
+        self.replication = replication
+        self.violations = violations
+        self.requisitions = requisitions
+        self.hosts = hosts
+        self.vm_dict = vm_dict
+        # self. =
+
+    def execute_chave(self, chave_object):
+        chave_object.run()

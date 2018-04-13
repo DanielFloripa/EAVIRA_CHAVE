@@ -12,19 +12,43 @@ from Algorithms import ksp_yen, dijkstra
 #import chave
 
 from Physical import PhysicalMachine
-#from Virtual import VirtualMachine
+from Virtual import VirtualMachine
 #from BaseInfrastructure import *
+from itertools import combinations
 
+class Infrastructure(object):
+    def __init__(self, global_manager, local_manager, *args):
+        self.global_manager = global_manager
+        self.local_manager = local_manager
+        self.
 
-class Datacenter(object):
-    def __init__(self, azNodes, azCores, availability, id, azRam, algorithm, has_overbooking, logger):
+# Grupo de tres AZs,
+class Region(Infrastructure):
+    def __init__(self, *args):
+        self.region_name = region_name
+        self.availability_zones_list = az_list
+        self.av_list = av_list
+
+    def set_ha_tree(self, av_list):
+        n = len(av_list) - 1
+        y = combinations(av_list, n)
+        x = []
+        for element in y:
+            x.append(element)
+            print x
+        x.append(combinations(av_list, n+1))
+        return x
+
+class AvailabilityZone(Infrastructure):
+    def __init__(self, localController, azNodes, azCores, availability, dc_id, azRam, algorithm, has_overbooking, logger):
+        self.localController = localController
         self.logger = logger
         self.dc_has_overbooking = has_overbooking
         self.algorithm = algorithm
         self.azNodes = azNodes
         self.azCores = azCores
         self.availability = availability
-        self.id = id
+        self.id = dc_id
         self.azRam = azRam
         self.base_infrastructure = None
         self.host_list = []
@@ -48,9 +72,14 @@ class Datacenter(object):
     def __repr__(self):
         return repr([self.azNodes, self.azCores, self.availability, self.id, self.azRam, self.algorithm])
 
+    def is_required_replication(self, vm):
+        if vm.get_ha() > self.availability:
+            return True
+        return False
+
     def each_cycle_get_hosts_on(self):
-        host_on, host_off = 0 , 0
-        self.logger.error("SIZE OF HOST_LIST:"+str(len(self.host_list)))
+        host_on, host_off = 0, 0
+        self.logger.info("Size of HOST_LIST : "+str(len(self.host_list)))
         for host in self.host_list:
             if host.get_state() == "ON":
                 host_on += 1
@@ -58,7 +87,7 @@ class Datacenter(object):
                 host_off += 1
         return host_on, host_off
 
-    #@TODO:
+    # TODO: improvements
     def fragmentation(self):
         remaining_res, count = 0, 0
         s = len(self.host_list)
@@ -91,9 +120,10 @@ class Datacenter(object):
 
     def allocate_on_host(self, vm):
         for host in self.host_list:
-            if vm.get_physical_host() is not None and type(vm.get_physical_host()) is object:
-                if host.get_id() == vm.get_physical_host().get_id():
-
+            # vm.set_host_object()
+            if vm.get_physical_host() is not None:
+                if host.get_id() == vm.get_physical_host():
+                    vm.set_host_object(host)
                     if host.allocate(vm):
                         self.logger.debug("A: "+str(vm.get_id())+" on "+str(host.get_id()))
                         return True
@@ -106,6 +136,7 @@ class Datacenter(object):
                                 return True
                     #return False
             elif vm.get_physical_host() is "migrate":
+                vm.set_host_object(host)
                 if host.allocate(vm):
                     self.logger.debug("Migr."+str(vm.get_id())+" to:"+str(host.get_id()))
                     return True
@@ -126,17 +157,17 @@ class Datacenter(object):
     def deallocate_on_host(self, vm):
         for host in self.host_list:
             try:
-                vmid = vm.get_physical_host().get_id()
+                vmid = vm.get_physical_host()
                 hostid = host.get_id()
             except:
                 self.logger.error("None found on deallocate: "+str(vm.get_parameters()))
                 return False
             if hostid == vmid:
                 if host.deallocate(vm):
-                    self.logger.debug("\t\t\tD:"+str(vm.get_id())+", from "+str(host.get_id()))
+                    self.logger.info("\t\t\tD:"+str(vm.get_id())+", from "+str(host.get_id()))
                     return True
                 else:
-                    self.logger.error("Problem on deallocate:"+str(vm.get_physical_host().get_id()))
+                    self.logger.error("Problem on deallocate:"+str(vm.get_physical_host()))
         return False
 
     def create_infrastructure(self):
@@ -148,6 +179,7 @@ class Datacenter(object):
                                 self.algorithm,
                                 self.logger)
             host_list.append(h)
+        self.logger.info("Infrastructure created with "+str(len(host_list))+" hosts ")
         return host_list
 
     def get_host_SLA_violations(self, host):
@@ -231,7 +263,6 @@ class Datacenter(object):
         #		self.base_infrastructure = VIBasedBaseInfrastructure(self.vi_list)
         #self.base_infrastructure = SLABasedBaseInfrastructure(self.resources)
 
-    '''
     def answer_replication_requests_mbfd(self, repl_requests):
         if len(repl_requests) == 0: return
     
@@ -284,11 +315,9 @@ class Datacenter(object):
                 vi.add_virtual_resource(new_replica)
                 if self.dbg: print("OK, just replicated a new VM with id %d hosted by %d" % (
                 new_replica.get_id(), new_replica.get_physical_host().get_id()))
-    
-    
+
     def migrate(self, vnode, resources):
         pnode = vnode.get_physical_host()
-    
         # Try to migrate in all candidates
         for destination in resources:
             if destination != pnode and destination.can_allocate(vnode):
@@ -316,8 +345,7 @@ class Datacenter(object):
                             return destination
                         # Failure
         return -1
-    
-    
+
     def get_sla_breaks(self):
         sla = 0
         steal = 0
@@ -345,14 +373,7 @@ class Datacenter(object):
                 steal = steal + (sum_nodes - h.get_total_cpu())
     
         return sla, steal
-    '''
 
-    def update_vcpu_usage(self):
-        for h in self.host_list:
-            for vm in h.get_virtual_resources():
-                vm.update_usage()
-
-    '''
     def reallocate_infrastructure_mm(self):
         THRESH_UP = 19  # 80%
         THRESH_LOW = 5  # ~20%
@@ -414,8 +435,7 @@ class Datacenter(object):
             # vi_after_migration = vm.get_vi()
             # vi_after_migration.print_allocation()
             # if self.dbg: print ("\n ################################ \n")
-    
-    
+
     def mbfd(self, vi):
         max_power = self.get_resources(MACHINE)[0].get_max_energy()
         vmList = sorted(vi.get_virtual_resources(), key=lambda v: v.get_vcpu_usage())
@@ -478,8 +498,7 @@ class Datacenter(object):
     
         if self.dbg: print "MBFD: OK. Allocation is done with MBFD"
         return 1
-    
-    
+
     def mbfd_and_migration(self, migrationList):
         vmList = sorted(migrationList, key=lambda v: v.get_vcpu_usage())
         for vm in vmList:
@@ -511,8 +530,11 @@ class Datacenter(object):
                 self.nmig += 1
                 if self.dbg: print("MBFD just conclude the migration of %s from %s to %s" % (
                 vm.get_id(), original.get_id(), allocatedHost.get_id()))
-    
-    '''
+
+    def update_vcpu_usage(self):
+        for h in self.host_list:
+            for vm in h.get_virtual_resources():
+                vm.update_usage()
 
     def print_datacenter(self):
         print('Physical Infrastructure')
@@ -558,7 +580,6 @@ class Datacenter(object):
     Method: guarantees at least % resources
             for the next reallocation iteration
     """
-
     def provide_elasticity(self, pe):
         return True
 
@@ -615,7 +636,6 @@ class Datacenter(object):
 
 
     def clear(self):
-
         self.ndealloc = 0
         self.ndelete = 0
         self.nalloc = 0

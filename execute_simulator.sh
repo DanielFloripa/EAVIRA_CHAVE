@@ -2,51 +2,57 @@
 
 source chave.conf
 
-if [ $@ -ge 1 ]; then
-    TS=$1
-else
-    TS=`date ${DP}`
-fi
+#if [ $@ -ge 1 ]; then
+#    TS=$1
+#else
+#    echo "no parametter"
+#    TS=`date +${DP}`
+#fi
 
-mkdir $NFS_RAIZ/results/ 2> /dev/null
-mkdir $NFS_RAIZ/logs/ 2> /dev/null
+mkdir ${CS_LOGPATH} 2> /dev/null
+mkdir ${CS_DATAPATH} 2> /dev/null
 
-TEST_LIST=( 'CHAVE' 'EUCA') # 'google' )
+TEST_LIST=( 'CHAVE' 'EUCA')
 PM_LIST=( 'PlacementFirst' ) # 'MigrationFirst' )
 FF_LIST=( 'FFD2I') # 'FF3D')
-
-# Sources: ('DS1-trace.txt' 'DS2-trace.txt' 'DS3-trace.txt' 'DS4-trace.txt' 'DS5-trace.txt' 'DS6-trace.txt')
-SRC_LIST=(`ls -d ${FDR_EUCALYPTUS}/* | grep DS`)
-
-AZ_LIST=( '13:24' '7:12' '7:8' '12:8' '31:32' '31:32' ) # pattern: ('node:core')
-#AZ_LIST=( '7 12' )
-
 WITH_OVERB=( 'False' ) # 'True' ) Shared, or Dedicated
 
-AV=0.9995 # azs: ${#SRC_LIST[@]}")
+# Sources:
+SRC_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace.txt`)
+AZ_LIST=( '13:24' '7:12' '7:8' '12:8' '31:32' '31:32' ) # ('node:core')
+NIT=()
+for SRC in ${SRC_LIST[@]}; do
+    NIT+=(`wc -l < $SRC`)
+    python src/myGVT.py -source ${SRC}
+done
+SRC_HA_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-ha.txt`)
+#echo ${NIT[@]}
+
+
 
 # WINDOW time/size='min step max'
 WT=('2000' '2000' '2001')
 WS=('20' '20' '21')
+AV=0.9995
 
 cd src
+echo "executing at " `date +$DP`
 
-if [ isAWS == true ]; then
-    parallel --bar 'python main.py -nit {1} -alg {2} -pm {3} -ff {4} -in {5} -az {6} -av {10} -out `date ${DP}`"_{2}_{3}_{4}_{7}_{8}_{9}.log" -wt {7} -ws {8} -ovb {9}' ::: \
-        2000 ::: \
+if [ ${CS_isAWS} == true ]; then
+    parallel --bar 'python main.py -alg {1} -pm {2} -ff {3} -nit {4} -in {5} -az {6} -av {10} -wt {7} -ws {8} -ovb {9}' ::: \
         ${TEST_LIST[@]} ::: \
         ${PM_LIST[@]} ::: \
         ${FF_LIST[@]} ::: \
+        ${NIT[@]} :::+ \
         ${SRC_LIST[@]} :::+ \
         ${AZ_LIST[@]} ::: \
         $(seq ${WT[0]} ${WT[1]} ${WT[2]}) ::: \
         $(seq ${WS[0]} ${WS[1]} ${WS[2]}) ::: \
         ${WITH_OVERB[@]} ::: \
         ${AV}
-    exit
-elif [ isG5K == true ]; then
-    ${AZ_LIST[$it]}
-    TEST=${TEST_LIST[0]} ## CHAVE
+
+elif [ ${CS_isG5K} == true ]; then  # If in Grid 5000 we need use nested for #
+    TEST=${TEST_LIST[0]} # test for 'CHAVE' algorithm
     for OB in ${WITH_OVERB[@]}; do
         for PM in "${PM_LIST[@]}"; do
             for FF in "${FF_LIST[@]}"; do
@@ -54,19 +60,15 @@ elif [ isG5K == true ]; then
                     for SIZE in `seq ${WS[0]} ${WS[1]} ${WS[2]}`; do
                         it=0
                         for SRC in "${SRC_LIST[@]}"; do
-                            NIT=$(wc -l < $FDR_EUCALYPTUS/$SRC)
-                            STR=`date +%s`"_${TEST}_${NIT}_${PM}_${FF}_${SRC}_${TIME}_${SIZE}_${OB}"
-                            OUTPUT="output_${STR}.log"
-                            echo "executing: python" $STR
+                            echo -e "Executing Test"`date +${CS_DP}`"_${TEST}_${PM}_${FF}_${TIME}_${SIZE}_${OB}"
                             python main.py\
-                                    -nit $NIT\
+                                    -nit ${NIT[$it]}\
                                     -algorithm $TEST\
                                     -pm $PM\
                                     -ff $FF\
                                     -input "$FDR_EUCALYPTUS/$SRC"\
                                     -az ${AZ_LIST[$it]}\
                                     -availab $AV\
-                                    -output "$OUTPUT"\
                                     -wt "$TIME"\
                                     -ws "$SIZE"\
                                     -overb $OB
@@ -78,7 +80,7 @@ elif [ isG5K == true ]; then
         done
     done
 
-    TEST=${TEST_LIST[1]} ## EUCA
+    TEST=${TEST_LIST[1]} # EUCA
     PM="None"
     FF="None"
     for OB in ${WITH_OVERB[@]}; do
@@ -86,19 +88,15 @@ elif [ isG5K == true ]; then
             for SIZE in `seq ${WS[0]} ${WS[1]} ${WS[2]}`; do
                 it=0
                 for SRC in "${SRC_LIST[@]}"; do
-                    NIT=$(wc -l < $FDR_EUCALYPTUS/$SRC)
-                    STR=`date +%s`"_${TEST}_${NIT}_${PM}_${FF}_${SRC}_${TIME}_${SIZE}_${OB}"
-                    OUTPUT="output_${STR}.log"
-                    echo "executing: python" $STR
+                    echo -e "Executing Test"`date +${CS_DP}`"_${TEST}_${PM}_${FF}_${TIME}_${SIZE}_${OB}"
                     python main.py\
-                            -nit $NIT\
+                            -nit ${NIT[$it]}\
                             -algorithm $TEST\
                             -pm $PM\
                             -ff $FF\
                             -input "$FDR_EUCALYPTUS/$SRC"\
                             -az ${AZ_LIST[$it]}\
                             -availab $AV\
-                            -output "$OUTPUT"\
                             -wt "$TIME"\
                             -ws "$SIZE"\
                             -overb $OB
