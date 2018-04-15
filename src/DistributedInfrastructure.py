@@ -3,29 +3,26 @@
 
 from random import randrange, uniform, random, randint
 from copy import deepcopy
-from re import findall
 import math
-import os, sys
-
-# My stuff
-from Algorithms import ksp_yen, dijkstra
-#import chave
 
 from Physical import PhysicalMachine
 from Virtual import VirtualMachine
-#from BaseInfrastructure import *
 from itertools import combinations
 
 class Infrastructure(object):
-    def __init__(self, global_manager, local_manager, *args):
-        self.global_manager = global_manager
-        self.local_manager = local_manager
-        self.
+    def __init__(self, logger, *args):
+        self.logger = logger
+        self.global_manager = args[0]
+        self.local_manager = args[1]
+        self.max_ha = 0
+        self.min_ha = 0
 
-# Grupo de tres AZs,
+
 class Region(Infrastructure):
-    def __init__(self, *args):
-        self.region_name = region_name
+    def __init__(self, region_id, az_list, logger, *args):
+        Infrastructure.__init__(logger, *args)
+        self.logger = logger
+        self.region_id = region_id
         self.availability_zones_list = az_list
         self.av_list = av_list
 
@@ -40,15 +37,16 @@ class Region(Infrastructure):
         return x
 
 class AvailabilityZone(Infrastructure):
-    def __init__(self, localController, azNodes, azCores, availability, dc_id, azRam, algorithm, has_overbooking, logger):
-        self.localController = localController
+    def __init__(self, localController, azNodes, azCores, availability, az_id, azRam, algorithm, has_overbooking, logger, *args):
+        Infrastructure.__init__(logger, *args)
+        self.localController = localController  # Object
         self.logger = logger
         self.dc_has_overbooking = has_overbooking
         self.algorithm = algorithm
         self.azNodes = azNodes
         self.azCores = azCores
         self.availability = availability
-        self.id = dc_id
+        self.az_id = az_id
         self.azRam = azRam
         self.base_infrastructure = None
         self.host_list = []
@@ -70,7 +68,7 @@ class AvailabilityZone(Infrastructure):
             self.dbg = False
 
     def __repr__(self):
-        return repr([self.azNodes, self.azCores, self.availability, self.id, self.azRam, self.algorithm])
+        return repr([self.azNodes, self.azCores, self.availability, self.az_id, self.azRam, self.algorithm])
 
     def is_required_replication(self, vm):
         if vm.get_ha() > self.availability:
@@ -170,16 +168,22 @@ class AvailabilityZone(Infrastructure):
                     self.logger.error("Problem on deallocate:"+str(vm.get_physical_host()))
         return False
 
-    def create_infrastructure(self):
+    def create_infrastructure(self, first_time=False):
         host_list = []
         for node in range(self.azNodes):
+            # todo: add az_id nos hosts
             h = PhysicalMachine('NODE' + str(node),
                                 self.azCores,
                                 self.azRam,
                                 self.algorithm,
+                                #self.az_id,
                                 self.logger)
             host_list.append(h)
-        self.logger.info("Infrastructure created with "+str(len(host_list))+" hosts ")
+        self.logger.info("Infrastructure created with "+str(len(host_list))+" hosts")
+        if first_time:
+            self.host_list = host_list
+            return True
+        #else:
         return host_list
 
     def get_host_SLA_violations(self, host):
@@ -213,7 +217,7 @@ class AvailabilityZone(Infrastructure):
         self.dbg = dbg_level
 
     def set_id(self, id):
-        self.id = id
+        self.az_id = id
 
     def set_azNodes(self, azNodes):
         self.azNodes = azNodes
@@ -236,7 +240,7 @@ class AvailabilityZone(Infrastructure):
         return self.dc_has_overbooking
 
     def get_id(self):
-        return self.id
+        return self.az_id
 
     def get_azNodes(self):
         return self.azNodes
@@ -313,7 +317,7 @@ class AvailabilityZone(Infrastructure):
             else:
                 self.nrepl += 1
                 vi.add_virtual_resource(new_replica)
-                if self.dbg: print("OK, just replicated a new VM with id %d hosted by %d" % (
+                if self.dbg: print("OK, just replicated a new VM with az_id %d hosted by %d" % (
                 new_replica.get_id(), new_replica.get_physical_host().get_id()))
 
     def migrate(self, vnode, resources):
@@ -420,7 +424,7 @@ class AvailabilityZone(Infrastructure):
         if self.dbg: print ("MM: Now I must migrate:")
     
         for vm in migrationList:
-            if self.dbg: print("VM id %d" % (vm.get_id()))
+            if self.dbg: print("VM az_id %d" % (vm.get_id()))
     
         # if self.dbg: print ("\n\n*** VI before to run the migration ***")
         # vi_before_migration = vm.get_vi()

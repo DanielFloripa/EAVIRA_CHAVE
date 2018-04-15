@@ -7,10 +7,11 @@ import math
 import Physical
 
 class VirtualMachine(object):
-    def __init__(self, id, vcpu, vram, ha, type, host, timestamp, lifetime, logger):
+    def __init__(self, vm_id, vcpu, vram, ha, type, host, az_id, timestamp, lifetime, logger):
         self.logger = logger
-        self.id = id
-        self.state = None # old: id.split('-')[2]
+        self.az_id = az_id
+        self.id = vm_id
+        self.state = None # old: az_id.split('-')[2]
         self.vcpu = vcpu
         self.usage = 1.0  # starts with 100
         self.vram = vram
@@ -21,13 +22,12 @@ class VirtualMachine(object):
         self.host = host
         self.ha = float(ha)
         self.linked_to = []
-        self.datacenter = None
         self.energy_table = self.fetch_energy_info()
         self.dbg = False
         self.host_obj = Physical.PhysicalMachine("asd", 1, 1, "asd", self.logger)
 
     def __repr__(self):
-        return repr(('id:',self.id, 'vcpu:',self.vcpu, 'vram:',self.vram, 'ha:',self.ha,'host:',self.host,'timestamp:',self.timestamp, 'lifetime:', self.lifetime))
+        return repr(('az_id:',self.id, 'vcpu:',self.vcpu, 'vram:',self.vram, 'ha:',self.ha,'host:',self.host,'timestamp:',self.timestamp, 'lifetime:', self.lifetime))
 
     def set_host_object(self, host_obj):
         self.host_obj = host_obj
@@ -36,7 +36,7 @@ class VirtualMachine(object):
         return self.host_obj
 
     def get_parameters(self):
-        return {'id': self.id, 'vcpu': self.vcpu, 'vram': self.vram, 'ha': self.ha, 'type': self.type,
+        return {'az_id': self.id, 'vcpu': self.vcpu, 'vram': self.vram, 'ha': self.ha, 'type': self.type,
                 'host': self.host, 'timestamp': self.timestamp, 'lifetime': self.lifetime}
 
     ##################################################
@@ -141,8 +141,8 @@ class VirtualMachine(object):
     def set_state(self, state):
         self.state = state
 
-    def set_datacenter(self, datacenter):
-        self.datacenter = datacenter
+    def set_az(self, az_id):
+        self.az_id = az_id
 
     def set_vram(self, vram):
         self.vram = vram
@@ -237,6 +237,6 @@ class VirtualMachine(object):
 #	know if it's right, my OOP sucks
 ########################################
 #class VirtualMachine(VirtualResource):
-#    def __init__(self, id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger):
-#        VirtualResource.__init__(self, id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger)
+#    def __init__(self, az_id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger):
+#        VirtualResource.__init__(self, az_id, vcpu, vram, ha, av, type, physical_host, az, timestamp, lifetime, logger)
 

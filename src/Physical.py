@@ -18,32 +18,28 @@ class PhysicalMachine(object):
         self.sla_violations_list = []
         self.acc = 0
         self.father = 0
-
         if self.algorithm == "CHAVE":
             self.state = "OFF"
             self.dbg = True
         else:
             self.state = "ON"
             self.dbg = False
-
         self.default_cpu = cpu
         self.default_ram = ram
         self.has_overbooking = False
         self.overb_max = float(2.0)
         self.overb_count = 0
         self.actual_overb = 0
-
         # With vms
         self.max_energy = 202.43
         self.min_energy = 118.11
-
         # Witout vms
         self.max_dom0 = 202.43
         self.min_dom0 = 118.11
         #self.dbg = False
 
     def __repr__(self):
-        return repr((self.id, self.cpu, self.ram,"vl:", self.virtual_machine_list, self.algorithm,
+        return repr((self.id, self.cpu, self.ram, "vl:", self.virtual_machine_list, self.algorithm,
                      self.sla_violations_list, self.has_overbooking, self.overb_count, self.actual_overb))
 
     def allocate(self, vnode):
@@ -62,7 +58,7 @@ class PhysicalMachine(object):
     def deallocate(self, vnode):
         try:
             self.virtual_machine_list.remove(vnode)
-        except:
+        finally:
             self.sla_violations_list.append({vnode.get_id(): "deallocate"})
             self.logger.error("Error on remove resources for:\n"+str(vnode.get_id())+" on "+str(self.get_id()))
             self.logger.error(traceback.format_exc())
@@ -301,5 +297,5 @@ class PhysicalMachine(object):
 #	know if it's right, my OOP sucks
 ########################################
 #class PhysicalMachine(PhysicalResource):
-#    def __init__(self, id, cpu, ram, type=None):
-#        PhysicalResource.__init__(self, id, cpu, ram, type)
+#    def __init__(self, az_id, cpu, ram, type=None):
+#        PhysicalResource.__init__(self, az_id, cpu, ram, type)

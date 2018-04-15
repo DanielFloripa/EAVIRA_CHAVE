@@ -257,7 +257,7 @@ class Chave(object):
         vm_list_to_migrate = []
         host_list_to_receive = []
         len_in = len(last_host_list)
-        #new_dc = Datacenter(dc.azNodes, dc.azCores, dc.availability, dc.id, dc.azRam, dc.algorithm)
+        #new_dc = Datacenter(dc.azNodes, dc.azCores, dc.availability, dc.az_id, dc.azRam, dc.algorithm)
         #new_dc = deepcopy(dc)
         #new_dc.set_host_list([])
         #Criando a lista com todas as mvs em execução:
