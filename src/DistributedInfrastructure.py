@@ -4,54 +4,98 @@
 from random import randrange, uniform, random, randint
 from copy import deepcopy
 import math
+# From packages:
+from Chave import *
+from Controller import *
+from DistributedInfrastructure import *
+from Demand import Demand
+from Eucalyptus import *
+from SLAHelper import *
 
 from Physical import PhysicalMachine
 from Virtual import VirtualMachine
 from itertools import combinations
 
+
 class Infrastructure(object):
-    def __init__(self, logger, *args):
-        self.logger = logger
-        self.global_manager = args[0]
-        self.local_manager = args[1]
+    def __init__(self, sla):
+        self.sla = sla
+        self.logger = sla.g_logger()
         self.max_ha = 0
         self.min_ha = 0
+        self.controller_list = []
+        self.region_list = []
+
+    def __repr__(self):
+        return repr([self.logger, self.max_ha, self.min_ha, self.region_list, self.controller_list, self.sla])
+
+    def create_regions_list(self, controller_list):
+        region_list = []
+        self.controller_list = controller_list
+        for r_id, controller in enumerate(controller_list):
+            region = Region(r_id, self.sla)
+            region_list.append(region)
+        self.region_list = region_list
+        return region_list
 
 
 class Region(Infrastructure):
-    def __init__(self, region_id, az_list, logger, *args):
-        Infrastructure.__init__(logger, *args)
-        self.logger = logger
+    def __init__(self, sla, region_id, lcontroller):
+        """
+        Region its just a set  of AZs whit a local controller
+        :param sla:
+        :param region_id:
+        :param lcontroller:
+        """
+        Infrastructure.__init__(self, sla)
+        self.sla = sla
         self.region_id = region_id
-        self.availability_zones_list = az_list
-        self.av_list = av_list
+        self.lcontroller = lcontroller
+        self.availability_zones_list = lcontroller.az_list
+        self.logger = sla.g_logger()
+
+    def __repr__(self):
+        return repr([self.logger, self.region_id, self.availability_zones_list, self.lcontroller, self.sla])
 
     def set_ha_tree(self, av_list):
+        """
+        For generate the best combinations between AZs
+        :param av_list:
+        :return:
+        """
         n = len(av_list) - 1
         y = combinations(av_list, n)
         x = []
         for element in y:
             x.append(element)
-            print x
+            # print x
         x.append(combinations(av_list, n+1))
         return x
 
+
 class AvailabilityZone(Infrastructure):
-    def __init__(self, localController, azNodes, azCores, availability, az_id, azRam, algorithm, has_overbooking, logger, *args):
-        Infrastructure.__init__(logger, *args)
-        self.localController = localController  # Object
-        self.logger = logger
-        self.dc_has_overbooking = has_overbooking
-        self.algorithm = algorithm
-        self.azNodes = azNodes
-        self.azCores = azCores
-        self.availability = availability
+    def __init__(self, sla, az_id, vms, ops, ha):
+        Infrastructure.__init__(self, sla)
+        self.sla = sla
         self.az_id = az_id
-        self.azRam = azRam
+        self.logger = sla.g_logger()
+        self.has_overbooking = sla.g_has_overbooking()
+        self.algorithm = sla.g_algorithm()
+
+        self.azNodes = sla.g_az_dict()[az_id]['az_nodes']
+        self.azCores = sla.g_az_dict()[az_id]['az_cores']
+        self.azRam = sla.g_az_dict()[az_id]['az_ram']
+        self.nit = sla.g_az_dict()[az_id]['az_nit']
+
+        self.availability = ha['this_az']  # first line
+        self.vms_dict = vms
+        self.op_dict = ops
+        self.ha_dict = ha
+
         self.base_infrastructure = None
         self.host_list = []
         self.rollback_list = []
-        #self.total_SLA_violations = 0
+        self.total_SLA_violations = 0
         # @TODO: olha a gambi:
         self.resources = self.host_list
         self.ndelete = 0
@@ -62,13 +106,31 @@ class AvailabilityZone(Infrastructure):
         self.trecfg = 0
         self.nrecfg = 0
         self.nmig = 0
-        if algorithm == "EUCA":
+        if self.algorithm == "EUCA":
             self.dbg = False
-        elif algorithm == "CHAVE":
+        elif self.algorithm == "CHAVE":
             self.dbg = False
 
     def __repr__(self):
         return repr([self.azNodes, self.azCores, self.availability, self.az_id, self.azRam, self.algorithm])
+
+    def create_infrastructure(self, first_time=False):
+        host_list = []
+        for node in range(self.azNodes):
+            # todo: add az_id nos hosts
+            h = PhysicalMachine('NODE' + str(node),
+                                self.azCores,
+                                self.azRam,
+                                self.algorithm,
+                                self.az_id,
+                                self.logger)
+            h.state = False
+            host_list.append(h)
+        self.logger.info("Infrastructure created with "+str(len(host_list))+" hosts")
+        if first_time:
+            self.host_list = host_list
+            return True
+        return host_list
 
     def is_required_replication(self, vm):
         if vm.get_ha() > self.availability:
@@ -85,7 +147,7 @@ class AvailabilityZone(Infrastructure):
                 host_off += 1
         return host_on, host_off
 
-    # TODO: improvements
+    # TODO: need improvements
     def fragmentation(self):
         remaining_res, count = 0, 0
         s = len(self.host_list)
@@ -126,7 +188,7 @@ class AvailabilityZone(Infrastructure):
                         self.logger.debug("A: "+str(vm.get_id())+" on "+str(host.get_id()))
                         return True
                     else:
-                        if self.dc_has_overbooking and host.can_overbooking(vm):
+                        if self.has_overbooking and host.can_overbooking(vm):
                             self.logger.debug("Overbook vm: "+str(vm.get_id())+", with:"+str(len(self.get_list_overb_amount())))
                             host.do_overbooking(vm)
                             if host.allocate(vm):
@@ -139,7 +201,7 @@ class AvailabilityZone(Infrastructure):
                     self.logger.debug("Migr."+str(vm.get_id())+" to:"+str(host.get_id()))
                     return True
                 else:
-                    if self.dc_has_overbooking and host.can_overbooking(vm):
+                    if self.has_overbooking and host.can_overbooking(vm):
                         self.logger.debug("Overbook on migr. vm:"+str(vm.get_id()))
                         host.do_overbooking(vm)
                         if host.allocate(vm):
@@ -168,24 +230,6 @@ class AvailabilityZone(Infrastructure):
                     self.logger.error("Problem on deallocate:"+str(vm.get_physical_host()))
         return False
 
-    def create_infrastructure(self, first_time=False):
-        host_list = []
-        for node in range(self.azNodes):
-            # todo: add az_id nos hosts
-            h = PhysicalMachine('NODE' + str(node),
-                                self.azCores,
-                                self.azRam,
-                                self.algorithm,
-                                #self.az_id,
-                                self.logger)
-            host_list.append(h)
-        self.logger.info("Infrastructure created with "+str(len(host_list))+" hosts")
-        if first_time:
-            self.host_list = host_list
-            return True
-        #else:
-        return host_list
-
     def get_host_SLA_violations(self, host):
         return host.get_host_SLA_violations_total()
 
@@ -212,56 +256,8 @@ class AvailabilityZone(Infrastructure):
     def host_status(self):
         pass
 
-    def set_debug_level(self, dbg_level):
-        assert (dbg_level in [0,1,2]), "Debug Level must be" + str([0,1,2])
-        self.dbg = dbg_level
-
-    def set_id(self, id):
-        self.az_id = id
-
-    def set_azNodes(self, azNodes):
-        self.azNodes = azNodes
-
-    def set_azCores(self, azCores):
-        self.azCores = azCores
-
-    def set_azRam(self, azRam):
-        self.azRam = azRam
-
-    def set_availability(self, availability):
-        self.availability = availability
-
-    def set_ram2core(self, ram2core):
-        self.ram2core = ram2core
-
-    ''' GETTERS'''
-
-    def get_flag_overbooking(self):
-        return self.dc_has_overbooking
-
-    def get_id(self):
-        return self.az_id
-
-    def get_azNodes(self):
-        return self.azNodes
-
-    def get_azCores(self):
-        return self.azCores
-
-    def get_azRam(self):
-        return self.azRam
-
-    def get_availability(self):
-        return self.availability
-
-    def get_ram2core(self):
-        return self.ram2core
-
-    def get_algorithm(self):
-        return self.algorithm
-
-    def build_base_infrastructure(self):
-        self.base_infrastructure = None
+    #def build_base_infrastructure(self):
+        #self.base_infrastructure = None
         # if self.bi_type == VI_BASED:
         #	if len(self.vi_list) >= 1:
         #		self.base_infrastructure = VIBasedBaseInfrastructure(self.vi_list)
@@ -351,31 +347,25 @@ class AvailabilityZone(Infrastructure):
         return -1
 
     def get_sla_breaks(self):
-        sla = 0
-        steal = 0
-        for h in self.get_resources(MACHINE):
+        sla, steal = 0 , 0
+        for h in self.resources:
             sum_nodes = 0
             for vm in h.get_virtual_resources():
                 if self.dbg: print "%s %s %s %s" % (vm.get_id(), vm.get_vcpu_usage(), vm.get_vcpu_network(),
                                        int(math.ceil(vm.get_vcpu_usage() + vm.get_vcpu_network())))
-    
                 sum_nodes = sum_nodes + int(math.ceil(vm.get_vcpu_usage() + vm.get_vcpu_network()))
                 if sum_nodes > h.get_total_cpu():
                     sla = sla + 1
-    
             if sum_nodes > h.get_total_cpu():
                 steal = steal + (sum_nodes - h.get_total_cpu())
-    
-        for h in self.get_resources(SWITCH):
+        '''for h in self.get_resources(SWITCH):
             sum_nodes = 0
             for vm in h.get_virtual_resources():
                 sum_nodes = sum_nodes + int(math.ceil(vm.get_vcpu_usage() + vm.get_vcpu_network()))
                 if sum_nodes > h.get_total_cpu():
                     sla = sla + 1
-    
             if sum_nodes > h.get_total_cpu():
-                steal = steal + (sum_nodes - h.get_total_cpu())
-    
+                steal = steal + (sum_nodes - h.get_total_cpu())'''
         return sla, steal
 
     def reallocate_infrastructure_mm(self):
@@ -441,13 +431,12 @@ class AvailabilityZone(Infrastructure):
             # if self.dbg: print ("\n ################################ \n")
 
     def mbfd(self, vi):
-        max_power = self.get_resources(MACHINE)[0].get_max_energy()
+        max_power = self.resources[0].get_max_energy()
         vmList = sorted(vi.get_virtual_resources(), key=lambda v: v.get_vcpu_usage())
         rollback = []
         # VMs: if something went wrong, just return -1. We shouldn't fix MBFD :)
         for vm in vmList:
             vm.set_datacenter(self)
-    
             minPower = max_power
             allocatedHost = None
             for h in self.get_resources(vm.get_type()):
@@ -456,7 +445,6 @@ class AvailabilityZone(Infrastructure):
                     if power <= minPower:
                         allocatedHost = h
                         minPower = power
-    
             if allocatedHost == None:
                 for row in rollback:
                     pnode = row[0]
@@ -464,13 +452,11 @@ class AvailabilityZone(Infrastructure):
                     pnode.deallocate(vnode)
                 if self.dbg: print "MBFD - None: Without solution for node %s" % (vm.get_id())
                 return -1
-    
             if not allocatedHost.allocate(vm):
                 for row in rollback:
                     pnode = row[0]
                     vnode = row[1]
                     pnode.deallocate(vnode)
-    
                 if self.dbg: print "MBFD: Without solution for node %s" % (vm.get_id())
                 return -1
     
@@ -530,7 +516,8 @@ class AvailabilityZone(Infrastructure):
                 if len(connect) == 0 and len(disconnect) == 0:
                     # Return everything as it was
                     allocatedHost.deallocate(vm)
-                    if not original.allocate(vm): if self.dbg: print('vishmig2')
+                    if not original.allocate(vm):
+                        print('vishmig2')
                 self.nmig += 1
                 if self.dbg: print("MBFD just conclude the migration of %s from %s to %s" % (
                 vm.get_id(), original.get_id(), allocatedHost.get_id()))

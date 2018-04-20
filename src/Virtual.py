@@ -24,10 +24,11 @@ class VirtualMachine(object):
         self.linked_to = []
         self.energy_table = self.fetch_energy_info()
         self.dbg = False
-        self.host_obj = Physical.PhysicalMachine("asd", 1, 1, "asd", self.logger)
+        self.host_obj = None
 
     def __repr__(self):
-        return repr(('az_id:',self.id, 'vcpu:',self.vcpu, 'vram:',self.vram, 'ha:',self.ha,'host:',self.host,'timestamp:',self.timestamp, 'lifetime:', self.lifetime))
+        return repr(('az_id:',self.id, 'vcpu:',self.vcpu, 'vram:',self.vram, 'ha:',self.ha,'host:',self.host,
+                     'timestamp:',self.timestamp, 'lifetime:', self.lifetime))
 
     def set_host_object(self, host_obj):
         self.host_obj = host_obj

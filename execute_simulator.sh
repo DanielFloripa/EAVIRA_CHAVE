@@ -9,47 +9,51 @@ source chave.conf
 #    TS=`date +${DP}`
 #fi
 
+CLEAR="true"
+
+if "${CLEAR}" == "true"; then
+    rm -rf ${CS_LOGPATH}/*
+    rm -rf ${CS_DATAPATH}/*
+fi
+
 mkdir ${CS_LOGPATH} 2> /dev/null
 mkdir ${CS_DATAPATH} 2> /dev/null
 
-TEST_LIST=( 'CHAVE' 'EUCA')
+TEST_LIST=( 'CHAVE' ) # 'EUCA' 'MM' MBFD )
 PM_LIST=( 'PlacementFirst' ) # 'MigrationFirst' )
 FF_LIST=( 'FFD2I') # 'FF3D')
-WITH_OVERB=( 'False' ) # 'True' ) Shared, or Dedicated
+WITH_OVERB=( 'False' ) # 'True' ) # Shared, or Dedicated
+# TODO: implemetar um criador de AZs e regioes
+AZ_2_REGIONS=('HA' 'LoadBalance' 'BestEffort')
 
 # Sources:
 SRC_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace.txt`)
-AZ_LIST=( '13:24' '7:12' '7:8' '12:8' '31:32' '31:32' ) # ('node:core')
+SRC_LIST_HA=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-ha.txt`)
+AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 31 32 ) # ('node core')
 NIT=()
 for SRC in ${SRC_LIST[@]}; do
-    NIT+=(`wc -l < $SRC`)
-    python src/myGVT.py -source ${SRC}
+    NIT+=( `wc -l < ${SRC}` )
+    # python src/myGVT.py -source ${SRC}
 done
-SRC_HA_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-ha.txt`)
-#echo ${NIT[@]}
 
-
-
-# WINDOW time/size='min step max'
+# WINDOW time/size:
+#  ('min' 'step' 'max')
 WT=('2000' '2000' '2001')
 WS=('20' '20' '21')
-AV=0.9995
 
 cd src
-echo "executing at " `date +$DP`
+_INIT=`date +%s`
+echo -e "\tExecuting at" `date +${CS_DP}`
 
 if [ ${CS_isAWS} == true ]; then
-    parallel --bar 'python main.py -alg {1} -pm {2} -ff {3} -nit {4} -in {5} -az {6} -av {10} -wt {7} -ws {8} -ovb {9}' ::: \
+    parallel --bar python __init__.py -nit ${NIT[@]} -in ${SRC_LIST[@]} -az ${AZ_CONF[@]} -ha ${SRC_LIST_HA[@]} \
+    -alg {1} -pm {2} -ff {3}  -wt {4} -ws {5} -ob {6} ::: \
         ${TEST_LIST[@]} ::: \
         ${PM_LIST[@]} ::: \
         ${FF_LIST[@]} ::: \
-        ${NIT[@]} :::+ \
-        ${SRC_LIST[@]} :::+ \
-        ${AZ_LIST[@]} ::: \
         $(seq ${WT[0]} ${WT[1]} ${WT[2]}) ::: \
         $(seq ${WS[0]} ${WS[1]} ${WS[2]}) ::: \
         ${WITH_OVERB[@]} ::: \
-        ${AV}
 
 elif [ ${CS_isG5K} == true ]; then  # If in Grid 5000 we need use nested for #
     TEST=${TEST_LIST[0]} # test for 'CHAVE' algorithm
@@ -68,7 +72,6 @@ elif [ ${CS_isG5K} == true ]; then  # If in Grid 5000 we need use nested for #
                                     -ff $FF\
                                     -input "$FDR_EUCALYPTUS/$SRC"\
                                     -az ${AZ_LIST[$it]}\
-                                    -availab $AV\
                                     -wt "$TIME"\
                                     -ws "$SIZE"\
                                     -overb $OB
@@ -96,7 +99,6 @@ elif [ ${CS_isG5K} == true ]; then  # If in Grid 5000 we need use nested for #
                             -ff $FF\
                             -input "$FDR_EUCALYPTUS/$SRC"\
                             -az ${AZ_LIST[$it]}\
-                            -availab $AV\
                             -wt "$TIME"\
                             -ws "$SIZE"\
                             -overb $OB
@@ -107,3 +109,21 @@ elif [ ${CS_isG5K} == true ]; then  # If in Grid 5000 we need use nested for #
     done
 fi
 
+let "_END=`date +%s`-${_INIT}"
+echo -e "\tFinish at" `date +${CS_DP}` " and toke ${_END} seconds"
+
+
+#-nit "18346, 1800, 5200, 2872, 16912, 8314"\
+# -in "/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS1-trace.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS2-trace.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS3-trace.txt,
+#/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS4-trace.txt,
+#/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS5-trace.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS6-trace.txt"\
+# -az "13:24, 7:12, 7:8, 12:8, 31:32, 31:32" \
+# -ha "/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS1-trace-ha.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS2-trace-ha.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS3-trace-ha.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS4-trace-ha.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS5-trace-ha.txt,
+# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS6-trace-ha.txt" \

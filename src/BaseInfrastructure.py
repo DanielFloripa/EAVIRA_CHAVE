@@ -1,5 +1,17 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+CHAVE-Sim: The simulator for research based in clouds architecture
+    CHAVE: Consolidation with High Availability on virtualyzed environments
+"""
+__author__ = "Daniel Camargo and Denivy Ruck"
+__credits__ = "Based on eavira simulator"
+__license__ = "GPL-v3"
+__version__ = "2.0.1"
+__maintainer__ = "Daniel Camargo"
+__email__ = "daniel@colmeia.udesc.br"
+__status__ = "Test"
+__url__ = "http://dscar.ga/chave-sim"
 
 from Physical import MACHINE,SWITCH
 from random import randint
@@ -41,7 +53,7 @@ class BaseInfrastructure(object):
     #	return list(self.sw_list)
 
 
-''' TODO: document '''
+''' TODO: document this '''
 
 
 class SLABasedBaseInfrastructure(BaseInfrastructure):

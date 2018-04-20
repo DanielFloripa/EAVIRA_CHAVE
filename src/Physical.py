@@ -6,9 +6,13 @@ import traceback
 SWITCH=1
 MACHINE=2
 
+S_ON = True
+S_OFF = False
+
 class PhysicalMachine(object):
-    def __init__(self, id, cpu, ram, algorithm, logger):
+    def __init__(self, id, cpu, ram, algorithm, az_id, logger):
         self.logger = logger
+        self.az_id = az_id
         self.id = id
         self.cpu = cpu
         self.ram = ram
@@ -18,12 +22,7 @@ class PhysicalMachine(object):
         self.sla_violations_list = []
         self.acc = 0
         self.father = 0
-        if self.algorithm == "CHAVE":
-            self.state = "OFF"
-            self.dbg = True
-        else:
-            self.state = "ON"
-            self.dbg = False
+        self.state = None
         self.default_cpu = cpu
         self.default_ram = ram
         self.has_overbooking = False
