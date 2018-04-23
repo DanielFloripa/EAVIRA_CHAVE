@@ -42,7 +42,7 @@ class Infrastructure(object):
 class Region(Infrastructure):
     def __init__(self, sla, region_id, lcontroller):
         """
-        Region its just a set  of AZs whit a local controller
+        Region its just a set  of AZs with one local controller
         :param sla:
         :param region_id:
         :param lcontroller:

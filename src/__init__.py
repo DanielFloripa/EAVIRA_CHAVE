@@ -43,11 +43,13 @@ def main():
         else:
             logger.error("Problem on create infra for AZ#%s: %s" % (i, azid))
 
-    lcontroller_list = [LocalController(sla, "lc0", az_list[0:3]),
-                        LocalController(sla, "lc1", az_list[3:5])]
+    lcontroller_d, region_d = dict(), dict()
+    lcontroller_d["lc0"] = LocalController(sla, "lc0", az_list[0:3])
+    lcontroller_d["lc1"] = LocalController(sla, "lc1", az_list[3:5])
 
-    region_list = [Region(sla, "r0", lcontroller_list[0]),
-                   Region(sla, "r1", lcontroller_list[1])]
+    # Regiao é dispensável, apenas para suportar arquiteturas mais complexas
+    region_d['rg0'] = Region(sla, "rg0", lcontroller_d['lc0'])
+    region_d['rg1'] = Region(sla, "rg1", lcontroller_d['lc1'])
 
     '''
     ctrl = Controller(sla)
@@ -56,11 +58,11 @@ def main():
     infra = Infrastructure(sla)
     regions_list = infra.create_regions_list(localcontroller_list)
     '''
-    api = GlobalController(sla, demand, lcontroller_list, region_list)
+    api = GlobalController(sla, demand, lcontroller_d, region_d)
 
-    print "api_response", api.localcontroller_list[0].get_vm_object_from_az('i-ABC443B3', 'DS1')
-    print "api_response", api.region_list[1].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4')
-
+    print "api_response", api.localcontroller_d['lc0'].get_vm_object_from_az('i-ABC443B3', 'DS1')
+    print "api_response", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4')
+    print "api_response", api.get_az_from_lc('DS4')
     # ################### the kernel ###############
     start = time.time()
     if sla.g_algorithm() == "CHAVE":
@@ -129,7 +131,7 @@ if __name__ == '__main__':
     sla.ff(args.ff)
     sla.has_overbooking(args.overb)
     sla.algorithm(args.alg[0])
-    sla.window_time(args.wt)
+    sla.window_time(args.wt[0])
     sla.window_size(args.ws)
     # Linux Environment vars
     sla.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))

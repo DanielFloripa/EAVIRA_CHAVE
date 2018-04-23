@@ -95,24 +95,62 @@ class Controller(object):
             exit(1)
         return False
 
+
 #################################################
 #######      CLASS GLOBAL CONTROLLER      #######
 #################################################
 class GlobalController(Controller):
-    def __init__(self, sla, demand, localcontroller_list, region_list):
-        Controller.__init__(self, sla, region_list)
+    def __init__(self, sla, demand, localcontroller_d, region_d=None):
+        Controller.__init__(self, sla, region_d)
         self.sla = sla
         self.algorithm = sla.g_algorithm()
-        self.region_list = region_list  # lista de objetos
-        self.localcontroller_list = localcontroller_list  # lista de objetos
+        self.region_d = region_d  # lista de objetos
+        self.localcontroller_d = localcontroller_d  # lista de objetos
         self.demand = demand  # Objeto
         self.logger = sla.g_logger()
 
     def __repr__(self):
-        return repr([self.sla, self.logger, self.algorithm, self.region_list, self.localcontroller_list, self.demand])
+        return repr([self.sla, self.logger, self.algorithm, self.region_d, self.localcontroller_d, self.demand])
 
-    def describe_availability_zones(self, region):
-        pass
+    #######################
+    def get_az_list(self):
+        az_list = []
+        for lc_id, lc_obj in self.localcontroller_d.viewitems():
+            for az in lc_obj.az_list:
+                print "AZ_id da az_list:%s do lc %s" % (az.az_id, lc_id)
+                az_list.append(az)
+
+        return az_list
+
+    def get_az(self, azid):
+        for az in self.az_list:
+            if az.az_id == azid:
+                #print 'Found azid', azid
+                return az
+        self.logger.error("Not found azid: %s" % (azid))
+        return False
+
+    def get_vms_dict_from_az(self, azid):
+        az = self.get_az(azid)
+        if az:
+            return az.vms_dict
+        self.logger.error("Not found az: %s" % (azid))
+        return False
+
+    def get_vm_object_from_az(self, vmid, azid):
+        for vm in self.get_vms_dict_from_az(azid):
+            if vm.id == vmid:
+                return vm
+        self.logger.error("Not found vm %s in az: %s" % (vmid, azid))
+        return False
+
+    #####################################3
+
+    def get_az_from_lc(self, az_id):
+        for lc_id, lc_obj in self.localcontroller_d.viewitems():
+            for az in lc_obj.az_list:
+                if az.az_id == az_id:
+                    return az
 
     def choose_config(self, virtual_folder):
         # Choose a random virtual file
@@ -121,17 +159,6 @@ class GlobalController(Controller):
 
     def execute_mbfd(self, vi):
         return self.datacenter.mbfd(vi)
-
-    # Interface for any algorithm, must be agnostic
-    def run_algorithm_object(self, algorithm_object):
-        #self.metrics()
-        algorithm_object.set_demand(self.demand)
-        algorithm_object.set_localcontroller(self.localcontroller_list)
-        algorithm_object.set_region(self.region_list)
-
-        if algorithm_object.run():
-            return True
-        return False
 
     def get_list_overb_amount_from_cloud(self):
         pass
@@ -178,7 +205,7 @@ class LocalController(Controller):
 
     def get_vm_object_from_az(self, vmid, azid):
         for vm in self.get_vms_dict_from_az(azid):
-            if vm.id == vmid:
+            if vm.vm_id == vmid:
                 return vm
         self.logger.error("Not found vm %s in az: %s" % (vmid, azid))
         return False

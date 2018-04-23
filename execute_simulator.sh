@@ -38,7 +38,7 @@ done
 
 # WINDOW time/size:
 #  ('min' 'step' 'max')
-WT=('2000' '2000' '2001')
+WT=('1' '1' '2')
 WS=('20' '20' '21')
 
 cd src

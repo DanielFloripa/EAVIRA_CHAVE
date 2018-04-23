@@ -54,17 +54,24 @@ class Soma(Master):
         self.set_results(a + b)
         return self.get_results()
 
+import time
 
 if __name__ == '__main__':
-    m = Master("MASTER")
-    print "m: " + m.is_Master
-    s = Soma(2, 3, 0, "SOMA")
-    print "m: " + m.is_Master + ", s: " + s.is_Master
-    ss = deepcopy(s)
-    o = Objects(0, ss, "OBJECTS")
-    print "m: " + m.is_Master + ", o: " + o.is_Master + ", s: " + s.is_Master
-    args = (0, s, "NEW_OBJECTS", "Im not master")
-    oo = Objects(*args)
+    count = 0
+    start = time.time()
+    while count < 24531071:
+        m = Master("MASTER")
+        #print "m: " + m.is_Master
+        s = Soma(2, 3, 0, "SOMA")
+        #print "m: " + m.is_Master + ", s: " + s.is_Master
+        ss = deepcopy(s)
+        o = Objects(0, ss, "OBJECTS")
+        #print "m: " + m.is_Master + ", o: " + o.is_Master + ", s: " + s.is_Master
+        args = (0, s, "NEW_OBJECTS", "Im not master")
+        oo = Objects(*args)
+        count = count + 1
+    elapsed = time.time() - start
+    print elapsed, count
 
     print "m: " + m.is_Master + ", o: " + o.is_Master + ", s: " + s.is_Master + ", oo: " + oo.is_Master
     s.is_Master = "maybe true"
