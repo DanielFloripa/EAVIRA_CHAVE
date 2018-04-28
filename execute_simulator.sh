@@ -2,28 +2,26 @@
 
 source chave.conf
 
-#if [ $@ -ge 1 ]; then
-#    TS=$1
-#else
-#    echo "no parametter"
-#    TS=`date +${DP}`
-#fi
+CLEAR="false"
 
-CLEAR="true"
+killall dropbox
 
 if "${CLEAR}" == "true"; then
-    rm -rf ${CS_LOGPATH}/*
-    rm -rf ${CS_DATAPATH}/*
+    rm -rf ${CS_LOG_PATH}/*
+    rm -rf ${CS_DATA_PATH}/*
 fi
 
-mkdir ${CS_LOGPATH} 2> /dev/null
-mkdir ${CS_DATAPATH} 2> /dev/null
+mkdir ${CS_LOG_PATH} 2> /dev/null
+mkdir ${CS_DATA_PATH} 2> /dev/null
+##### ##### ##### ##### ##### ##### ##### ##### #####
+#####  DATA CONFIGURATIONS                      #####
+##### ##### ##### ##### ##### ##### ##### ##### #####
 
 TEST_LIST=( 'CHAVE' ) # 'EUCA' 'MM' MBFD )
 PM_LIST=( 'PlacementFirst' ) # 'MigrationFirst' )
 FF_LIST=( 'FFD2I') # 'FF3D')
 WITH_OVERB=( 'False' ) # 'True' ) # Shared, or Dedicated
-# TODO: implemetar um criador de AZs e regioes
+# TODO: para implemetar um criador de AZs e regioes
 AZ_2_REGIONS=('HA' 'LoadBalance' 'BestEffort')
 
 # Sources:
@@ -36,10 +34,10 @@ for SRC in ${SRC_LIST[@]}; do
     # python src/myGVT.py -source ${SRC}
 done
 
-# WINDOW time/size:
-#  ('min' 'step' 'max')
-WT=('1' '1' '2')
+# WINDOW time/size: ('min' 'step' 'max')
+WT=('1' '2' '2')
 WS=('20' '20' '21')
+
 
 cd src
 _INIT=`date +%s`
@@ -110,20 +108,6 @@ elif [ ${CS_isG5K} == true ]; then  # If in Grid 5000 we need use nested for #
 fi
 
 let "_END=`date +%s`-${_INIT}"
-echo -e "\tFinish at" `date +${CS_DP}` " and toke ${_END} seconds"
+echo -e "\n\tThis simulation ended at" `date +${CS_DP}` " and took ${_END} seconds"
 
-
-#-nit "18346, 1800, 5200, 2872, 16912, 8314"\
-# -in "/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS1-trace.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS2-trace.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS3-trace.txt,
-#/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS4-trace.txt,
-#/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS5-trace.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS6-trace.txt"\
-# -az "13:24, 7:12, 7:8, 12:8, 31:32, 31:32" \
-# -ha "/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS1-trace-ha.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS2-trace-ha.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS3-trace-ha.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS4-trace-ha.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS5-trace-ha.txt,
-# /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/database/eucalyptus-traces/DS6-trace-ha.txt" \
+dropbox start 2> /dev/null

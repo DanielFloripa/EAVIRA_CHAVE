@@ -11,7 +11,7 @@ __maintainer__ = "Daniel Camargo"
 __email__ = "daniel@colmeia.udesc.br"
 __status__ = "Test"
 
-from Priodict import priorityDictionary
+from tests.Priodict import priorityDictionary
 # from Graph import DiGraph
 from operator import itemgetter
 

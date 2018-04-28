@@ -1,4 +1,5 @@
-O arquivo de entrada g5k.dat foi inspirado na conexão de produção do cluster de grenoble centro da Grid5000 na França.
+O arquivo de entrada g5k.dat foi inspirado na conexão de produção do cluster de grenoble centro da
+Grid5000 na França.
 O mapa de conexões utilizado foi a versão da figura 800px-G5K-grenoble-network.png datado de 2013-05-14.
 O mapeamento do arquivo desconsiderou o cluster Adonis, pois ele foi retirado em meados de 2016.
 Os nós 0 a 17 correspondem a Edel [1-18] e estão conectados através do switch id 108 (edel-swge-1).

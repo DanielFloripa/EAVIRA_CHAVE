@@ -13,7 +13,7 @@ __email__ = "daniel@colmeia.udesc.br"
 __status__ = "Test"
 __url__ = "http://dscar.ga/chave-sim"
 
-from Physical import MACHINE,SWITCH
+from src.Physical import MACHINE,SWITCH
 from random import randint
 
 SLA_BASED = 'SLA'
@@ -45,7 +45,7 @@ class BaseInfrastructure(object):
         return resources
 
     def get_physical_resources(self):
-        self.pm_list.sort(key=lambda e: e.get_cpu())
+        self.pm_list.sort(key=lambda e: e.cpu)
         return list(self.pm_list)
 
     # def get_network_resources(self):
@@ -70,6 +70,6 @@ class SLABasedBaseInfrastructure(BaseInfrastructure):
     def build_base_infrastructure(self, resources):
         for node in resources:
             for vnode in node.get_virtual_resources():
-                if vnode.get_ha() == -1:
+                if vnode.ha == -1:
                     self.insert(node)
                     break
