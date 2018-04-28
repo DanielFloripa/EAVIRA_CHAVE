@@ -7,7 +7,7 @@ import random
 # From packages:
 from Chave import *
 from Controller import *
-from DistributedInfrastructure import *
+from DistInfra import *
 from Demand import Demand
 from Eucalyptus import *
 from SLAHelper import *
@@ -30,7 +30,7 @@ class Controller(object):
         return repr([self.sla, self.logger, self.algorithm, self.context_list])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def get_algorithm(self):
         return self.algorithm
@@ -117,7 +117,7 @@ class GlobalController(Controller):
         return repr([self.sla, self.logger, self.algorithm, self.region_d, self.localcontroller_d, self.demand])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def create_new_host(self, az_id):
         az = self.get_az(az_id)
@@ -200,7 +200,7 @@ class LocalController(Controller):
         return repr([self.lc_id, self.az_list, self.algorithm])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def set_replicas_dict(self):
         pass

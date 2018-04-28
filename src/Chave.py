@@ -6,11 +6,11 @@ import math
 from copy import deepcopy
 from threading import Thread, RLock, current_thread, currentThread
 import time
-from DistributedInfrastructure import *
+from DistInfra import *
 
 
 class Chave(object):
-    global_time = 0  # type: int
+    global_time = -1  # type: int
 
     def __init__(self, api):
         self.api = api
@@ -98,14 +98,13 @@ class Chave(object):
                 #                dc = chave.migrate(dc)
                 #                print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
                 arrival_time = vm.timestamp
-                this_time = self.global_time
-                if arrival_time <= this_time:
+                if arrival_time <= self.global_time:
                     this_state = op_id.split('_')[1]
                     if this_state == "START":
                         requisitions_queue.append(vm)
                         req_size += 1
                         # Let's PLACE
-                        if (self.is_time_to_place(this_time) or
+                        if (self.is_time_to_place(self.global_time) or
                             self.window_size_is_full(req_size)) or \
                             FORCE_PLACE is True:
                             if self.place(requisitions_queue, az):
@@ -138,16 +137,20 @@ class Chave(object):
                         FORCE_PLACE = True
                         break
                 else:  # While there are not requisition, wait for the Thread_GVT
-                    self.logger.debug("Waiting GVT at %s" % (this_time))
-                    if (this_time % 3600) < 2:
+                    #self.logger.debug("Waiting GVT at %s" % (this_time))
+                    if (self.global_time % 3600) < 2:
+                        this_hour = True
+                        self.logger.debug("Trying calculate energy at %s" % (self.global_time))
                         try:
                             mean_last_hour = self.sla.metrics(az.az_id, 'avg', 'energy_hour_l', energy)
-                            self.logger.critical("Media da ultima HORA:", mean_last_hour)
+                            if mean_last_hour is False:
+                                break
+                            self.logger.info("Media da ultima HORA:", mean_last_hour)
                             self.sla.metrics(az.az_id, 'set', 'energy_avg_l', mean_last_hour)
                             self.sla.metrics(az.az_id, 'set', 'energy_hour_l', [])
                             self.sla.metrics(az.az_id, 'add', 'total_energy_f', mean_last_hour)
                         except ZeroDivisionError:
-                            self.logger.error("Zero Division at %s" % (this_time))
+                            self.logger.error("Zero Division at %s" % (self.global_time))
                     requisitions_queue = []
                     req_size = 0
                     break
@@ -224,8 +227,8 @@ class Chave(object):
         vm_list.sort(key=lambda e: e.get_vcpu(), reverse=True)  # decrescente
         #host_ff_mode = az.get_host_list()  # TODO: ver se e necessario: self.order_ff_mode(az.host_list)
         for vm in vm_list:
-            bhost, state = self.best_host(vm, az)
-            if state is True:
+            bhost, is_ok = self.best_host(vm, az)
+            if is_ok is True:
                 vm.set_host_id(bhost.host_id)
                 self.logger.debug("Allocating %s in %s" % (vm.vm_id, vm.host_id))
                 if bhost.allocate(vm):
@@ -292,77 +295,3 @@ class Chave(object):
     def dealocate_vm_list_on_dc(self, vm_list):
         pass
 
-    ''' OLD:
-    def az_consolidation(self, az, ):
-        self.sla.metrics("init", "ALL", "ZEROS", self.nit)
-        requisitions_list = []
-        this_cycle = self.window_time
-        arrival_time = 0
-        req_size, req_size2, energy = 0, 0, 0.0
-        max_host_on = 0
-        req_size_list = []
-        op_dict_temp = self.operation_dict
-        FORCE_PLACE = False
-        # Se o tempo de chegada está neste ciclo, então:
-        while arrival_time < this_cycle and len(op_dict_temp.items()) > 0:
-            new_host_on, off = az.each_cycle_get_hosts_on()
-            if new_host_on > max_host_on:
-                max_host_on = new_host_on
-                self.logger.info("New max host on:"+str(max_host_on)+str(off)+\
-                                 "at"+str(arrival_time)+"sec.")
-            for op_id, op_vm in op_dict_temp.items():
-                # MIGRATE FIRST
-                #            if pm == "MigrationFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
-                #                dc = chave.migrate(dc)
-                #                print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
-                arrival_time = op_vm.get_timestamp()
-                vm = self._opdict_to_vmlist(op_vm.get_id(), az.vm_list)
-                if arrival_time < this_cycle:
-                    this_state = op_id.split('-')[2]
-                    if this_state == "START":
-                        requisitions_list.append(vm)
-                        req_size += 1
-                        # PLACEMENT
-                        if (self.is_time_to_place(this_cycle) or self.window_size_is_full(
-                                req_size)) or FORCE_PLACE is True:
-                            new_host_list = self.place(requisitions_list, az.get_host_list())
-                            if new_host_list is not None:
-                                energy = energy + az.get_az_energy_consumption()
-                                # x = metrics('add','energy_ttl',energy, None)
-                                az.set_host_list(new_host_list)
-                                requisitions_list = []
-                                req_size = 0
-                                FORCE_PLACE = False
-                            else:
-                                self.logger.error("New_host_list problem: " + str(new_host_list))
-                            del op_dict_temp[op_id]
-
-                    elif this_state == "STOP" and vm not in requisitions_list:  # adicionado na ultima janela
-                        az.deallocate_on_host(vm)
-                        del op_dict_temp[op_id]
-                    else:
-                        self.logger.info("OOOps, " + str(op_id) + " STILL IN REQ_LIST, LETS BREAK.")
-                        FORCE_PLACE = True
-                        break
-                else:
-                    # Enquanto não há requisições, incremente o relógio
-                    while arrival_time >= this_cycle:
-                        this_cycle += self.window_time
-                    # print "\nNOVA FILA: ", this_cycle, "[", arrival_time, op_id.split('-')[1], "],[",
-                    req_size_list.append(req_size)
-                    req_size = 0
-                    requisitions_list = []
-                    break
-            # PLACEMENT FIRST
-            #        if pm == "PlacementFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
-            #            dc = chave.migrate(dc)
-            ##            last_host_list = dc.get_host_list()
-            ##            empty_host_list = dc.create_infrastructure()
-            ##            new_host_list = chave.migrate(last_host_list, empty_host_list)
-            ##            dc.set_host_list(new_host_list)
-            #            print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
-            self.logger.info("Final: last arrival:" + str(arrival_time) + ", lastCicle:" + str(
-                this_cycle) + ", len(op_dict):" + str(len(op_dict_temp.items())))
-        return az, max_host_on
-
-    '''

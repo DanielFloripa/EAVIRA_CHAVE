@@ -7,7 +7,7 @@ import math
 # From packages:
 from Chave import *
 from Controller import *
-from DistributedInfrastructure import *
+from DistInfra import *
 from Demand import Demand
 from Eucalyptus import *
 from SLAHelper import *
@@ -30,7 +30,7 @@ class Infrastructure(object):
         return repr([self.logger, self.max_ha, self.min_ha, self.region_list, self.controller_list, self.sla])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def create_regions_list(self, controller_list):
         region_list = []
@@ -61,7 +61,7 @@ class Region(Infrastructure):
         return repr([self.logger, self.region_id, self.availability_zones_list, self.lcontroller, self.sla])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def set_ha_tree(self, av_list):
         """
@@ -122,7 +122,7 @@ class AvailabilityZone(Infrastructure):
                      self.az_id, self.azRam, self.algorithm])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def create_infrastructure(self, first_time=False, is_on=True):
         host_list = []

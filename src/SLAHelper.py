@@ -52,12 +52,11 @@ class SLAHelper(object):
                      self.__algorithm, self.__max_az_per_region])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def is_sla_lock(self):
         if self.__is_locked:
             res = "The SLA Object is locked, please, re-run the simulator with desired parameters"
-            print res
             self.__logger.error(res)
             return True
         return False
@@ -70,7 +69,6 @@ class SLAHelper(object):
         else:
             str = "State must be a bool type: True | False"
             ret = False
-        print str
         self.__logger.info(str)
         return ret
 
@@ -132,30 +130,8 @@ class SLAHelper(object):
         str_ok = ("{%s: %s} -> " % (key, value))
         l = len(key_list)
         m = 4
-        if command is 'INIT':
-            self.__init_metrics_dict()
-            if key is "ALL":
-                key1 = key_list[0:m]  # inteiros
-                l1 = len(key1)
-                key2 = key_list[m:l]  # listas vazias
-                l2 = len(key2)
-                key = [key1, key2]
-                self.__logger.debug("Init Metrics Size: ", l1, l2)
-                if value == "ZEROS":
-                    for kk in key:
-                        x = len(kk)
-                        for k in kk:
-                            if x == l1:
-                                self.__metrics_dict[az_id][k] = 0
-                            elif x == l2:
-                                self.__metrics_dict[az_id][k] = []
-                    return True
-                else:
-                    self.__logger.error("You must specify 'ZEROS'!!")
-                    return False
-            self.__logger.debug(str_ok, self.__metrics_dict[az_id].viewitems())
 
-        elif command is 'set':
+        if command is 'set':
             if key in key_list[0:m]:
                 self.__metrics_dict[az_id][key] = value
             elif key in key_list[m:l]:
@@ -163,7 +139,7 @@ class SLAHelper(object):
             else:
                 self.__logger.error(str_error)
                 return False
-            self.__logger.debug(str_ok, True)  #, self.__metrics_dict[az_id].viewitems()))
+            self.__logger.debug(str_ok)  #, self.__metrics_dict[az_id].viewitems()))
             return True
 
         elif command is 'get':
@@ -204,15 +180,39 @@ class SLAHelper(object):
             if key in key_list[0:m]:
                 ret = self.__metrics_dict[az_id][key]
             elif key in key_list[m:l]:
-                print (values for values in self.__metrics_dict[az_id][key])
                 sum_avg = sum(values for values in self.__metrics_dict[az_id][key])
                 len_avg = float(len(self.__metrics_dict[az_id][key]))
+                if len_avg == 0:
+                    self.__logger.error("LEN_AVG is Zero")
+                    return False
                 ret = sum_avg / len_avg
             else:
                 self.__logger.error(str_error)
                 return False
             self.__logger.debug(str_ok, ret)
             return ret
+        elif command is 'INIT':
+            self.__init_metrics_dict()
+            if key is "ALL":
+                key1 = key_list[0:m]  # inteiros
+                l1 = len(key1)
+                key2 = key_list[m:l]  # listas vazias
+                l2 = len(key2)
+                key = [key1, key2]
+                self.__logger.debug("Init Metrics Size")
+                if value == "ZEROS":
+                    for kk in key:
+                        x = len(kk)
+                        for k in kk:
+                            if x == l1:
+                                self.__metrics_dict[az_id][k] = 0
+                            elif x == l2:
+                                self.__metrics_dict[az_id][k] = []
+                    return True
+                else:
+                    self.__logger.error("You must specify 'ZEROS'!!")
+                    return False
+            self.__logger.debug(str_ok, self.__metrics_dict[az_id].viewitems())
         else:
             self.__logger.error("Command (" + str(command) + ") not found!!")
         return False

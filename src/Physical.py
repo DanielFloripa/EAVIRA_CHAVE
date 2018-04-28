@@ -41,7 +41,7 @@ class PhysicalMachine(object):
         self.min_dom0 = 118.11
         self.energy_table = self.__fetch_energy_info()
         #
-        self.percent_cpu_management = 0.05  # 12.5% from total CPUs
+        self.percent_cpu_management = 0.00  # 12.5% from total CPUs
         self.management_cpu = math.ceil(self.percent_cpu_management * self.default_cpu)
         self.management_ram = self.ram2cpu * self.management_cpu
         self.management_cons_dict = self.__get_management_consumption()
@@ -52,7 +52,7 @@ class PhysicalMachine(object):
                      self.sla_violations_list, self.has_overbooking, self.overb_count, self.actual_overb))
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def allocate(self, vm):
         if self.can_allocate(vm):

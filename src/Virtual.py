@@ -28,7 +28,7 @@ class VirtualMachine(object):
                      'timestamp:', self.timestamp, 'lifetime:', self.lifetime))
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     ##################################################
     # Input: max_it -> maximum number of iterations

@@ -8,7 +8,7 @@ import sys
 from Virtual import VirtualMachine
 from SLAHelper import *
 from Controller import *
-from DistributedInfrastructure import *
+from DistInfra import *
 from Eucalyptus import *
 from SLAHelper import *
 
@@ -33,7 +33,7 @@ class Demand(object):
                      self.all_vms_dict, self.all_operations_dicts, self.all_ha_dict])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
 
     def get_demand_from_az(self, az_id):
         return self.all_vms_dict[az_id], \

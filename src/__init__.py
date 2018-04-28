@@ -22,7 +22,7 @@ import json
 # From packages:
 from Chave import *
 from Controller import *
-from DistributedInfrastructure import *
+from DistInfra import *
 from Demand import *
 from Eucalyptus import *
 from SLAHelper import *
@@ -95,6 +95,7 @@ def main():
     exit(0)
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(description='CHAVE Simulator')
     parser.add_argument('-nit', dest='nit', action='store', nargs='+', required=True,
                         help='Number of iterations: N')
@@ -117,9 +118,8 @@ if __name__ == '__main__':
     parser.add_argument('-ob', dest='overb', action='store', nargs=1, type=str, required=True,
                         help='Has Overbooking?')  # overprovisioning
     args = parser.parse_args()
-    print "args:", args
 
-    ''' This 'sla' instance will get all specifications and parameters'''
+    ''' This 'sla' instance will reserve all specifications and parameters'''
     sla = SLAHelper()
 
     sla.list_of_source_files(args.input)  # List
@@ -154,10 +154,8 @@ if __name__ == '__main__':
     # se primeiro parametro der erro, use o segundo:
     logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.DEBUG)))
     sla.logger(logger)
-
-    # Cannot change the SLA
     sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
+    # Now, we can't change the SLA parameters
     sla.set_sla_lock(True)
-    #print "SLA object is: ", sla
 
     main()

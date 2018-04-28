@@ -7,7 +7,7 @@ import random
 # From packages:
 from Chave import *
 from Controller import *
-from DistributedInfrastructure import *
+from DistInfra import *
 from Demand import Demand
 from Eucalyptus import *
 from SLAHelper import *
@@ -27,4 +27,4 @@ class Broker(object):
         return repr([self.sla, self.logger])
 
     def obj_id(self):
-        print str(self).split(' ')[3].split('>')[0]
+        return str(self).split(' ')[3].split('>')[0]
