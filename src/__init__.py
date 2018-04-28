@@ -4,7 +4,6 @@
 CHAVE-Sim: The simulator for research based in clouds architecture
     CHAVE: Consolidation with High Availability on virtualyzed environments
 """
-from json import load
 
 __author__ = "Daniel Camargo and Denivy Ruck"
 __license__ = "GPL-v3"
@@ -17,6 +16,9 @@ import argparse
 import logging
 from datetime import datetime
 import time
+import csv
+import json
+
 # From packages:
 from Chave import *
 from Controller import *
@@ -26,43 +28,37 @@ from Eucalyptus import *
 from SLAHelper import *
 
 
-
 def main():
     # Setting objects demand, az, lc, region, gc
+    logger.info("SLA object is: %s" % sla)
     demand = Demand(sla)
     demand.create_vms_from_sources()
     # Get specific values using dict: 'all_xx_dict['DSn']'
-    # print len(demand.all_op_dict), len(demand.all_vms_dict), len(demand.all_ha_dict)
+    # print len(demand.all_operations_dicts), len(demand.all_vms_dict), len(demand.all_ha_dict)
 
     az_list, demand_list = [], []
     for i, azid in enumerate(demand.az_id):
-        vm, op, ha = demand.get_demand_from_az(azid)
-        az = AvailabilityZone(sla, azid, vm, op, ha)
-        if az.create_infrastructure(first_time=True):
+        vm_d, op_d, ha_d = demand.get_demand_from_az(azid)
+        az = AvailabilityZone(sla, azid, vm_d, op_d, ha_d)
+        if az.create_infrastructure(first_time=True, is_on=True):
             az_list.append(az)
         else:
             logger.error("Problem on create infra for AZ#%s: %s" % (i, azid))
 
     lcontroller_d, region_d = dict(), dict()
     lcontroller_d["lc0"] = LocalController(sla, "lc0", az_list[0:3])
-    lcontroller_d["lc1"] = LocalController(sla, "lc1", az_list[3:5])
+    lcontroller_d["lc1"] = LocalController(sla, "lc1", az_list[3:6])
 
-    # Regiao é dispensável, apenas para suportar arquiteturas mais complexas
+    # Regiao é dispensável aqui, mas útil para suportar arquiteturas mais complexas
     region_d['rg0'] = Region(sla, "rg0", lcontroller_d['lc0'])
     region_d['rg1'] = Region(sla, "rg1", lcontroller_d['lc1'])
 
-    '''
-    ctrl = Controller(sla)
-    localcontroller_list = ctrl.create_lcontroller_list(az_list)
-
-    infra = Infrastructure(sla)
-    regions_list = infra.create_regions_list(localcontroller_list)
-    '''
     api = GlobalController(sla, demand, lcontroller_d, region_d)
 
-    print "api_response", api.localcontroller_d['lc0'].get_vm_object_from_az('i-ABC443B3', 'DS1')
-    print "api_response", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4')
-    print "api_response", api.get_az_from_lc('DS4')
+    # print "api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-ABC443B3', 'DS1')
+    # print "api_response", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4')
+    # print "api_response", api.get_az_from_lc('DS4')
+    # exit(1)
     # ################### the kernel ###############
     start = time.time()
     if sla.g_algorithm() == "CHAVE":
@@ -84,12 +80,19 @@ def main():
     energy = api.get_total_energy_consumption_from_cloud()
     overb_list = api.get_list_overb_amount_from_cloud()
 
-    # TODO:
-    max_hosts_on = 0
+    if sla.g_output_type() == "CSV":
+        w = csv.writer(open(sla.g_data_output(), "w"))
+        for key, val in sla.g_metrics_dict().viewitems():
+            w.writerow([key, val])
+    elif sla.g_output_type() == "JSON":
+        json_f = json.dumps(sla.g_metrics_dict())
+        f = open(sla.g_data_output()+'.json', "w")
+        f.write(json_f)
+        f.close()
+    else:
+        print "Save in txt"
 
-    #with open(sla.g_data_output(), 'aw') as data:
-    #    data.write('%s\t%s\t%s\n$s\n%s\n%s' % (slav, energy, overb_list, elapsed, max_hosts_on))
-
+    exit(0)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='CHAVE Simulator')
@@ -111,10 +114,11 @@ if __name__ == '__main__':
                         help='Window time: N')
     parser.add_argument('-ws', dest='ws', action='store', nargs=1, type=int, required=True,
                         help='Window size: N')
-    parser.add_argument('-ob', dest='overb', action='store', nargs=1, type=bool, required=True,
-                        help='Has Overbooking?')
+    parser.add_argument('-ob', dest='overb', action='store', nargs=1, type=str, required=True,
+                        help='Has Overbooking?')  # overprovisioning
     args = parser.parse_args()
-    #print args
+    print "args:", args
+
     ''' This 'sla' instance will get all specifications and parameters'''
     sla = SLAHelper()
 
@@ -127,31 +131,33 @@ if __name__ == '__main__':
     sla.nit(sla.set_conf(args.nit, 'nit'))
 
     # Values from python args
-    sla.pm(args.pm)
-    sla.ff(args.ff)
-    sla.has_overbooking(args.overb)
+    sla.pm(args.pm[0])
+    sla.ff(args.ff[0])
+    sla.has_overbooking(eval(args.overb[0]))
     sla.algorithm(args.alg[0])
     sla.window_time(args.wt[0])
-    sla.window_size(args.ws)
+    sla.window_size(args.ws[0])
     # Linux Environment vars
     sla.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
     sla.date(str(datetime.now().strftime(os.environ.get("CS_DP"))))
     sla.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
-    sla.data_output(eval(os.environ["CS_DATAOUTPUT"]))
-    sla.log_output(str(eval(os.environ["CS_LOGOUTPUT"])))
+    sla.data_output(eval(os.environ["CS_DATA_OUTPUT"]))
+    sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
+    sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]))
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
     sla.frag_percentual(float(os.environ.get('CS_FRAG_PERCENT')))
     # Para os logs de mensagens:
     logger = logging.getLogger(__name__)
     hdlr = logging.FileHandler(sla.g_log_output())
-    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOGFORMATTER")))
+    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER")))
     logger.addHandler(hdlr)
     # se primeiro parametro der erro, use o segundo:
-    logger.setLevel(int(os.environ.get('CS_LOGLEVEL', logging.DEBUG)))
+    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.DEBUG)))
     sla.logger(logger)
 
     # Cannot change the SLA
     sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
     sla.set_sla_lock(True)
+    #print "SLA object is: ", sla
 
     main()

@@ -23,7 +23,7 @@ class Eucalyptus(object):
         op_dict_temp = self.operation_dict
         while (arrival_time < this_cycle) and (len(op_dict_temp.items()) > 0):
             for op_id, op_vm in op_dict_temp.items():
-                arrival_time = op_vm.get_timestamp()
+                arrival_time = op_vm.timestamp
                 vm = self._opdict_to_vmlist(op_vm.get_id())
                 if arrival_time < this_cycle:  # TODO: or (req_size < window_size):
                     this_state = op_id.split('-')[2]

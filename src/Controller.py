@@ -29,6 +29,9 @@ class Controller(object):
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm, self.context_list])
 
+    def obj_id(self):
+        print str(self).split(' ')[3].split('>')[0]
+
     def get_algorithm(self):
         return self.algorithm
 
@@ -104,23 +107,37 @@ class GlobalController(Controller):
         Controller.__init__(self, sla, region_d)
         self.sla = sla
         self.algorithm = sla.g_algorithm()
-        self.region_d = region_d  # lista de objetos
-        self.localcontroller_d = localcontroller_d  # lista de objetos
+        self.region_d = region_d  # dicionario de objetos regiao
+        self.localcontroller_d = localcontroller_d  # dicionario de objetos local controller
         self.demand = demand  # Objeto
         self.logger = sla.g_logger()
+        self.az_list = self.__discover_az_list()
 
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm, self.region_d, self.localcontroller_d, self.demand])
 
-    #######################
+    def obj_id(self):
+        print str(self).split(' ')[3].split('>')[0]
+
+    def create_new_host(self, az_id):
+        az = self.get_az(az_id)
+        if az.add_new_host_to_list():
+            return True
+        return False
+
     def get_az_list(self):
+        return self.az_list
+
+    def __discover_az_list(self):
         az_list = []
         for lc_id, lc_obj in self.localcontroller_d.viewitems():
             for az in lc_obj.az_list:
-                print "AZ_id da az_list:%s do lc %s" % (az.az_id, lc_id)
+                #self.logger.info("AZ_id %s da az_list do lc %s" % (az.az_id, lc_id))
                 az_list.append(az)
-
         return az_list
+
+    def get_regions_d(self):
+        return self.region_d
 
     def get_az(self, azid):
         for az in self.az_list:
@@ -143,8 +160,6 @@ class GlobalController(Controller):
                 return vm
         self.logger.error("Not found vm %s in az: %s" % (vmid, azid))
         return False
-
-    #####################################3
 
     def get_az_from_lc(self, az_id):
         for lc_id, lc_obj in self.localcontroller_d.viewitems():
@@ -169,10 +184,6 @@ class GlobalController(Controller):
     def get_total_SLA_violations_from_cloud(self):
         pass
 
-    def run(self, mm):
-        pass
-
-
 #################################################
 #######       CLASS LOCAL CONTROLLER      #######
 #################################################
@@ -187,6 +198,13 @@ class LocalController(Controller):
 
     def __repr__(self):
         return repr([self.lc_id, self.az_list, self.algorithm])
+
+    def obj_id(self):
+        print str(self).split(' ')[3].split('>')[0]
+
+    def set_replicas_dict(self):
+        pass
+        #for vm in self.az_list.
 
     def get_az(self, azid):
         for az in self.az_list:

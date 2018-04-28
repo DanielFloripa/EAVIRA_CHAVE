@@ -6,9 +6,13 @@ import numpy as np
 import logging
 from collections import OrderedDict
 
+key_list = ['total_alloc_i', 'accepted_alloc_i', 'max_host_on_i', 'total_energy_f',
+            'energy_l', 'energy_avg_l', 'energy_hour_l',
+            'sla_break_l', 'alloc_l', 'total_alloc_l', 'dc_load_l']
+command_list = ['set', 'add', 'sum', 'get', 'avg'] # 'init'
+
 
 class SLAHelper(object):
-    #  = OrderedDict()
     def __init__(self):
         # vars
         self.__pm = ""  # str()
@@ -26,6 +30,7 @@ class SLAHelper(object):
         self.__log_output = ""  # str()
         self.__trigger_to_migrate = ""  # str()
         self.__frag_percentual = ""  # str()
+        self.__output_type = ""
         # lists
         self.__ha_input = []
         self.__az_nodes = []
@@ -111,84 +116,102 @@ class SLAHelper(object):
             out = int(raw_data)
         return out
 
+    def __init_metrics_dict(self, is_print=False):
+        for azid in self.__az_id_list:
+            self.__metrics_dict[azid] = OrderedDict()
+            for key in key_list:
+                self.__metrics_dict[azid][key] = []
+        if is_print:
+            for azid, key in self.__metrics_dict.viewitems():
+                print '\n\n', azid,
+                for k, value in key.viewitems():
+                    print '\n\t', k, '\n\t\t', value
+
     def metrics(self, az_id, command, key, value=None, n=-1):
-        metrics_dict = dict()
-        command_list = ['get', 'set', 'add', 'init', 'summ']
-        key_list = ['total_alloc', 'accepted_alloc',
-                    'acc_list', 'acc_means', 'energy_list', 'energy_means', 'nop_list', 'nop_means',
-                    'sla_break', 'sla_break_steal', 'alloc', 'total_alloc_list', 'dealloc', 'realloc',
-                    'energy_rlc', 'energy_ttl', 'dc_vm_load', 'dc_load']
+        str_error = ("Key (%s) not found for Command %s, with val %s!!" % (key, command, value))
+        str_ok = ("{%s: %s} -> " % (key, value))
         l = len(key_list)
-        global l1, l2, l3
-        if command is 'init':
+        m = 4
+        if command is 'INIT':
+            self.__init_metrics_dict()
             if key is "ALL":
-                key1 = key_list[0:2]  # inteiros
+                key1 = key_list[0:m]  # inteiros
                 l1 = len(key1)
-                key2 = key_list[2:8]  # v listas vazias
+                key2 = key_list[m:l]  # listas vazias
                 l2 = len(key2)
-                key3 = key_list[8:l]  # z listas inicializadas em 0
-                l3 = len(key3)
-                key = [key1, key2, key3]
-                self.__logger.info("Init Metrics Size: ", l1, l2, l3)
-                if value == "ZEROS" and n > 0:
+                key = [key1, key2]
+                self.__logger.debug("Init Metrics Size: ", l1, l2)
+                if value == "ZEROS":
                     for kk in key:
                         x = len(kk)
                         for k in kk:
                             if x == l1:
-                                self.__metrics_dict[az_id] = {k: 0}
+                                self.__metrics_dict[az_id][k] = 0
                             elif x == l2:
-                                self.__metrics_dict[az_id] = {k: []}
-                            elif x == l3:
-                                self.__metrics_dict[az_id] = {k: [0 for i in range(n)]}
-                    return True, self.__metrics_dict
-            else:
-                self.__logger.error("You must specify 'n'!!", n)
-                return False
-            self.__logger.info("Metrics init %s:%s -> %s" % (key, value, self.__metrics_dict[az_id].viewitems()))
+                                self.__metrics_dict[az_id][k] = []
+                    return True
+                else:
+                    self.__logger.error("You must specify 'ZEROS'!!")
+                    return False
+            self.__logger.debug(str_ok, self.__metrics_dict[az_id].viewitems())
 
         elif command is 'set':
-            if key in key_list[0:l1]:
-                self.__metrics_dict[az_id] = {key: value}
-            elif key in key_list[l1:l1 + l2]:
+            if key in key_list[0:m]:
+                self.__metrics_dict[az_id][key] = value
+            elif key in key_list[m:l]:
                 self.__metrics_dict[az_id][key].append(value)
-            elif key in key_list[l1 + l2: l] and n > 0:
-                self.__metrics_dict[az_id][key][n] = value
             else:
-                self.__logger.error("Key (%s) not found for Command %s!!" % (key, value))
+                self.__logger.error(str_error)
                 return False
-            self.__logger.info("Metrics set %s:%s -> %s" % (key, value, self.__metrics_dict[az_id].viewitems()))
+            self.__logger.debug(str_ok, True)  #, self.__metrics_dict[az_id].viewitems()))
             return True
 
         elif command is 'get':
             if key in key_list:
-                self.__logger.info("Metrics get %s:%s -> %s" % (key, value, self.__metrics_dict[az_id][key]))
+                self.__logger.debug(str_ok, self.__metrics_dict[az_id][key])
                 return self.__metrics_dict[az_id][key]
             else:
-                self.__logger.error("Key (%s) not found for Command %s!!" % (key, value))
+                self.__logger.error(str_error)
                 return False
 
         elif command is 'add':
-            if key in key_list[0:l1 + l2]:
-                self.__metrics_dict[az_id] = {key: self.__metrics_dict[az_id][key] + value}
-            if key in key_list[l1 + l2:l]:
-                self.__metrics_dict[az_id] = {key: self.__metrics_dict[az_id][key].append(value)}
+            if key in key_list[0:m]:
+                self.__metrics_dict[az_id][key] += value
+            elif key in key_list[m:l]:
+                if n >= 0:
+                    self.__metrics_dict[az_id][key][n] += value
+                else:
+                    self.__logger.error("Use 'set' command or specify the 'n' in list position")
+                    return False
             else:
-                self.__logger.error("Key (%s) not found for Command %s!!" % (key, value))
+                self.__logger.error(str_error)
                 return False
-            self.__logger.info("Metrics added %s:%s -> %s" % (key, value, self.__metrics_dict[az_id][key]))
+            self.__logger.debug(str_ok, self.__metrics_dict[az_id][key])
             return self.__metrics_dict[az_id][key]
 
-        elif command is 'summ':
-            if key in key_list[0:l1]:
+        elif command is 'sum':
+            if key in key_list[0:m]:
                 ret = self.__metrics_dict[az_id][key]
-            elif key in key_list[l1:l1 + l2]:
+            elif key in key_list[m:l]:
                 ret = sum(values for values in self.__metrics_dict[az_id][key])
-            elif key in key_list[l1 + l2: l]:
-                ret = sum(val for val in list(self.__metrics_dict[az_id][key]))
             else:
-                self.__logger.error("Key (%s) not found for Command %s!!" % (key, value))
+                self.__logger.error(str_error)
                 return False
-            self.__logger.info("Metrics summ %s:%s -> %s" % (key, value, self.__metrics_dict[az_id][key]))
+            self.__logger.debug(str_ok, ret)
+            return ret
+
+        elif command is 'avg':
+            if key in key_list[0:m]:
+                ret = self.__metrics_dict[az_id][key]
+            elif key in key_list[m:l]:
+                print (values for values in self.__metrics_dict[az_id][key])
+                sum_avg = sum(values for values in self.__metrics_dict[az_id][key])
+                len_avg = float(len(self.__metrics_dict[az_id][key]))
+                ret = sum_avg / len_avg
+            else:
+                self.__logger.error(str_error)
+                return False
+            self.__logger.debug(str_ok, ret)
             return ret
         else:
             self.__logger.error("Command (" + str(command) + ") not found!!")
@@ -329,7 +352,16 @@ class SLAHelper(object):
         self.__logger = logger
         return True
 
+    def output_type(self, output_type):
+        if self.is_sla_lock():
+            return False
+        self.__output_type = output_type
+        return True
+
     ''' GETTERS '''
+    def g_output_type(self):
+        return self.__output_type
+
     def g_pm(self):
         return self.__pm
 

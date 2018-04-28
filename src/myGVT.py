@@ -2,20 +2,11 @@
 
 import argparse
 import cPickle as pickle
-from copy import deepcopy
-from random import randint, uniform
-from timeit import default_timer
-import numpy as np
-import os
-from BaseInfrastructure import SLA_BASED, VI_BASED
-from Virtual import VirtualMachine
-from Physical import *
-from DistributedInfrastructure import AvailabilityZone
-from Algorithms import dijkstra
 from Controller import *
 from collections import OrderedDict
+import sys
+import os
 
-from itertools import permutations
 # TODO: perm = permutations([1, 2, 3])
 # for i in list(perm): print i
 
@@ -179,6 +170,53 @@ def create_profile(nit, dist):
                                             'vi': vi.get_id()})
     return op_log, vi_list
 
+def test_consistency(source_file):
+    for_check = []
+    consistent_dictionary = OrderedDict()
+    consistent_list = []
+    can_save = False
+    with open(source_file, 'r') as source:
+        for operation in source:
+            operation = operation.split()
+            state = str(operation[0])
+            timestamp = int(operation[1])
+            vm_id = str(operation[2])
+            if state == "START":
+                host = str(operation[3])
+                vcpu = str(operation[4])
+                for_check.append(vm_id)
+                consistent_list = [state, timestamp, vm_id, host, vcpu]
+                can_save = True
+            else:
+                if consistent_dictionary.has_key(vm_id + "_START"):
+                    consistent_list = [state, timestamp, vm_id]
+                    can_save = True
+                else:
+                    consistent_dictionary.pop(vm_id + "_START")
+                    print "Problem in ", vm_id, source_file
+                    can_save = False
+                try:
+                    vmindex = for_check.index(vm_id)
+                    for_check.pop(vmindex)
+                except ValueError:
+                    print "Problem in ", vm_id, source_file
+                    can_save = False
+                    break
+            if can_save:
+                consistent_dictionary[vm_id+"_"+state] = consistent_list
+    source.close()
+    if for_check:
+        print "Some problem on consistency", len(for_check), source_file
+        os.rename(source_file, source_file+"_ERROR")
+        out = open(source_file, "w")
+        for d_id, d_list in consistent_dictionary.viewitems():
+            if for_check.count(d_id.split('_')[0]) == 0:
+                line = ''
+                for i in range(len(d_list)):
+                    line += str(d_list[i])+" "
+                line += '\n'
+                out.writelines(line)
+        out.close()
 
 
 def createAvailabilityRequisitions(source_file):
@@ -195,16 +233,19 @@ def createAvailabilityRequisitions(source_file):
             state = str(operation[0])
             timestamp = int(operation[1])
             vm_id = str(operation[2])
-            #host = str(operation[3])
+
             if state == "START":
+                host = str(operation[3])
+                vcpu = str(operation[4])
                 number_of_replicas = 1
                 if monte_carlo():
                     number_of_replicas = 2
                 # No momento so temos duas AZs: HA da atual varia e a segunda eh fixa
-                ha =  get_required_ha(number_of_replicas, [avail_az, 0.9995])
+                ha = get_required_ha(number_of_replicas, [avail_az, 0.9995])
                 out = open(out_file, "aw")
                 out.write(str(timestamp)+" "+str(vm_id)+" "+str(ha)+"\n")
                 out.close()
+    source.close()
     return True
 
 
@@ -215,8 +256,8 @@ def get_required_ha(replicas, av_azs):
             return av_azs[0]
         for i in range(0, replicas):
             prod = prod * float(1.0 - av_azs[i])
-            print av_azs[i], i, prod
-        ha =  1.0 - prod
+            #print av_azs[i], i, prod
+        ha = 1.0 - prod
     elif type(av_azs) is float:
         if replicas == 1:
             return av_azs
@@ -337,20 +378,23 @@ def main(dist):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Elastic Energy-Aware Virtual Infrastructure Realocation Algoritm')
-    parser.add_argument('-nit', dest='nit', action='store', nargs=1, type=int, help='Number of iterations: N')
-    parser.add_argument('-pr', dest='pr', action='store', nargs='+', help='%% of restricted VMs in decimal')
     parser.add_argument('-source', dest='source', action='store', nargs=1, help='Source Files')
-    parser.add_argument('-virtual', dest='virtual', action='store', nargs=1, help='Virtual infrastructure input folder')
-    parser.add_argument('-output', dest='output', action='store', nargs=1, help='Profile output directory')
-    parser.add_argument('-distribution', dest='dist', action='store', nargs=1, help='Arrival distribution: poisson or uniform')
+
+    parser.add_argument('-max-gvt', dest='max_gvt', action='store', nargs=1, type=bool, required=False)
+#    parser.add_argument('-nit', dest='nit', action='store', nargs=1, type=int, help='Number of iterations: N')
+#    parser.add_argument('-pr', dest='pr', action='store', nargs='+', help='%% of restricted VMs in decimal')
+#    parser.add_argument('-virtual', dest='virtual', action='store', nargs=1, help='Virtual infrastructure input folder')
+#    parser.add_argument('-output', dest='output', action='store', nargs=1, help='Profile output directory')
+#    parser.add_argument('-distribution', dest='dist', action='store', nargs=1, help='Arrival distribution: poisson or uniform')
 
     args = parser.parse_args()
 
-    nit = args.nit[0]
-    pr_list = [float(e) for e in args.pr]
-    virtual_folder = args.virtual[0]
-    output_folder = args.output[0]
-    dist = args.dist[0]
+    #nit = args.nit[0]
+    #pr_list = [float(e) for e in args.pr]
+    #virtual_folder = args.virtual[0]
+    #output_folder = args.output[0]
+    #dist = args.dist[0]
     source_file = args.source[0]
+    test_consistency(source_file)
     createAvailabilityRequisitions(source_file)
     # main(dist)
