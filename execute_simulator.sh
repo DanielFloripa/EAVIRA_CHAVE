@@ -13,9 +13,6 @@ fi
 
 mkdir ${CS_LOG_PATH} 2> /dev/null
 mkdir ${CS_DATA_PATH} 2> /dev/null
-##### ##### ##### ##### ##### ##### ##### ##### #####
-#####  DATA CONFIGURATIONS                      #####
-##### ##### ##### ##### ##### ##### ##### ##### #####
 
 TEST_LIST=( 'CHAVE' ) # 'EUCA' 'MM' MBFD )
 PM_LIST=( 'PlacementFirst' ) # 'MigrationFirst' )
@@ -33,11 +30,9 @@ for SRC in ${SRC_LIST[@]}; do
     NIT+=( `wc -l < ${SRC}` )
     # python src/myGVT.py -source ${SRC}
 done
-
 # WINDOW time/size: ('min' 'step' 'max')
 WT=('1' '2' '2')
 WS=('20' '20' '21')
-
 
 cd src
 _INIT=`date +%s`

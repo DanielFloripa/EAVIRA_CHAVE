@@ -20,7 +20,7 @@ import time
 # From packages:
 from src.Chave import *
 from src.Controller import *
-from src.DistributedInfrastructure import *
+from src.DistInfra import *
 from src.Demand import *
 from src.Eucalyptus import *
 from src.SLAHelper import *

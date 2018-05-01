@@ -4,6 +4,7 @@
 import os
 from collections import OrderedDict
 import random
+import operator
 # From packages:
 from Chave import *
 from Controller import *
@@ -107,7 +108,10 @@ class GlobalController(Controller):
         Controller.__init__(self, sla, region_d)
         self.sla = sla
         self.algorithm = sla.g_algorithm()
-        self.region_d = region_d  # dicionario de objetos regiao
+        if region_d is None:
+            self.region_d = localcontroller_d
+        else:
+            self.region_d = region_d  # dicionario de objetos regiao
         self.localcontroller_d = localcontroller_d  # dicionario de objetos local controller
         self.demand = demand  # Objeto
         self.logger = sla.g_logger()
@@ -138,6 +142,9 @@ class GlobalController(Controller):
 
     def get_regions_d(self):
         return self.region_d
+
+    def get_localcontroller_d(self):
+        return self.localcontroller_d
 
     def get_az(self, azid):
         for az in self.az_list:
@@ -193,8 +200,9 @@ class LocalController(Controller):
         self.lc_id = lc_id
         self.az_list = az_list
         self.algorithm = sla.g_algorithm()
-        #self.vm_dict = sla.all_vms_dict['']
-        # self. =
+        self.replicas_dict = OrderedDict()
+        self.ordered_replicas_dict = OrderedDict()
+        self.in_execution_replicas_dict = OrderedDict()
 
     def __repr__(self):
         return repr([self.lc_id, self.az_list, self.algorithm])
@@ -202,9 +210,20 @@ class LocalController(Controller):
     def obj_id(self):
         return str(self).split(' ')[3].split('>')[0]
 
-    def set_replicas_dict(self):
-        pass
-        #for vm in self.az_list.
+    def put_critical_vms_on_replicas_dict(self, vm):
+        self.replicas_dict[vm.vm_id] = vm
+        # reboot/clean this dict
+        self.ordered_replicas_dict.clear()
+        for vm in (sorted(self.replicas_dict.values(),
+                          key=operator.attrgetter('timestamp'),
+                          reverse=True)):
+            self.ordered_replicas_dict[vm.get_id()] = vm
+        # x = ordered_replicas_dict.popitem()
+
+    def pop_critical_vms_from_replicas_dict(self):
+        rem = self.ordered_replicas_dict.popitem()
+        self.logger.debug("Removed {0} from replicas Dict".format(rem))
+        return rem
 
     def get_az(self, azid):
         for az in self.az_list:
@@ -229,10 +248,7 @@ class LocalController(Controller):
         return False
         #return (vm[vmid] for vm in self.get_vms_dict_from_az(azid) if vm.has_key(vmid))
 
-    def execute_euca(self):
-        pass
-
-    def execute_elasticity(self, delete_requests, recfg_requests, repl_requests, offline):
+    def execute_elasticity(self, az, delete_requests, recfg_requests, repl_requests, offline):
         repl_requests_count = 0
         recfg_requests_count = 0
         delete_requests_count = 0
@@ -240,17 +256,17 @@ class LocalController(Controller):
         new_delete_requests = []
         for delete in delete_requests:
             delete_requests_count += 1
-            vi = self.datacenter.get_vi(delete['vi'])
+            vi = az.get_vi(delete['vi'])
             if vi != -1:
                 new_vnode = vi.get_virtual_resource(delete['vnode'])
                 if new_vnode != -1:
                     new_delete_requests.append(new_vnode)
-        self.datacenter.answer_delete_requests(new_delete_requests)
+        az.answer_delete_requests(new_delete_requests)
 
         new_recfg_requests = []
         for recfg in recfg_requests:
             recfg_requests_count += 1
-            vi = self.datacenter.get_vi(recfg['vi'])
+            vi = az.get_vi(recfg['vi'])
             if vi != -1:
                 new_vnode = vi.get_virtual_resource(recfg['vnode'])
                 if new_vnode != -1:
@@ -260,13 +276,13 @@ class LocalController(Controller):
         new_repl_requests = []
         for repl in repl_requests:
             repl_requests_count += 1
-            vi = self.datacenter.get_vi(repl['vi'])
+            vi = az.get_vi(repl['vi'])
             if vi != -1:
                 new_vnode = vi.get_virtual_resource(repl['vnode'])
                 if new_vnode != -1:
                     new_repl_requests.append(new_vnode)
 
         # call MM, MBFD and Buyya solutions
-        self.datacenter.answer_reconfiguration_requests_mbfd(new_recfg_requests)
-        self.datacenter.answer_replication_requests_mbfd(new_repl_requests)
+        az.answer_reconfiguration_requests_mbfd(new_recfg_requests)
+        az.answer_replication_requests_mbfd(new_repl_requests)
 

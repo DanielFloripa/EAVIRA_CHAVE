@@ -5,12 +5,13 @@ from random import randint
 import math
 from copy import deepcopy
 from threading import Thread, RLock, current_thread, currentThread
+from collections import OrderedDict
 import time
 from DistInfra import *
 
 
 class Chave(object):
-    global_time = -1  # type: int
+      # type: int
 
     def __init__(self, api):
         self.api = api
@@ -33,8 +34,12 @@ class Chave(object):
         self.all_vms_dict = dict()
         self.all_op_dict = dict()
         self.all_ha_dict = dict()
-        self.az_list = []
         self.thread_dict = dict()
+        self.replicas_dict = OrderedDict()
+        self.az_list = []
+        self.global_hour = -1
+        self.global_time = -1
+        self.buffer_replicas_dict = OrderedDict()
 
     def __repr__(self):
         return repr([self.logger, self.nit, self.trigger_to_migrate,
@@ -43,11 +48,16 @@ class Chave(object):
                      self.all_vms_dict, self.all_op_dict, self.all_ha_dict, self.sla])
 
     def gvt(self, max):
-        self.logger.info("Init GVT")
-        for self.global_time in range(max):
+        self.logger.info("Init GVT in %s to %s" %
+                         (self.global_time, self.api.demand.max_timestamp))
+        while self.global_time < self.api.demand.max_timestamp + 1:
             self.global_time += self.window_time
-            #self.logger.debug(self.global_time)
-            time.sleep(0.000001)
+            if self.global_time % 60 == 0:
+                time.sleep(0.001)
+            if self.global_time % 3600 == 0:
+                self.global_hour += 1
+                self.logger.debug("GVT s:%s, h:%s" % (self.global_time, self.global_hour))
+                time.sleep(0.01)
         self.logger.info("End of GVT!")
 
 
@@ -56,27 +66,26 @@ class Chave(object):
         Interface for all algorithms, the name must be agnostic for all them
         :return: Void
         '''
-        self.thread_dict['gvt'] = Thread(name="T_gvt", target=self.gvt, args=[99999999])
+        self.thread_dict['gvt'] = Thread(name="T_gvt", target=self.gvt, args=[0])
         # Creating Thread list
         for az in self.api.get_az_list():
             self.thread_dict[str(az.az_id)] = Thread(
                 name="Tz_" + str(az.az_id),
                 target=self.az_consolidation,
                 args=[az])
-        for r_id, r_obj in self.api.get_regions_d().viewitems():
-            self.thread_dict[str(r_id)] = Thread(
-                name="Tr_" + str(r_id),
+        for lc_id, lc_obj in self.api.get_localcontroller_d().viewitems():
+            self.thread_dict[str(lc_id)] = Thread(
+                name="Tr_" + str(lc_id),
                 target=self.region_replication,
-                args=[r_obj])
+                args=[lc_obj])
         # Release Threads
         for t_id, t_obj in self.thread_dict.viewitems():
             self.logger.debug("Executing thread for: %s" % (t_obj.getName()))
             t_obj.start()
-            #t_obj.join(0.001)
+            #t_obj.join(0.1)
             # Join Threads? NO!
 
     def az_consolidation(self, az):
-        self.sla.metrics(az.az_id, "INIT", "ALL", "ZEROS")
         requisitions_queue = []
         req_size, req_size2, energy = 0, 0, 0.0
         max_host_on = 0
@@ -86,23 +95,27 @@ class Chave(object):
         arrival_time = 0
         # Enquanto houverem operações:
         while len(op_dict_temp.items()) > 0:
-            new_host_on, off = az.each_cycle_get_hosts_on()
-            if new_host_on > max_host_on:
-                max_host_on = new_host_on
-                self.sla.metrics(az.az_id, 'set', 'max_host_on_i', max_host_on)
-                #self.max_host_on[az.az_id].append(max_host_on)
-                self.logger.info("New max host on: %s at %s sec." % (max_host_on, arrival_time))
             for op_id, vm in op_dict_temp.items():
                 # MIGRATE FIRST
                 #            if pm == "MigrationFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
                 #                dc = chave.migrate(dc)
                 #                print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
+                if (self.global_time % 3600) == 0:
+                    self.resume_energy_hour(az)
+
+                new_host_on, off = az.each_cycle_get_hosts_on()
+                if new_host_on > max_host_on:
+                    max_host_on = new_host_on
+                    self.sla.metrics(az.az_id, 'set', 'max_host_on_i', max_host_on)
+                    self.logger.info("New max host on: {0} at {1} sec".format(max_host_on, arrival_time))
+
                 arrival_time = vm.timestamp
                 if arrival_time <= self.global_time:
                     this_state = op_id.split('_')[1]
                     if this_state == "START":
                         requisitions_queue.append(vm)
                         req_size += 1
+
                         # Let's PLACE
                         if (self.is_time_to_place(self.global_time) or
                             self.window_size_is_full(req_size)) or \
@@ -118,39 +131,26 @@ class Chave(object):
                                 req_size = 0
                                 FORCE_PLACE = False
                             else:
-                                self.logger.error("New_host_list problem: ", az.az_id)
+                                self.logger.error("Problem on place queue: {0}".format(requisitions_queue))
                             del op_dict_temp[op_id]
 
-                    elif this_state == "STOP" and vm not in requisitions_queue:  # adicionado na ultima janela
+                    elif this_state == "STOP" and vm not in requisitions_queue:  # não adicionado na ultima janela
+                        try:
+                            exec_vm = vms_in_execution.pop(vm.vm_id)
+                        except IndexError or KeyError:
+                            self.logger.error("Problem on pop vm {0}".format(vm.vm_id))
+                            exit(1)
                         energy = az.get_az_energy_consumption()
                         self.sla.metrics(az.az_id, 'set', 'energy_l', energy)
                         self.sla.metrics(az.az_id, 'set', 'energy_hour_l', energy)
-                        try:
-                            exec_vm = vms_in_execution.pop(vm.vm_id)
-                        except IndexError:
-                            self.logger.error("Problem on pop vm %s executed in az %s" % (vm.vm_id, az.az_id))
-                            exit(1)
                         az.deallocate_on_host(exec_vm)
                         del op_dict_temp[op_id]
                     else:
-                        self.logger.error("OOOps, " + str(op_id) + " STILL IN REQ_LIST, LETS BREAK.")
+                        self.logger.error("OOOps, DIVERGENCE between {0} and {1} ".format(this_state, op_id))
                         FORCE_PLACE = True
                         break
                 else:  # While there are not requisition, wait for the Thread_GVT
-                    #self.logger.debug("Waiting GVT at %s" % (this_time))
-                    if (self.global_time % 3600) < 2:
-                        this_hour = True
-                        self.logger.debug("Trying calculate energy at %s" % (self.global_time))
-                        try:
-                            mean_last_hour = self.sla.metrics(az.az_id, 'avg', 'energy_hour_l', energy)
-                            if mean_last_hour is False:
-                                break
-                            self.logger.info("Media da ultima HORA:", mean_last_hour)
-                            self.sla.metrics(az.az_id, 'set', 'energy_avg_l', mean_last_hour)
-                            self.sla.metrics(az.az_id, 'set', 'energy_hour_l', [])
-                            self.sla.metrics(az.az_id, 'add', 'total_energy_f', mean_last_hour)
-                        except ZeroDivisionError:
-                            self.logger.error("Zero Division at %s" % (self.global_time))
+                    #self.logger.debug("Waiting GVT at %s" % (self.global_time))
                     requisitions_queue = []
                     req_size = 0
                     break
@@ -165,11 +165,25 @@ class Chave(object):
             ##with self.reentrant_lock:
                 ##self.logger.info("Last arrival:" + str(arrival_time) + ", lastCicle:" + str(
                 #    self.global_time) + ", len(op_dict):" + str(len(op_dict_temp.items())))
-        return az, max_host_on
+        time.sleep(5)
 
-    def region_replication(self, region_obj):
+    def region_replication(self, lc_obj):
+        if len(lc_obj.get_oredered_replicas_dict()) > 0:
+            buffer_replicas_dict = lc_obj.get_oredered_replicas_dict()
+
         pass
         #print "Replicating: ", region_obj, "thrd:", current_thread().name
+
+    def resume_energy_hour(self, az):
+        mean_last_hour = self.sla.metrics(az.az_id, 'avg', 'energy_hour_l')
+        if mean_last_hour is False:
+            return False
+        self.logger.info("Media da ultima HORA: {0} at {1}h or {2}".format(
+            mean_last_hour, self.global_hour, self.global_time))
+        self.sla.metrics(az.az_id, 'set', 'energy_avg_l', mean_last_hour)
+        self.sla.metrics(az.az_id, 'set', 'energy_hour_l', 0)
+        self.sla.metrics(az.az_id, 'add', 'total_energy_f', mean_last_hour)
+        return True
 
     def set_demand(self, demand):
         self.demand = demand

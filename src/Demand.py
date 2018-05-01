@@ -26,11 +26,12 @@ class Demand(object):
         self.all_vms_dict = dict()  # Dicionaario de listas
         self.all_operations_dicts = dict()  # Dicionario de dicionarios
         self.all_ha_dicts = dict()  # Dicionario de dicionarios
+        self.max_timestamp = 0
 
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm,
                      self.az_id, self.number_of_azs, self.vmRam_default,
-                     self.all_vms_dict, self.all_operations_dicts, self.all_ha_dict])
+                     self.all_vms_dict, self.all_operations_dicts, self.all_ha_dicts])
 
     def obj_id(self):
         return str(self).split(' ')[3].split('>')[0]
@@ -126,6 +127,8 @@ class Demand(object):
                                         timestamp, lifetime, self.logger)
 
                     operations_dict[op_id] = vm
+                    if self.max_timestamp < timestamp:
+                        self.max_timestamp = timestamp
                     try:
                         vmindex = for_testing_vm_list.index(vm_to_stop)
                         for_testing_vm_list.pop(vmindex)

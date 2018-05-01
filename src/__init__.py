@@ -18,6 +18,7 @@ from datetime import datetime
 import time
 import csv
 import json
+from pympler import summary, tracker, muppy
 
 # From packages:
 from Chave import *
@@ -28,9 +29,11 @@ from Eucalyptus import *
 from SLAHelper import *
 
 
+
+
 def main():
     # Setting objects demand, az, lc, region, gc
-    logger.info("SLA object is: %s" % sla)
+    sla.init_metrics(is_print=False)
     demand = Demand(sla)
     demand.create_vms_from_sources()
     # Get specific values using dict: 'all_xx_dict['DSn']'
@@ -55,11 +58,12 @@ def main():
 
     api = GlobalController(sla, demand, lcontroller_d, region_d)
 
+    ''' Lets test the api: '''
     # print "api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-ABC443B3', 'DS1')
     # print "api_response", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4')
     # print "api_response", api.get_az_from_lc('DS4')
     # exit(1)
-    # ################### the kernel ###############
+    # ################### Begin the algorithms ###############
     start = time.time()
     if sla.g_algorithm() == "CHAVE":
         chave = Chave(api)
@@ -74,28 +78,37 @@ def main():
         mbfd = 1
         api.run(mbfd)
     elapsed = time.time() - start
-    # ################### the kernel ###############
+    # ################### End the algorithms ###############
 
     slav = api.get_total_SLA_violations_from_cloud()
     energy = api.get_total_energy_consumption_from_cloud()
     overb_list = api.get_list_overb_amount_from_cloud()
 
     if sla.g_output_type() == "CSV":
-        w = csv.writer(open(sla.g_data_output(), "w"))
+        w = csv.writer(open(sla.g_data_output()+".csv", "w"))
         for key, val in sla.g_metrics_dict().viewitems():
+            logger.info(key, val)
             w.writerow([key, val])
     elif sla.g_output_type() == "JSON":
-        json_f = json.dumps(sla.g_metrics_dict())
-        f = open(sla.g_data_output()+'.json', "w")
+        json_f = json.dumps(sla.g_metrics_dict(), indent=True, sort_keys=False)
+        f = open(sla.g_data_output()+".json", "w")
         f.write(json_f)
         f.close()
-    else:
-        print "Save in txt"
+
+    all_objects = muppy.get_objects()
+    sum1 = summary.summarize(all_objects)
+    summary.print_(sum1)
 
     exit(0)
 
-if __name__ == '__main__':
 
+
+if __name__ == '__main__':
+    '''
+    Lets get the parameters from args and from Linux environment, 
+    create the SLAHelper Object and put them all into object.
+    This part we can't need change
+    '''
     parser = argparse.ArgumentParser(description='CHAVE Simulator')
     parser.add_argument('-nit', dest='nit', action='store', nargs='+', required=True,
                         help='Number of iterations: N')
@@ -122,11 +135,11 @@ if __name__ == '__main__':
     ''' This 'sla' instance will reserve all specifications and parameters'''
     sla = SLAHelper()
 
-    sla.list_of_source_files(args.input)  # List
+    sla.list_of_source_files(args.input)
     s = len(args.input)
     if s == len(args.ha_input) == len(args.az_conf) == len(args.nit):
         sla.number_of_azs(s)
-    sla.ha_input(args.ha_input)  # List
+    sla.ha_input(args.ha_input)
     sla.az_conf(sla.set_conf(args.az_conf, 'az_conf'))
     sla.nit(sla.set_conf(args.nit, 'nit'))
 
@@ -141,7 +154,7 @@ if __name__ == '__main__':
     sla.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
     sla.date(str(datetime.now().strftime(os.environ.get("CS_DP"))))
     sla.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
-    sla.data_output(eval(os.environ["CS_DATA_OUTPUT"]))
+    sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
     sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
     sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]))
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
@@ -155,7 +168,7 @@ if __name__ == '__main__':
     logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.DEBUG)))
     sla.logger(logger)
     sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
-    # Now, we can't change the SLA parameters
+    # From now, we can't change the SLA parameters
     sla.set_sla_lock(True)
 
     main()

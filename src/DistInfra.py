@@ -104,6 +104,7 @@ class AvailabilityZone(Infrastructure):
         self.total_SLA_violations = 0
         # @TODO: olha a gambi:
         self.resources = self.host_list
+        ''''
         self.ndelete = 0
         self.ndealloc = 0
         self.nalloc = 0
@@ -112,10 +113,7 @@ class AvailabilityZone(Infrastructure):
         self.trecfg = 0
         self.nrecfg = 0
         self.nmig = 0
-        if self.algorithm == "EUCA":
-            self.dbg = False
-        elif self.algorithm == "CHAVE":
-            self.dbg = False
+        self.dbg = False'''
 
     def __repr__(self):
         return repr([self.azNodes, self.azCores, self.availability,

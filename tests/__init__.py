@@ -51,7 +51,7 @@ class Metric:
                 key2 = key_list[m:l]  # listas vazias
                 l2 = len(key2)
                 key = [key1, key2]
-                self.__logger.debug("Init Metrics Size: ", l1, l2)
+                print ("Init Metrics Size: ", l1, l2)
                 if value == "ZEROS":
                     for kk in key:
                         x = len(kk)
@@ -62,9 +62,9 @@ class Metric:
                                 self.__metrics_dict[az_id][k] = []
                     return True
                 else:
-                    self.__logger.error("You must specify 'ZEROS'!!")
+                    print ("You must specify 'ZEROS'!!")
                     return False
-            self.__logger.debug(str_ok, self.__metrics_dict[az_id].viewitems())
+            print (str_ok, self.__metrics_dict[az_id].viewitems())
 
         elif command is 'set':
             if key in key_list[0:m]:
@@ -72,17 +72,17 @@ class Metric:
             elif key in key_list[m:l]:
                 self.__metrics_dict[az_id][key].append(value)
             else:
-                self.__logger.error(str_error)
+                print (str_error)
                 return False
-            self.__logger.debug(str_ok, True)  #, self.__metrics_dict[az_id].viewitems()))
+            print (str_ok, True)  #, self.__metrics_dict[az_id].viewitems()))
             return True
 
         elif command is 'get':
             if key in key_list:
-                self.__logger.debug(str_ok, self.__metrics_dict[az_id][key])
+                print (str_ok, self.__metrics_dict[az_id][key])
                 return self.__metrics_dict[az_id][key]
             else:
-                self.__logger.error(str_error)
+                print (str_error)
                 return False
 
         elif command is 'add':
@@ -92,12 +92,12 @@ class Metric:
                 if n >= 0:
                     self.__metrics_dict[az_id][key][n] += value
                 else:
-                    self.__logger.error("Use 'set' command or specify 'n' position")
+                    print ("Use 'set' command or specify 'n' position")
                     return False
             else:
-                self.__logger.error(str_error)
+                print (str_error)
                 return False
-            self.__logger.debug(str_ok, self.__metrics_dict[az_id][key])
+            print (str_ok, self.__metrics_dict[az_id][key])
             return self.__metrics_dict[az_id][key]
 
         elif command is 'summ':
@@ -106,23 +106,23 @@ class Metric:
             elif key in key_list[m:l]:
                 ret = sum(values for values in self.__metrics_dict[az_id][key])
             else:
-                self.__logger.error(str_error)
+                print (str_error)
                 return False
-            self.__logger.debug(str_ok, ret)
+            print (str_ok, ret)
             return ret
         else:
-            self.__logger.error("Command (" + str(command) + ") not found!!")
+            print ("Command (" + str(command) + ") not found!!")
         return False
 
 
 m = Metric()
 m.metrics('ds1', 'INIT', 'ALL', 'ZEROS')
 
-for i in range(10):
+for i in range(100000000):
     for az in m.az_id_list:
-        print "AZ:", az,
+        #print "AZ:", az,
         for com in command_list:
-            print '\n\tCommand', com
+            #print '\n\tCommand', com
             for key in key_list:
-                print '\t\t',
+                #print '\t\t',
                 m.metrics(az, com, key, i+1, 0)

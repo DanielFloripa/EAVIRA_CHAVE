@@ -246,7 +246,7 @@ class PhysicalMachine(object):
                 if ret > self.get_max_energy() + 1:
                     self.logger.info("Energy breaking for %s->"
                                      "(%s), vm_cons:%s, mngm_c:%s, p:%s=%s-%s/def" %
-                                     (self.get_id(), ret, vm_cons, self.__get_management_consumption()['avg'],
+                                     (self.get_id(), ret, vm_cons, self.management_cons_dict['avg'],
                                       p, self.default_cpu, self.cpu))
                 return self.get_max_energy()
             return ret
