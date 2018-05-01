@@ -26,5 +26,5 @@ class Broker(object):
     def __repr__(self):
         return repr([self.sla, self.logger])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]

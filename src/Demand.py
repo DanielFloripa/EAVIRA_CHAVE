@@ -33,7 +33,7 @@ class Demand(object):
                      self.az_id, self.number_of_azs, self.vmRam_default,
                      self.all_vms_dict, self.all_operations_dicts, self.all_ha_dicts])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def get_demand_from_az(self, az_id):

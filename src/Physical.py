@@ -51,7 +51,7 @@ class PhysicalMachine(object):
         return repr((self.host_id, self.cpu, self.ram, "vml:", self.virtual_machine_list, self.algorithm, self.az_id,
                      self.sla_violations_list, self.has_overbooking, self.overb_count, self.actual_overb))
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def allocate(self, vm):

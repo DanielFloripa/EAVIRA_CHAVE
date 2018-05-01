@@ -27,7 +27,7 @@ class VirtualMachine(object):
         return repr(('az_id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram, 'ha:', self.ha, 'host:', self.host_id,
                      'timestamp:', self.timestamp, 'lifetime:', self.lifetime))
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     ##################################################

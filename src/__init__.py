@@ -14,8 +14,8 @@ __status__ = "Test"
 
 import argparse
 import logging
-from datetime import datetime
 import time
+from datetime import datetime
 import csv
 import json
 from pympler import summary, tracker, muppy
@@ -27,8 +27,6 @@ from DistInfra import *
 from Demand import *
 from Eucalyptus import *
 from SLAHelper import *
-
-
 
 
 def main():
@@ -95,9 +93,9 @@ def main():
         f.write(json_f)
         f.close()
 
-    all_objects = muppy.get_objects()
+    '''all_objects = muppy.get_objects()
     sum1 = summary.summarize(all_objects)
-    summary.print_(sum1)
+    summary.print_(sum1)'''
 
     exit(0)
 

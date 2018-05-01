@@ -40,6 +40,7 @@ class Chave(object):
         self.global_hour = -1
         self.global_time = -1
         self.buffer_replicas_dict = OrderedDict()
+        self.executing_replicas_dict = OrderedDict()
 
     def __repr__(self):
         return repr([self.logger, self.nit, self.trigger_to_migrate,
@@ -169,10 +170,8 @@ class Chave(object):
 
     def region_replication(self, lc_obj):
         if len(lc_obj.get_oredered_replicas_dict()) > 0:
-            buffer_replicas_dict = lc_obj.get_oredered_replicas_dict()
+            self.buffer_replicas_dict[lc_obj.get_id()] = lc_obj.get_oredered_replicas_dict()
 
-        pass
-        #print "Replicating: ", region_obj, "thrd:", current_thread().name
 
     def resume_energy_hour(self, az):
         mean_last_hour = self.sla.metrics(az.az_id, 'avg', 'energy_hour_l')
@@ -194,8 +193,7 @@ class Chave(object):
     def set_localcontroller(self, localcontroller):
         self.localcontroller_list = localcontroller
         for lc in localcontroller:
-            print lc.lc_id
-            print lc.az_list
+            print (lc.lc_id, lc.az_list)
 
     def _opdict_to_vmlist(self, id, this_vm_list):
         for vm_temp in this_vm_list:

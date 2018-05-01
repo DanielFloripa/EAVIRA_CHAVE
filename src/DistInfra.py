@@ -29,7 +29,7 @@ class Infrastructure(object):
     def __repr__(self):
         return repr([self.logger, self.max_ha, self.min_ha, self.region_list, self.controller_list, self.sla])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def create_regions_list(self, controller_list):
@@ -60,7 +60,7 @@ class Region(Infrastructure):
     def __repr__(self):
         return repr([self.logger, self.region_id, self.availability_zones_list, self.lcontroller, self.sla])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def set_ha_tree(self, av_list):
@@ -119,7 +119,7 @@ class AvailabilityZone(Infrastructure):
         return repr([self.azNodes, self.azCores, self.availability,
                      self.az_id, self.azRam, self.algorithm])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def create_infrastructure(self, first_time=False, is_on=True):

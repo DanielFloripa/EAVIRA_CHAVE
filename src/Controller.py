@@ -30,7 +30,7 @@ class Controller(object):
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm, self.context_list])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def get_algorithm(self):
@@ -120,7 +120,7 @@ class GlobalController(Controller):
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm, self.region_d, self.localcontroller_d, self.demand])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def create_new_host(self, az_id):
@@ -208,7 +208,11 @@ class LocalController(Controller):
         return repr([self.lc_id, self.az_list, self.algorithm])
 
     def obj_id(self):
+        # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
+
+    def get_id(self):
+        return self.lc_id
 
     def put_critical_vms_on_replicas_dict(self, vm):
         self.replicas_dict[vm.vm_id] = vm
@@ -224,6 +228,9 @@ class LocalController(Controller):
         rem = self.ordered_replicas_dict.popitem()
         self.logger.debug("Removed {0} from replicas Dict".format(rem))
         return rem
+
+    def get_oredered_replicas_dict(self):
+        return self.ordered_replicas_dict
 
     def get_az(self, azid):
         for az in self.az_list:

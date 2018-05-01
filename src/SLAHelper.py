@@ -51,7 +51,7 @@ class SLAHelper(object):
                      self.__pm, self.__ff, self.__date, self.__window_size, self.__window_time,
                      self.__algorithm, self.__max_az_per_region])
 
-    def obj_id(self):
+    def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def is_sla_lock(self):
@@ -92,7 +92,6 @@ class SLAHelper(object):
                                 'az_cores': int(self.__az_cores[i]),
                                 'az_ram': (int(self.__az_cores[i]) * int(self.__core_2_ram_default)),
                                 'az_nit': int(self.__nit[i])}
-            #print "Verificando atribuicao do dict:\n\t id = %s -> %s\n" % (id, self.__az_dict[id])
         return True
 
     def set_conf(self, raw_data, flag):
@@ -127,9 +126,9 @@ class SLAHelper(object):
         self.__logger.info("Metrics Initialized! %s" % self.__metrics_dict.viewitems())
         if is_print:
             for azid, key in self.__metrics_dict.viewitems():
-                print '\n\n', azid,
+                print('\n\n', azid,)
                 for k, value in key.viewitems():
-                    print '\n\t', k, '\n\t\t', value
+                    print('\n\t', k, '\n\t\t', value)
 
     def metrics(self, az_id, command, key, value=None, n=-1):
         str_error = ("Key (%s) not found for Command %s, with val %s!!" % (key, command, value))
