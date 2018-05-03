@@ -7,7 +7,7 @@ import logging
 from collections import OrderedDict
 
 k_values = ['total_alloc_i', 'accepted_alloc_i', 'max_host_on_i', 'total_energy_f']
-k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'sla_break_l', 'alloc_l', 'total_alloc_l', 'dc_load_l']
+k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'sla_break_l', 'req_size', 'total_alloc_l', 'dc_load_l']
 key_list = k_values + k_lists
 command_list = ['set', 'add', 'sum', 'get', 'avg', 'init']
 
@@ -31,6 +31,7 @@ class SLAHelper(object):
         self.__trigger_to_migrate = ""  # str()
         self.__frag_percentual = ""  # str()
         self.__output_type = ""
+        self.__az_selection = ""
         # lists
         self.__ha_input = []
         self.__az_nodes = []
@@ -123,16 +124,26 @@ class SLAHelper(object):
                 else:
                     self.__metrics_dict[az_id][k] = []
 
-        self.__logger.info("Metrics Initialized! %s" % self.__metrics_dict.viewitems())
+        #self.__logger.info("Metrics Initialized! %s" % self.__metrics_dict.items())
         if is_print:
-            for azid, key in self.__metrics_dict.viewitems():
+            for azid, key in self.__metrics_dict.items():
                 print('\n\n', azid,)
                 for k, value in key.viewitems():
                     print('\n\t', k, '\n\t\t', value)
 
     def metrics(self, az_id, command, key, value=None, n=-1):
-        str_error = ("Key (%s) not found for Command %s, with val %s!!" % (key, command, value))
-        str_ok = ("{0}: {1} -> ".format(key, value))
+        '''
+        Concentrates all metrics used in simulator,
+        for add or remove labels, please change the lists in this header file
+        :param az_id: str
+        :param command:
+        :param key:
+        :param value: integer or float:
+        :param n: integer: the list index
+        :return: Bool or the requested value
+        '''
+        str_error = ("Key {0} not found for Command {1}, with val {2}!!".format(key, command, value))
+        str_ok = ("{0}: {1}".format(key, value))
         l = len(key_list)
         m = len(k_values)
         #if command not in command_list or key not in key_list:
@@ -147,12 +158,12 @@ class SLAHelper(object):
             else:
                 self.__logger.error(str_error)
                 return False
-            self.__logger.debug(str_ok)  #, self.__metrics_dict[az_id].viewitems()))
+            #self.__logger.debug(str_ok)  #, self.__metrics_dict[az_id].viewitems()))
             return True
         #
         elif command is 'get':
             if key in key_list:
-                self.__logger.debug(str_ok)
+                #self.__logger.debug(str_ok)
                 return self.__metrics_dict[az_id][key]
             else:
                 self.__logger.error(str_error)
@@ -170,7 +181,7 @@ class SLAHelper(object):
             else:
                 self.__logger.error(str_error)
                 return False
-            self.__logger.debug(str_ok)
+            #self.__logger.debug(str_ok)
             return self.__metrics_dict[az_id][key]
         #
         elif command is 'sum':
@@ -182,8 +193,19 @@ class SLAHelper(object):
             else:
                 self.__logger.error(str_error)
                 return False
-            self.__logger.debug(str_ok)
+            #self.__logger.debug(str_ok)
             return ret
+        #
+        elif command is 'rst':
+            if key in key_list[0:m]:
+                self.__metrics_dict[az_id][key] = 0
+            elif key in key_list[m:l]:
+                self.__metrics_dict[az_id][key] = []
+            else:
+                self.__logger.error(str_error)
+                return False
+            #self.__logger.debug(str_ok)
+            return True
         #
         elif command is 'avg':
             if key in key_list[0:m]:
@@ -194,14 +216,15 @@ class SLAHelper(object):
                 for values in self.__metrics_dict[az_id][key]:
                     if type(sum_avg) == list or type(values) == list:
                         self.__logger.error("DIFFERENT TYPES sa%s v%s %s %s %s" % (type(sum_avg), type(values), key, sum_avg, values))
-                        exit(1)
+                        #exit(1)
+                        raise ConnectionAbortedError
                     sum_avg += values
                 #sum_avg = float(sum(values) for values in self.__metrics_dict[az_id][key])
                 len_avg = float(len(self.__metrics_dict[az_id][key]))
                 if len_avg == 0:
                     #self.__logger.error("LEN_AVG is Zero")
                     return False
-                self.__logger.debug(str_ok)
+                #self.__logger.debug(str_ok)
                 return sum_avg / len_avg
             else:
                 self.__logger.error(str_error)
@@ -210,7 +233,8 @@ class SLAHelper(object):
         elif command is 'init':
             self.init_metrics(is_print=False)
         else:
-            self.__logger.error("Command (" + str(command) + ") not found!!")
+            self.__logger.error("Command {0} not found!! Try: {1}".format(
+                command, command_list))
         return False
 
     def pm(self, pm):
@@ -353,7 +377,16 @@ class SLAHelper(object):
         self.__output_type = output_type
         return True
 
+    def az_selection(self, az_selection):
+        if self.is_sla_lock():
+            return False
+        self.__az_selection = az_selection
+        return True
+
     ''' GETTERS '''
+    def g_az_selection(self):
+        return self.__az_selection
+
     def g_output_type(self):
         return self.__output_type
 

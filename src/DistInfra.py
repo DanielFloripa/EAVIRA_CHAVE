@@ -84,6 +84,7 @@ class AvailabilityZone(Infrastructure):
         Infrastructure.__init__(self, sla)
         self.sla = sla
         self.az_id = az_id
+        self.lc_id = None
         self.logger = sla.g_logger()
         self.has_overbooking = sla.g_has_overbooking()
         self.algorithm = sla.g_algorithm()
@@ -116,8 +117,8 @@ class AvailabilityZone(Infrastructure):
         self.dbg = False'''
 
     def __repr__(self):
-        return repr([self.azNodes, self.azCores, self.availability,
-                     self.az_id, self.azRam, self.algorithm])
+        return repr(['node:',self.azNodes, 'core:', self.azCores, 'av:', self.availability,
+                     'id:', self.az_id, 'ram:', self.azRam, 'alg:', self.algorithm])
 
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
@@ -135,7 +136,8 @@ class AvailabilityZone(Infrastructure):
             h.activate_hypervisor_dom0()
             h.state = is_on
             host_list.append(h)
-        self.logger.info("Infrastructure created with %s hosts." % (len(host_list)))
+        self.logger.info("AZ {2} created {0} hosts, availab: {1}".format(
+            len(host_list), self.availability, self.az_id))
         if first_time:
             self.host_list = host_list
             return True
@@ -195,19 +197,19 @@ class AvailabilityZone(Infrastructure):
             self.logger.error("Some problem on fragmentation:"+str(s)+"!="+str(count))
             return -1
 
-    def get_total_density(self):
+    def get_hosts_density(self):
         state_on, state_off = 0, 0
         for host in self.host_list:
-            state = host.is_on
-            if state:
+            if host.is_on:
                 state_on += 1
             else:
                 state_off += 1
         if state_on + state_off != len(self.host_list):
-            self.logger.error("Prob on number of states"+str(state_on)+"+"+str(state_off)+"!="+str(len(self.host_list)))
+            self.logger.error("Prob on number of states {0}+{1}!={2}".format(
+                state_on, state_off, len(self.host_list)))
             return None
-        actives = float(state_on) / float(state_on) + float(state_off)
-        self.logger.info("DC has"+str(actives)+"hosts actives")
+        actives = float(state_on) / (float(state_on) + float(state_off))
+        self.logger.info("AZ {0} has {1}% hosts actives".format(self.az_id, actives*100))
         return actives
 
     def allocate_on_host(self, vm):
@@ -253,19 +255,23 @@ class AvailabilityZone(Infrastructure):
             hostid = host.get_id()
 
             if vm_host_id is None or vm_host_id is "None":
-                self.logger.error("None found when deallocate: (%s) or %s for %s" % (vm.obj_id(), vm, hostid))
+                self.logger.error("None found when deallocate: {0} or {1} for {2} {3}".format(
+                    vm.obj_id(), vm, hostid, vm.az_id, vm.type))
                 return False
             elif hostid is None:
-                self.logger.error("None found when deallocate: %s for %s" % (vm_host_id, host))
+                self.logger.error("None found when deallocate: {0} for {1} {2} {3}".format(
+                    vm_host_id, host, vm.az_id, vm.type))
                 return False
             if hostid == vm_host_id:
                 if host.deallocate(vm):
-                    self.logger.info("Deallocated SUCESS! %s, from %s " % (vm.vm_id, hostid))
+                    self.logger.info("Deallocated SUCESS! {0} {1} from {2} {3} ".format(
+                        vm.vm_id, hostid, vm.az_id, vm.pool_id))
                     return True
                 else:
-                    self.logger.error("Problem on deallocate: %s != %s" % (vm_host_id, hostid))
+                    self.logger.error("Problem on deallocate: {0} != {1} {2} {3}".format(
+                        vm_host_id, hostid, vm.az_id, vm.type))
                     return False
-        self.logger.error("SERIOUS!!! Problem on deallocate: \n %s \n %s" % (vm, self.host_list))
+        self.logger.error("SERIOUS!!! Problem on deallocate: \n{0} \n {1}".format(vm, self.host_list))
         return False
 
     def get_host_SLA_violations(self, host):
@@ -324,6 +330,9 @@ class AvailabilityZone(Infrastructure):
     def get_vms_load(self):
         ret = []
         return ret
+
+    def get_id(self):
+        return self.az_id
 
     def get_az_energy_consumption(self):
         return sum([host.get_energy_consumption() for host in self.host_list if host.has_virtual_resources()])

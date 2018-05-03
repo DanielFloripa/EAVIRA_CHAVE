@@ -18,7 +18,7 @@ import time
 from datetime import datetime
 import csv
 import json
-from pympler import summary, tracker, muppy
+from pympler import summary, tracker, muppy, refbrowser
 
 # From packages:
 from Chave import *
@@ -40,6 +40,7 @@ def main():
     az_list, demand_list = [], []
     for i, azid in enumerate(demand.az_id):
         vm_d, op_d, ha_d = demand.get_demand_from_az(azid)
+        #logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
         az = AvailabilityZone(sla, azid, vm_d, op_d, ha_d)
         if az.create_infrastructure(first_time=True, is_on=True):
             az_list.append(az)
@@ -93,9 +94,14 @@ def main():
         f.write(json_f)
         f.close()
 
-    '''all_objects = muppy.get_objects()
+    '''fp=open(sla.g_log_output()+".mem", "w")
+    all_objects = muppy.get_objects()
     sum1 = summary.summarize(all_objects)
-    summary.print_(sum1)'''
+    #summary.print_(sum1)
+    for line in summary.format_(sum1):
+        fp.write("{0}\n".format(line))
+    fp.write("\nElapśed time: {0}\n".format(elapsed))
+    fp.close()'''
 
     exit(0)
 
@@ -155,12 +161,14 @@ if __name__ == '__main__':
     sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
     sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
     sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]))
+    sla.az_selection(str(os.environ["CS_AZ_SELECTION"]))
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
     sla.frag_percentual(float(os.environ.get('CS_FRAG_PERCENT')))
     # Para os logs de mensagens:
     logger = logging.getLogger(__name__)
     hdlr = logging.FileHandler(sla.g_log_output())
-    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER")))
+    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER"),
+                      datefmt='%H:%M:%S'))
     logger.addHandler(hdlr)
     # se primeiro parametro der erro, use o segundo:
     logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.DEBUG)))

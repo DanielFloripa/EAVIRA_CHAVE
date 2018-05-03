@@ -27,6 +27,7 @@ class Demand(object):
         self.all_operations_dicts = dict()  # Dicionario de dicionarios
         self.all_ha_dicts = dict()  # Dicionario de dicionarios
         self.max_timestamp = 0
+        self.ha_only_dict = dict()
 
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm,
@@ -51,14 +52,15 @@ class Demand(object):
 
     def __get_availab_from_source(self, source_file):
         av_source_file = source_file.split(".txt")[0] + "-ha.txt"
-        av_demand_dict = OrderedDict()
+        av_demand_dict = dict()
         with open(av_source_file, "r") as ha_source:
-            av_demand_dict["this_az"] = ha_source.readline()  # apenas uma vez
+            av_demand_dict['this_az'] = float(ha_source.readline())  # apenas uma vez
+            #self.logger.info("HA for {0} is {1}".format(source_file, av_demand_dict['this_az']))
             for demand in ha_source:
                 demand = demand.split()
                 #  ha_ts = demand[0]  # <- not used!
                 vm_id = demand[1]
-                av_tax = demand[2]
+                av_tax = float(demand[2])
                 av_demand_dict[vm_id] = av_tax
             ha_source.close()
         return av_demand_dict
@@ -70,7 +72,6 @@ class Demand(object):
                     vms_list --> a list with all VMs objects to instance
         '''
         availab_dict = self.__get_availab_from_source(source_file)
-        ha_only_dict = OrderedDict()
         operations_dict = OrderedDict()
         vms_list = []
         for_testing_vm_list = []
@@ -93,7 +94,7 @@ class Demand(object):
                         host = str(operation[3])  # Default allocation from EUCA_files
                     #else:
                     #    self.logger.error("We must decide which algorithm will be used!")
-                    #    exit(-1)
+                    #    exit(1)
                     av_vm = availab_dict[this_vm_id]
                     vcpu = int(operation[4])
                     vram = self.vmRam_default * vcpu
@@ -105,7 +106,7 @@ class Demand(object):
                     for_testing_vm_list.append(vm)
                     operations_dict[op_id] = vm
                     if self.__require_ha(av_vm, availab_dict['this_az']):
-                        ha_only_dict[this_vm_id] = vm
+                        self.ha_only_dict[this_vm_id] = vm
 
                 elif state == "STOP":
                     last_op_id = str(this_vm_id + '_START')
@@ -138,7 +139,7 @@ class Demand(object):
             if for_testing_vm_list:  # Se tiver algo, entao sobrou alguma vm
                 self.logger.error("At the end, we already have VMs: %s"
                                   % for_testing_vm_list)
-        return vms_list, operations_dict, ha_only_dict
+        return vms_list, operations_dict, availab_dict
 
     def __require_ha(self, av_vm, av_az):
         if av_vm > av_az:

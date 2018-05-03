@@ -4,6 +4,7 @@ import argparse
 import cPickle as pickle
 from Controller import *
 from collections import OrderedDict
+import numpy as np
 import sys
 import os
 
@@ -105,7 +106,7 @@ def create_profile(nit, dist):
     elif dist == 'uniform':
         op_allocations = np.random.random_integers(0, nit, nit / 3).tolist()
     else:
-        print "Invalid dist %s" % (dist)
+        print("Invalid dist %s" % (dist))
         sys.exit(1)
 
     # saida
@@ -193,20 +194,20 @@ def test_consistency(source_file):
                     can_save = True
                 else:
                     consistent_dictionary.pop(vm_id + "_START")
-                    print "Problem in ", vm_id, source_file
+                    print("Problem in ", vm_id, source_file)
                     can_save = False
                 try:
                     vmindex = for_check.index(vm_id)
                     for_check.pop(vmindex)
                 except ValueError:
-                    print "Problem in ", vm_id, source_file
+                    print("Problem in ", vm_id, source_file)
                     can_save = False
                     break
             if can_save:
                 consistent_dictionary[vm_id+"_"+state] = consistent_list
     source.close()
     if for_check:
-        print "Some problem on consistency", len(for_check), source_file
+        print("Some problem on consistency", len(for_check), source_file)
         os.rename(source_file, source_file+"_ERROR")
         out = open(source_file, "w")
         for d_id, d_list in consistent_dictionary.viewitems():
@@ -264,6 +265,7 @@ def get_required_ha(replicas, av_azs):
         ha = 1.0 - np.power((1.0 - float(av_azs)), replicas)
     return ha
 
+
 def truncate(tax):
     n = str(tax).count("9")
     quick_trunc = str(tax).split(".")[:n] # np.round(tax, n)
@@ -292,7 +294,7 @@ def get_required_replicas(a, ha=None, downtime=None):
     logHA = np.log10(1.0 - ha)
     r = float(logHA / logA) - 1.0
     replicas = np.ceil(r)
-    print "For %s min of Downtime is required %s and %s replicas" % (downtime, (ha * 100), replicas)
+    print("For %s min of Downtime is required %s and %s replicas" % (downtime, (ha * 100), replicas))
     #else:
     return replicas
 
@@ -306,11 +308,10 @@ def set_av_for_az(av_min, av_max):
 
 def monte_carlo():
     radius = 1
-    x = np.random.rand(1)
-    y = np.random.rand(1)
+    x = np.random.rand(2)
     # Funcao retorna 21% de probabilidade
     # Area externa de 1/4 do circulo
-    if x**2 + y**2 >= radius:
+    if (x[0]**2)+(x[1]**2) >= radius:
         return True
     return False
 
@@ -325,7 +326,7 @@ def test_ha_on_demand(iterations, av_min, av_max):
 
 
 def main(dist):
-    print "Creating profile with %s distribution" % (dist)
+    print("Creating profile with %s distribution" % (dist))
 
     createAvailabilityRequisitions(source_file)
     profile, vi_list = create_profile(nit, dist)

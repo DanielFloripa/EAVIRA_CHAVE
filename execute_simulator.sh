@@ -4,7 +4,7 @@ source chave.conf
 
 CLEAR="false"
 
-killall dropbox
+#killall dropbox
 
 if "${CLEAR}" == "true"; then
     rm -rf ${CS_LOG_PATH}/*
@@ -19,7 +19,7 @@ PM_LIST=( 'PlacementFirst' ) # 'MigrationFirst' )
 FF_LIST=( 'FFD2I') # 'FF3D')
 WITH_OVERB=( 'False' ) # 'True' ) # Shared, or Dedicated
 # TODO: para implemetar um criador de AZs e regioes
-AZ_2_REGIONS=('HA' 'LoadBalance' 'BestEffort')
+# AZ_2_REGIONS=('HA' 'LoadBalance' 'BestEffort')
 
 # Sources:
 SRC_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace.txt`)
@@ -105,4 +105,15 @@ fi
 let "_END=`date +%s`-${_INIT}"
 echo -e "\n\tThis simulation ended at" `date +${CS_DP}` " and took ${_END} seconds"
 
-dropbox start 2> /dev/null
+if [ "${USER}" == "debian" ]; then
+    LOG_FDR="/media/debian/logs/"
+    if [ -e ${LOG_FDR} ]; then
+        echo "sucesso" | sudo -S rsync -ah --update --stats --progress ../logs/* ${LOG_FDR}
+        rm -rf logs/*
+    else
+        udisksctl mount --block-device=/dev/vde
+        sleep 5
+        echo "sucesso" | sudo -S rsync -ah --update --stats --progress ../logs/* ${LOG_FDR}
+        rm -rf logs/*
+    fi
+fi

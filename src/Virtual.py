@@ -9,10 +9,12 @@ import Physical
 class VirtualMachine(object):
     def __init__(self, vm_id, vcpu, vram, ha, type, host_id, az_id, timestamp, lifetime, logger):
         self.logger = logger
-        self.az_id = az_id
         self.vm_id = vm_id
         self.host_id = host_id
+        self.az_id = az_id
+        self.lc_id = None
         self.state = None
+        self.pool_id = None
         self.vcpu = vcpu
         self.usage = 1.0
         self.vram = vram
@@ -24,12 +26,16 @@ class VirtualMachine(object):
         self.linked_to = []
 
     def __repr__(self):
-        return repr(('az_id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram, 'ha:', self.ha, 'host:', self.host_id,
-                     'timestamp:', self.timestamp, 'lifetime:', self.lifetime))
+        return repr(('az_id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram,
+                     'type:', self.type, 'ha:', self.ha, 'host:', self.host_id, self.az_id, self.lc_id,
+                     'ts:', self.timestamp, 'lt:', self.lifetime))
 
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
+    def getattr(self):
+        return [self.vm_id, self.vcpu, self.vram, self.ha, self.type, self.host_id,
+                self.az_id, self.timestamp, self.lifetime, self.logger]
     ##################################################
     # Input: max_it -> maximum number of iterations
     #		max_mem -> maximum amount of memory to copy

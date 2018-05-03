@@ -69,9 +69,9 @@ class PhysicalMachine(object):
     def deallocate(self, vnode):
         try:
             self.virtual_machine_list.remove(vnode)
-        except:
+        except:  # ValueError:
             self.sla_violations_list.append({vnode.get_id(): "deallocate"})
-            self.logger.error("Error on remove resources for:\n"+str(vnode.get_id())+" on "+str(self.get_id()))
+            self.logger.error("Error on remove resources for: "+str(vnode.get_id())+" on "+str(self.get_id()))
             self.logger.error(traceback.format_exc())
             return False
         if self.algorithm == "CHAVE":

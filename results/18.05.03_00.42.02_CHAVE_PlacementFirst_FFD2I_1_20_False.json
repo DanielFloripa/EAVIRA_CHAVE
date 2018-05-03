@@ -1,0 +1,164 @@
+{
+ "DS1": {
+  "total_alloc_i": 0, 
+  "accepted_alloc_i": 0, 
+  "max_host_on_i": 1, 
+  "total_energy_f": 0, 
+  "energy_l": [
+   139.91, 
+   153.2
+  ], 
+  "energy_avg_l": [], 
+  "energy_hour_l": [
+   139.91, 
+   153.2
+  ], 
+  "sla_break_l": [], 
+  "req_size": [
+   1, 
+   1
+  ], 
+  "total_alloc_l": [], 
+  "dc_load_l": []
+ }, 
+ "DS2": {
+  "total_alloc_i": 0, 
+  "accepted_alloc_i": 0, 
+  "max_host_on_i": 1, 
+  "total_energy_f": 0, 
+  "energy_l": [
+   139.91, 
+   147.1
+  ], 
+  "energy_avg_l": [], 
+  "energy_hour_l": [
+   139.91, 
+   147.1
+  ], 
+  "sla_break_l": [], 
+  "req_size": [
+   1, 
+   1
+  ], 
+  "total_alloc_l": [], 
+  "dc_load_l": []
+ }, 
+ "DS3": {
+  "total_alloc_i": 0, 
+  "accepted_alloc_i": 0, 
+  "max_host_on_i": 1, 
+  "total_energy_f": 0, 
+  "energy_l": [
+   139.91, 
+   147.1
+  ], 
+  "energy_avg_l": [], 
+  "energy_hour_l": [
+   139.91, 
+   147.1
+  ], 
+  "sla_break_l": [], 
+  "req_size": [
+   1, 
+   1
+  ], 
+  "total_alloc_l": [], 
+  "dc_load_l": []
+ }, 
+ "DS4": {
+  "total_alloc_i": 0, 
+  "accepted_alloc_i": 0, 
+  "max_host_on_i": 1, 
+  "total_energy_f": 0, 
+  "energy_l": [
+   157.08, 
+   172.52
+  ], 
+  "energy_avg_l": [], 
+  "energy_hour_l": [
+   157.08, 
+   172.52
+  ], 
+  "sla_break_l": [], 
+  "req_size": [
+   1, 
+   1
+  ], 
+  "total_alloc_l": [], 
+  "dc_load_l": []
+ }, 
+ "DS5": {
+  "total_alloc_i": 0, 
+  "accepted_alloc_i": 0, 
+  "max_host_on_i": 1, 
+  "total_energy_f": 0, 
+  "energy_l": [
+   157.08, 
+   172.52, 
+   184.79, 
+   196.66, 
+   199.51, 
+   201.27
+  ], 
+  "energy_avg_l": [], 
+  "energy_hour_l": [
+   157.08, 
+   172.52, 
+   184.79, 
+   196.66, 
+   199.51, 
+   201.27
+  ], 
+  "sla_break_l": [], 
+  "req_size": [
+   1, 
+   1, 
+   1, 
+   1, 
+   1, 
+   1
+  ], 
+  "total_alloc_l": [], 
+  "dc_load_l": []
+ }, 
+ "DS6": {
+  "total_alloc_i": 0, 
+  "accepted_alloc_i": 0, 
+  "max_host_on_i": 2, 
+  "total_energy_f": 0, 
+  "energy_l": [
+   157.08, 
+   172.52, 
+   184.79, 
+   196.66, 
+   199.51, 
+   203.0, 
+   207.0, 
+   414.0
+  ], 
+  "energy_avg_l": [], 
+  "energy_hour_l": [
+   157.08, 
+   172.52, 
+   184.79, 
+   196.66, 
+   199.51, 
+   203.0, 
+   207.0, 
+   414.0
+  ], 
+  "sla_break_l": [], 
+  "req_size": [
+   1, 
+   1, 
+   1, 
+   1, 
+   1, 
+   1, 
+   1, 
+   1
+  ], 
+  "total_alloc_l": [], 
+  "dc_load_l": []
+ }
+}

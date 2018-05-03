@@ -96,7 +96,8 @@ class Controller(object):
             return lcontroller_list
         else:
             self.logger.error("Relation between 'number_of_azs' and 'max_az_per_region' must be modulus <= 2!")
-            exit(1)
+            #exit(1)
+            raise ConnectionAbortedError
         return False
 
 
@@ -116,12 +117,32 @@ class GlobalController(Controller):
         self.demand = demand  # Objeto
         self.logger = sla.g_logger()
         self.az_list = self.__discover_az_list()
+        self.az_2_lc = self.__set_lc_id_from_az_id()
 
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm, self.region_d, self.localcontroller_d, self.demand])
 
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
+
+    def __discover_az_list(self):
+        az_list = []
+        for lc_id, lc_obj in self.localcontroller_d.viewitems():
+            for az in lc_obj.az_list:
+                az.lc_id = lc_obj.lc_id
+                #self.logger.info("AZ_id %s da az_list do lc %s" % (az.az_id, lc_id))
+                az_list.append(az)
+        return az_list
+
+    def __set_lc_id_from_az_id(self):
+        az_2_lc = dict()
+        for lci, lco in self.localcontroller_d.viewitems():
+            for az in lco.az_list:
+                az_2_lc[az.az_id] = lci
+        return az_2_lc
+
+    def get_lc_id_from_az_id(self, az_id):
+        return self.az_2_lc[az_id]
 
     def create_new_host(self, az_id):
         az = self.get_az(az_id)
@@ -131,14 +152,6 @@ class GlobalController(Controller):
 
     def get_az_list(self):
         return self.az_list
-
-    def __discover_az_list(self):
-        az_list = []
-        for lc_id, lc_obj in self.localcontroller_d.viewitems():
-            for az in lc_obj.az_list:
-                #self.logger.info("AZ_id %s da az_list do lc %s" % (az.az_id, lc_id))
-                az_list.append(az)
-        return az_list
 
     def get_regions_d(self):
         return self.region_d
@@ -179,8 +192,8 @@ class GlobalController(Controller):
         virtual_files = os.listdir(virtual_folder)
         return virtual_folder + virtual_files[random.randint(0, len(virtual_files) - 1)]
 
-    def execute_mbfd(self, vi):
-        return self.datacenter.mbfd(vi)
+    def execute_mbfd(self, az, vi):
+        return self.az.mbfd(vi)
 
     def get_list_overb_amount_from_cloud(self):
         pass
@@ -199,10 +212,13 @@ class LocalController(Controller):
         Controller.__init__(self, sla, az_list)
         self.lc_id = lc_id
         self.az_list = az_list
+        self.az_id_list = self.create_az_id_list()
+        self.az_dict = self.def_az_dict_from_list()
         self.algorithm = sla.g_algorithm()
         self.replicas_dict = OrderedDict()
         self.ordered_replicas_dict = OrderedDict()
         self.in_execution_replicas_dict = OrderedDict()
+        self.is_az_setted_with_lcid = self.__set_lcid_on_az()
 
     def __repr__(self):
         return repr([self.lc_id, self.az_list, self.algorithm])
@@ -210,6 +226,21 @@ class LocalController(Controller):
     def obj_id(self):
         # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
+
+    def def_az_dict_from_list(self):
+        az_dict = dict()
+        for az in self.az_list:
+            az_dict[az.get_id()] = az
+        return az_dict
+
+    def __set_lcid_on_az(self):
+        for az in self.az_list:
+            if az.lc_id is None:
+                az.lc_id = self.lc_id
+        return True
+
+    def get_az_list(self):
+        return self.az_list
 
     def get_id(self):
         return self.lc_id
@@ -231,6 +262,12 @@ class LocalController(Controller):
 
     def get_oredered_replicas_dict(self):
         return self.ordered_replicas_dict
+
+    def create_az_id_list(self):
+        az_ids = []
+        for az in self.az_list:
+            az_ids.append(az.get_id())
+        return az_ids
 
     def get_az(self, azid):
         for az in self.az_list:
