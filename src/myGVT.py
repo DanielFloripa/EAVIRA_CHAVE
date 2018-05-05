@@ -1,7 +1,6 @@
 # GVT = Global Virtual Time
 
 import argparse
-import cPickle as pickle
 from Controller import *
 from collections import OrderedDict
 import numpy as np
@@ -10,91 +9,6 @@ import os
 
 # TODO: perm = permutations([1, 2, 3])
 # for i in list(perm): print i
-
-ALLOC = 0
-REALLOC = 1
-DEALLOC = 2
-DO_NOTHING = 3
-
-def choose_config(virtual_folder):
-    # Choose a random virtual file
-    virtual_files = os.listdir(virtual_folder)
-    return virtual_folder + virtual_files[random.randint(0, len(virtual_files) - 1)]
-
-
-def print_list(vi_list):
-    for vi in vi_list:
-        for vnode in vi.get_virtual_resources():
-            print ("VI's list: (%d) vnode(%d)" % (vi.get_id(), vnode.get_id()))
-
-
-def create_delete_requests(vi_list):
-    delete_requests = []
-    recfg_requests = []
-    repl_requests = []
-
-    # Delete
-    vi_id = random.randint(0, len(vi_list) - 1)
-    vn_id = random.randint(0, len(vi_list[vi_id].get_virtual_resources()) - 1)
-    print ("Delete request VI(%d) vnode(%d)" % (
-    vi_list[vi_id].get_id(), vi_list[vi_id].get_virtual_resources()[vn_id].get_id()))
-    delete_requests.append(
-        {'vi': vi_list[vi_id].get_id(), 'vnode': vi_list[vi_id].get_virtual_resources()[vn_id].get_id()})
-
-    return delete_requests, recfg_requests, repl_requests
-
-
-def create_realloc_requests(vi_list):
-    delete_requests = []
-    recfg_requests = []
-    repl_requests = []
-
-    # Replication
-    vi_id = random.randint(0, len(vi_list) - 1)
-    vn_id = random.randint(0, len(vi_list[vi_id].get_virtual_resources()) - 1)
-    print ("Replication request VI(%d) vnode(%d)" % (
-    vi_list[vi_id].get_id(), vi_list[vi_id].get_virtual_resources()[vn_id].get_id()))
-    repl_requests.append(
-        {'vi': vi_list[vi_id].get_id(), 'vnode': vi_list[vi_id].get_virtual_resources()[vn_id].get_id()})
-
-    # Reconfiguration
-    vi_id = random.randint(0, len(vi_list) - 1)
-    vn_id = random.randint(0, len(vi_list[vi_id].get_virtual_resources()) - 1)
-    print ("Reconfiguration request VI(%d) vnode(%d)" % (
-    vi_list[vi_id].get_id(), vi_list[vi_id].get_virtual_resources()[vn_id].get_id()))
-    up_down = random.randint(1, 4)
-    signal = random.randint(0, 1)
-    if signal == 0:
-        up_down = up_down * -1
-    up_down = up_down / 10
-
-    vnode = vi_list[vi_id].get_virtual_resources()[vn_id]
-
-    new_cfg = {}
-    new_cfg['vi'] = vi_list[vi_id].get_id()
-    new_cfg['vnode'] = vnode.get_id()
-    new_cpu = vnode.get_vcpu() + (vnode.get_vcpu() * up_down)
-    new_ram = vnode.get_vram() + (vnode.get_vram() * up_down)
-    new_storage = vnode.get_vstorage() + (vnode.get_vstorage() * up_down)
-    if new_cpu < 1:
-        new_cfg['vcpu'] = 0
-    else:
-        new_cfg['vcpu'] = new_cpu
-
-    if new_ram < 1:
-        new_cfg['vram'] = 0
-    else:
-        new_cfg['vram'] = new_ram
-
-    if new_storage < 1:
-        new_cfg['vstorage'] = 0
-    else:
-        new_cfg['vstorage'] = new_storage
-
-    recfg_requests.append(new_cfg)
-
-    return delete_requests, recfg_requests, repl_requests
-
 
 def create_profile(nit, dist):
     vi_id = 0
@@ -179,7 +93,7 @@ def test_consistency(source_file):
     with open(source_file, 'r') as source:
         for operation in source:
             operation = operation.split()
-            state = str(operation[0])
+            state = operation[0]
             timestamp = int(operation[1])
             vm_id = str(operation[2])
             if state == "START":
@@ -219,7 +133,6 @@ def test_consistency(source_file):
                 out.writelines(line)
         out.close()
 
-
 def createAvailabilityRequisitions(source_file):
     line = 0
     avail_az = set_av_for_az(0.999, 0.9999)
@@ -249,7 +162,6 @@ def createAvailabilityRequisitions(source_file):
     source.close()
     return True
 
-
 def get_required_ha(replicas, av_azs):
     prod = 1.0
     if type(av_azs) is list:
@@ -265,7 +177,6 @@ def get_required_ha(replicas, av_azs):
         ha = 1.0 - np.power((1.0 - float(av_azs)), replicas)
     return ha
 
-
 def truncate(tax):
     n = str(tax).count("9")
     quick_trunc = str(tax).split(".")[:n] # np.round(tax, n)
@@ -276,7 +187,6 @@ def truncate(tax):
             truncating = str(tax)[:n] # np.round(tax, n)
         return truncating
     return quick_trunc
-
 
 def get_ha_tax(downtime):
     m = 525600.0 # 365 * 24 * 60
@@ -298,13 +208,11 @@ def get_required_replicas(a, ha=None, downtime=None):
     #else:
     return replicas
 
-
 def set_av_for_az(av_min, av_max):
     # av_mean = float((av_min + av_max) / 2.0)
     if monte_carlo():
         return np.random.uniform(av_min, av_max)
     return av_min
-
 
 def monte_carlo():
     radius = 1
@@ -315,7 +223,6 @@ def monte_carlo():
         return True
     return False
 
-
 def test_ha_on_demand(iterations, av_min, av_max):
     v = []
     for i in range(iterations):
@@ -324,58 +231,8 @@ def test_ha_on_demand(iterations, av_min, av_max):
     #print np.mean(v), np.std(v), np.amin(v), np.amax(v)
     #print "prob. nao-ha:", 100 * v.count(np.amin(v)) / float(iterations), "prob. ha grater mean:",100*sum(i > np.mean(v) for i in v)/float(iterations)
 
-
 def main(dist):
     print("Creating profile with %s distribution" % (dist))
-
-    createAvailabilityRequisitions(source_file)
-    profile, vi_list = create_profile(nit, dist)
-
-    out_fname = output_folder + virtual_folder.split('/')[-2]
-
-    # Set restrictive SLA and pickle it
-    for pr in pr_list:
-        new_vi_list = deepcopy(vi_list)
-
-        with open(out_fname + '_' + str(pr) + '.pkl', 'wb') as out_vi:
-            for vi in new_vi_list:
-                vresources = vi.get_virtual_resources()
-                # Restricting VI's SLA
-                chosen = []
-                for i in range(int(pr * len(vresources))):
-                    vnode = vresources[randint(0, len(vresources) - 1)]
-                    while vnode in chosen:
-                        vnode = vresources[randint(0, len(vresources) - 1)]
-                    chosen.append(vnode)
-                    vnode.sla_time = -1
-                # print "VI:",vi,",CHOOSEN:",chosen,",vnode:",vnode
-                pickle.dump(vi, out_vi, pickle.HIGHEST_PROTOCOL)
-
-    with open(out_fname + '.log', 'w') as log:
-        for i in range(nit):
-            for task in profile[i]:
-                if task['op'] == DO_NOTHING:
-                    log.write('%d\n%s %d\n' % ((DO_NOTHING), -1, -1))
-                elif task['op'] == ALLOC:
-                    log.write('%d\n%s %d\n' % ((ALLOC, task['cfg'], task['vi'])))
-                elif task['op'] == DEALLOC:
-                    log.write('%d\n%s\n' % ((DEALLOC, task['vi'])))
-                elif task['op'] == REALLOC:
-                    log.write('%d\n' % (REALLOC))
-                    log.write('%d\n' % (len(task['delete_requests'])))
-                    for request in task['delete_requests']:
-                        log.write('%d %d\n' % (request['vi'], request['vnode']))
-                    log.write('%d\n' % (len(task['recfg_requests'])))
-                    for request in task['recfg_requests']:
-                        log.write('%d %d %d %d %d\n' % (request['vnode'],
-                                                        request['vnode'],
-                                                        request['vcpu'],
-                                                        request['vram'],
-                                                        request['vstorage']))
-                    log.write('%d\n' % (len(task['repl_requests'])))
-                    for request in task['repl_requests']:
-                        log.write('%d %d\n' % (request['vi'], request['vnode']))
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Elastic Energy-Aware Virtual Infrastructure Realocation Algoritm')
@@ -390,12 +247,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    #nit = args.nit[0]
-    #pr_list = [float(e) for e in args.pr]
-    #virtual_folder = args.virtual[0]
-    #output_folder = args.output[0]
-    #dist = args.dist[0]
     source_file = args.source[0]
+    print("Source is {0}".format(source_file))
     test_consistency(source_file)
     createAvailabilityRequisitions(source_file)
     # main(dist)

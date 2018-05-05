@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+CHAVE-Sim: The simulator for research based in clouds architecture
+    CHAVE: Consolidation with High Availability on virtualyzed environments
+"""
+
 from copy import deepcopy
 import random
 from math import sqrt
@@ -6,13 +13,47 @@ import numpy as np
 import logging
 from collections import OrderedDict
 
-k_values = ['total_alloc_i', 'accepted_alloc_i', 'max_host_on_i', 'total_energy_f']
+k_values = ['total_alloc_i', 'overbooking_i', 'max_host_on_i', 'total_energy_f', 'sla_violations_i']
 k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'sla_break_l', 'req_size', 'total_alloc_l', 'dc_load_l']
 key_list = k_values + k_lists
 command_list = ['set', 'add', 'sum', 'get', 'avg', 'init']
 
 
 class SLAHelper(object):
+    CRITICAL    = 'critical'
+    REPLICA     = 'replica'
+    REGULAR     = 'regular'
+    K_SEP       = '_'
+    F_SEP       = '-'
+    HOST_ON     = True
+    HOST_OFF    = False
+
+    @staticmethod
+    def is_required_ha(av_vm, av_az):
+        if av_vm > av_az:
+            return True
+        return False
+
+    @staticmethod
+    def monte_carlo():
+        radius = 1
+        x = np.random.rand(1)
+        y = np.random.rand(1)
+        # Funcao que retorna 21% de probabilidade
+        if x ** 2 + y ** 2 >= radius:
+            return True
+        return False
+
+    @staticmethod
+    def my_std(data):
+        u = mean(data)
+        std = sqrt(1.0 / (len(data) - 1) * sum([(e - u) ** 2 for e in data]))
+        return 1.96 * std / sqrt(len(data))
+
+    @staticmethod
+    def mean(data):
+        return sum(data) / float(len(data))
+
     def __init__(self):
         # vars
         self.__pm = ""  # str()
@@ -55,85 +96,9 @@ class SLAHelper(object):
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
-    def is_sla_lock(self):
-        if self.__is_locked:
-            res = "The SLA Object is locked, please, re-run the simulator with desired parameters"
-            self.__logger.error(res)
-            return True
-        return False
-
-    def set_sla_lock(self, state):
-        if type(state) is bool:
-            self.__is_locked = state
-            str = "SLA sate is locked? R: %s" % (state)
-            ret = True
-        else:
-            str = "State must be a bool type: True | False"
-            ret = False
-        self.__logger.info(str)
-        return ret
-
-    def define_az_id(self, mode):
-        if self.is_sla_lock():
-            return False
-        if len(self.__ha_input) != len(self.__az_nodes) != len(self.__az_cores) != len(self.__nit):
-            self.__logger.error("Len diff: ", len(self.__ha_input), len(self.__az_nodes), len(self.__az_cores), len(self.__nit))
-
-        for i, source in enumerate(self.__list_of_source_files):
-            if mode == "file":
-                ns = str(source).rfind("/")
-                ne = str(source).rfind("-")
-                id = str(source[ns + 1: ne])
-            elif mode == "auto":
-                id = "AZ"+str(i)
-            self.__az_id_list.append(id)
-            self.__az_dict[id] = {'source_files': source,
-                                'ha_source_files': self.__ha_input[i],
-                                'az_nodes': int(self.__az_nodes[i]),
-                                'az_cores': int(self.__az_cores[i]),
-                                'az_ram': (int(self.__az_cores[i]) * int(self.__core_2_ram_default)),
-                                'az_nit': int(self.__nit[i])}
-        return True
-
-    def set_conf(self, raw_data, flag):
-        if self.is_sla_lock():
-            return False
-        # node:core
-        out = []
-        i = 0
-        while i < len(raw_data):
-            if flag is 'az_conf':
-                self.__az_nodes.append(int(raw_data[i]))  # node
-                self.__az_cores.append(int(raw_data[i + 1]))  # core
-                i = i + 2
-            if flag is 'nit':
-                self.__nit.append(int(raw_data[i]))  # nit
-                out.append(int(raw_data[i]))
-                i = i + 1
-        if type(raw_data) is str:
-            out = int(raw_data)
-        return out
-
-    def init_metrics(self, is_print=False):
-        m = len(k_values)
-        for az_id in self.__az_id_list:
-            self.__metrics_dict[az_id] = OrderedDict()
-            for i, k in enumerate(key_list):
-                if i < m:
-                    self.__metrics_dict[az_id][k] = 0
-                else:
-                    self.__metrics_dict[az_id][k] = []
-
-        #self.__logger.info("Metrics Initialized! %s" % self.__metrics_dict.items())
-        if is_print:
-            for azid, key in self.__metrics_dict.items():
-                print('\n\n', azid,)
-                for k, value in key.viewitems():
-                    print('\n\t', k, '\n\t\t', value)
-
     def metrics(self, az_id, command, key, value=None, n=-1):
-        '''
-        Concentrates all metrics used in simulator,
+        """
+        Group all metrics used in simulator,
         for add or remove labels, please change the lists in this header file
         :param az_id: str
         :param command:
@@ -141,15 +106,16 @@ class SLAHelper(object):
         :param value: integer or float:
         :param n: integer: the list index
         :return: Bool or the requested value
-        '''
+        """
         str_error = ("Key {0} not found for Command {1}, with val {2}!!".format(key, command, value))
-        str_ok = ("{0}: {1}".format(key, value))
+        #str_ok = ("{0}: {1}".format(key, value))
         l = len(key_list)
         m = len(k_values)
-        #if command not in command_list or key not in key_list:
-        #    self.__logger.error("Parameter not found: %s %s %s" % (az_id, command, key))
-        #    return False
-        #
+
+        if command not in command_list or key not in key_list:
+            self.__logger.error("Parameter not found: %s %s %s" % (az_id, command, key))
+            return False
+
         if command is 'set':
             if key in key_list[0:m]:
                 self.__metrics_dict[az_id][key] = value
@@ -236,6 +202,82 @@ class SLAHelper(object):
             self.__logger.error("Command {0} not found!! Try: {1}".format(
                 command, command_list))
         return False
+
+    def init_metrics(self, is_print=False):
+        m = len(k_values)
+        for az_id in self.__az_id_list:
+            self.__metrics_dict[az_id] = OrderedDict()
+            for i, k in enumerate(key_list):
+                if i < m:
+                    self.__metrics_dict[az_id][k] = 0
+                else:
+                    self.__metrics_dict[az_id][k] = []
+
+        #self.__logger.info("Metrics Initialized! %s" % self.__metrics_dict.items())
+        if is_print:
+            for azid, key in self.__metrics_dict.items():
+                print('\n\n', azid,)
+                for k, value in key.viewitems():
+                    print('\n\t', k, '\n\t\t', value)
+
+    def is_sla_lock(self):
+        if self.__is_locked:
+            res = "The SLA Object is locked, please, re-run the simulator with desired parameters"
+            self.__logger.error(res)
+            return True
+        return False
+
+    def set_sla_lock(self, state):
+        if type(state) is bool:
+            self.__is_locked = state
+            str = "SLA sate is locked? R: %s" % (state)
+            ret = True
+        else:
+            str = "State must be a bool type: True | False"
+            ret = False
+        self.__logger.info(str)
+        return ret
+
+    def define_az_id(self, mode):
+        if self.is_sla_lock():
+            return False
+        if len(self.__ha_input) != len(self.__az_nodes) != len(self.__az_cores) != len(self.__nit):
+            self.__logger.error("Len diff: ", len(self.__ha_input), len(self.__az_nodes), len(self.__az_cores), len(self.__nit))
+
+        for i, source in enumerate(self.__list_of_source_files):
+            if mode == "file":
+                ns = str(source).rfind("/")
+                ne = str(source).rfind("-")
+                id = str(source[ns + 1: ne])
+            elif mode == "auto":
+                id = "AZ"+str(i)
+            self.__az_id_list.append(id)
+            self.__az_dict[id] = {'source_files': source,
+                                'ha_source_files': self.__ha_input[i],
+                                'az_nodes': int(self.__az_nodes[i]),
+                                'az_cores': int(self.__az_cores[i]),
+                                'az_ram': (int(self.__az_cores[i]) * int(self.__core_2_ram_default)),
+                                'az_nit': int(self.__nit[i])}
+        return True
+
+    def set_conf(self, raw_data, flag):
+        if self.is_sla_lock():
+            return False
+        # node:core
+        out = []
+        i = 0
+        while i < len(raw_data):
+            if flag is 'az_conf':
+                self.__az_nodes.append(int(raw_data[i]))  # node
+                self.__az_cores.append(int(raw_data[i + 1]))  # core
+                i = i + 2
+            if flag is 'nit':
+                self.__nit.append(int(raw_data[i]))  # nit
+                out.append(int(raw_data[i]))
+                i = i + 1
+        if type(raw_data) is str:
+            out = int(raw_data)
+        return out
 
     def pm(self, pm):
         if self.is_sla_lock():
@@ -461,20 +503,4 @@ class SLAHelper(object):
             return False
         self.__xxx = xxx'''
 
-    def monte_carlo(self):
-        radius = 1
-        x = np.random.rand(1)
-        y = np.random.rand(1)
-        # Funcao que retorna 21% de probabilidade
-        if x ** 2 + y ** 2 >= radius:
-            return True
-        return False
-
-    def my_std(self, data):
-        u = mean(data)
-        std = sqrt(1.0 / (len(data) - 1) * sum([(e - u) ** 2 for e in data]))
-        return 1.96 * std / sqrt(len(data))
-
-    def mean(self, data):
-        return sum(data) / float(len(data))
 

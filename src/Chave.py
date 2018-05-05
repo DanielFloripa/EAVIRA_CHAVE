@@ -4,7 +4,6 @@
 from random import randint
 import math
 from copy import deepcopy
-#from threading import Thread, RLock, Lock, current_thread, currentThread, Semaphore
 import threading
 from collections import OrderedDict
 import time
@@ -12,8 +11,6 @@ from DistInfra import *
 
 
 class Chave(object):
-    # type: int
-
     def __init__(self, api):
         self.api = api
         self.sla = api.sla
@@ -69,6 +66,7 @@ class Chave(object):
     def run(self):
         '''
         Interface for all algorithms, the name must be agnostic for all them
+        In this version, we use Threads for running infrastructures in parallel
         :return: Void
         '''
         lock = threading.Lock()
@@ -94,16 +92,17 @@ class Chave(object):
             self.logger.debug("Executing thread for: {0}".format(
                 t_obj.getName()))
             t_obj.start()
-            #t_obj.join(10)
+            t_obj.join(1000)
             # Join Threads? NO!
         while True:
             for t_id, t_obj in self.thread_dict.items():
                 if not t_obj.isAlive():
                     #self.exceptions = True
                     self.logger.error("Thread {0} is dead!".format(t_obj.getName()))
-#                    raise RuntimeError("Thread {0} is dead!".format(t_obj.getName()))
+                    raise RuntimeError("Thread {0} is dead!".format(t_obj.getName()))
 
     def az_optimized_placement(self, az, lock):
+        self.logger.info("Passando pela az: {0}".format(az.az_id))
         requisitions_queue = []
         req_size, req_size2, energy = 0, 0, 0.0
         max_host_on = 0
@@ -112,7 +111,8 @@ class Chave(object):
         FORCE_PLACE = False
         arrival_time = 0
 
-        while len(op_dict_temp.items()) > 0  and not self.exceptions:
+        while len(op_dict_temp.items()) > 0 and not self.exceptions:
+
             for op_id, vm in op_dict_temp.items():
                 # MIGRATE FIRST
                 #            if pm == "MigrationFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
@@ -149,7 +149,6 @@ class Chave(object):
                                 self.sla.metrics(az.get_id(), 'set', "req_size", req_size)
                                 req_size = 0
                                 FORCE_PLACE = False
-                                #del op_dict_temp[op_id]
                             else:
                                 self.logger.error("Problem on place queue: {0}".format(requisitions_queue))
                                 #raise ConnectionAbortedError
@@ -172,7 +171,6 @@ class Chave(object):
                                 #if exec_vm.vm_id in self.executing_replicas_d:
                             if vm.pool_id is not None:
                                 if vm.pool_id in self.replication_pool_d.keys():
-                                    self.logger.info("TESTING {0}".format(self.replication_pool_d[vm.pool_id]))
                                     pop_vm_replica = self.executing_replicas_d.pop(exec_vm.vm_id)
                                     azid_replica = pop_vm_replica.az_id
                                     lc_id = self.api.get_lc_id_from_az_id(pop_vm_replica.az_id)
@@ -194,6 +192,13 @@ class Chave(object):
                     requisitions_queue = []
                     req_size = 0
                     continue
+
+        self.logger.info("Exit for {0} {1} {2}".format(
+            threading.currentThread().getName(), self.global_time, az.az_id))
+        '''while self.thread_dict['gvt'].isAlive():
+            time.sleep(60)
+            self.logger.info("AAAAAAAAAAA {0}".format(self.global_time))
+            pass
             # PLACEMENT FIRST
             #        if pm == "PlacementFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
             #            dc = chave.migrate(dc)
@@ -204,7 +209,7 @@ class Chave(object):
             #            print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
             ##self.logger.info("Last arrival:" + str(arrival_time) + ", lastCicle:" + str(
             #    self.global_time) + ", len(op_dict):" + str(len(op_dict_temp.items())))
-            # #time.sleep(5)
+            # #time.sleep(5)'''
 
     def best_host(self, vm, az):
         for host in az.host_list:
@@ -233,7 +238,7 @@ class Chave(object):
     def one_thread_place(self, lock, vm_list, az, type=None):
         with lock:
             r_bool, r_list = self.place(vm_list, az, type)
-        return r_bool, r_list
+            return r_bool, r_list
 
     def place(self, vm_list, az, type=None):
         vm_list_ret = []
@@ -250,16 +255,16 @@ class Chave(object):
                 vm.set_host_id(bhost.host_id)
                 vm.az_id = az.az_id
 
-                if type == 'replica':
+                if type == self.sla.REPLICA:
                     pool = self.replication_pool_d.get(vm.pool_id)
                     #self.logger.error("Get replicas from {0} {1}".format(vm.pool_id, pool))
                     try:
-                        replicas = pool.get('replica')
+                        replicas = pool.get(self.sla.REPLICA)
+                        replicas.append([vm, az])
+                        self.replication_pool_d[vm.pool_id].update({self.sla.REPLICA: replicas})
                     except AttributeError:
                         self.logger.error("Get replicas from {0} {1}".format(vm.pool_id,pool))
                         exit(0)
-                    replicas.append([vm, az])
-                    self.replication_pool_d[vm.pool_id].update({'replica': replicas})
 
                 self.logger.info("Allocating {0} in {1} {2} {3}".format(vm.vm_id, vm.host_id, vm.type, vm.az_id))
                 if bhost.allocate(vm):
@@ -286,13 +291,12 @@ class Chave(object):
         try:
             temp_az_list.remove(critical_az)
             self.logger.debug("In {0}-{1} Removed {2}=?{3}, from {4}".format(
-                vm.vm_id, vm.type, vm.az_id, critical_az.az_id, temp_az_list))
+                vm.vm_id, vm.type, vm.az_id, critical_az.az_id, len(temp_az_list)))
         except ValueError:
             self.logger.error("azid {0} ({1}) not in list {2}".format(vm.az_id, critical_az, temp_az_list))
-        except :
+        except Exception as e:
+            self.logger.exception(type(e))
             self.logger.error("UNKNOWN: azid {0} ({1}) not in list {2}".format(vm.az_id, critical_az, temp_az_list))
-
-
 
         for az in temp_az_list:
             if az.azCores > min_cpu[0]:
@@ -328,35 +332,38 @@ class Chave(object):
 
     def region_replication(self, lc_obj, lock):
         this_lc_azs = [az.get_id() for az in lc_obj.az_list]
-        self.logger.info("Into thread for REPLICATION: {0} azs{1}".format(lc_obj.get_id(), this_lc_azs))
-        while self.global_time < self.api.demand.max_timestamp and not self.exceptions:  # self.thread_dict['gvt'].isAlive():
-            if len(self.replication_pool_d.items()) > 0:
-            # for vm_id, vm_r in self.buffer_vm_replicas_d.items():
-                for pool_id, pool_d in self.replication_pool_d.items():
-                    lc_pool = pool_id.split('_')[0]
-                    if lc_pool == lc_obj.lc_id:
-                        # for type, pool_t_l in pool_d:
-                        vm_r = pool_d['replica'][0][1]
-                        if vm_r.az_id in this_lc_azs:
-                            az = self.choose_az_for_vm_replica(vm_r, lc_obj.az_list)
-                            r_bool, r_list = self.one_thread_place(lock, [vm_r], az, 'replica')
-                            if r_bool:
-                                self.logger.info("Allocating REPLICA {0} on {1}".format(
+        if len(self.replication_pool_d.items()) > 0:
+            for pool_id, pool_d in self.replication_pool_d.items():
+                lc_pool = pool_id.split('_')[0]
+                if lc_pool == lc_obj.lc_id:
+                    # for type, pool_t_l in pool_d:
+                    vm_r = pool_d[self.sla.REPLICA][0][1]
+                    if vm_r.az_id in this_lc_azs:
+                        az = self.choose_az_for_vm_replica(vm_r, lc_obj.az_list)
+                        r_bool, r_list = self.one_thread_place(lock, [vm_r], az, self.sla.REPLICA)
+                        if r_bool:
+                            self.logger.info("Allocating REPLICA {0} on {1}".format(
+                                vm_r.vm_id, vm_r.az_id))
+                            try:
+                                #vm_in_exec = self.buffer_vm_replicas_d.pop(vm_r.vm_id)
+                                self.executing_replicas_d[vm_r.vm_id] = vm_r
+                            except Exception as e:
+                                self.logger.exception(type(e))
+                                self.logger.error("Problem to allocating REPLICA {0} on {1}".format(
                                     vm_r.vm_id, vm_r.az_id))
-                                try:
-                                    #vm_in_exec = self.buffer_vm_replicas_d.pop(vm_r.vm_id)
-                                    self.executing_replicas_d[vm_r.vm_id] = vm_r
-                                except:
-                                    self.logger.error("Problem to allocating REPLICA {0} on {1}".format(
-                                        vm_r.vm_id, vm_r.az_id))
-                            else:
-                                self.logger.error("On place REPLICA {0}".format(pool_id))
                         else:
-                            pass
-                            #self.logger.error("pool:{2} az_id {0} not in {1}".format(vm_r.az_id, this_lc_azs, pool_id))
+                            self.logger.error("On place REPLICA {0}".format(pool_id))
                     else:
                         pass
-                        #self.logger.error("pool {0} != {1} lc_obj.lc_id".format(pool_id, lc_obj.lc_id))
+                        #self.logger.error("pool:{2} az_id {0} not in {1}".format(vm_r.az_id, this_lc_azs, pool_id))
+                else:
+                    pass
+                    #self.logger.error("pool {0} != {1} lc_obj.lc_id".format(pool_id, lc_obj.lc_id))
+        self.logger.info("Exit for {0} {1} {2}".format(
+            threading.currentThread().getName(), self.global_time, lc_obj.lc_id))
+        '''while self.thread_dict['gvt'].isAlive():
+            time.sleep(60)
+            self.logger.info("BBBBBBBBBBB {0}".format(self.global_time))'''
 
     '''
     def region_replication(self, lc_obj):
@@ -377,8 +384,8 @@ class Chave(object):
 
     def require_replica(self, vm, az):
         if type(vm.type) is str and type(vm.ha) is float and type(az.availability) is float:
-            if vm.ha > az.availability and vm.type != 'replica':
-                self.logger.info("{0}-{1} require replication! {2}".format(vm.vm_id, vm.type, vm.az_id))
+            if vm.ha > az.availability and vm.type != self.sla.REPLICA:
+                self.logger.info("{0}-{1} require replication! {2}=?{3}".format(vm.vm_id, vm.type, vm.az_id, az.az_id))
                 return True
             return False
         else:
@@ -390,12 +397,12 @@ class Chave(object):
         if pool_id not in self.replication_pool_d:
             attr = vm.getattr()
             vm_replica = VirtualMachine(*attr)
-            vm_replica.type = 'replica'
-            vm.type = 'critical'
+            vm_replica.type = self.sla.REPLICA
+            vm.type = self.sla.CRITICAL
             #self.buffer_vm_replicas_d[vm_replica.vm_id] = vm_replica
             vm_replica.pool_id = pool_id
             vm.pool_id = pool_id
-            self.replication_pool_d[pool_id] = {'critical': [az, vm], 'replica': [["", vm_replica]]}
+            self.replication_pool_d[pool_id] = {self.sla.CRITICAL: [az, vm], self.sla.REPLICA: [["", vm_replica]]}
             return True
         return False
 

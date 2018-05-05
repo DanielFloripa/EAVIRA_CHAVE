@@ -35,6 +35,7 @@ WT=('1' '2' '2')
 WS=('20' '20' '21')
 
 cd src
+pushd .
 _INIT=`date +%s`
 echo -e "\tExecuting at" `date +${CS_DP}`
 
@@ -105,15 +106,19 @@ fi
 let "_END=`date +%s`-${_INIT}"
 echo -e "\n\tThis simulation ended at" `date +${CS_DP}` " and took ${_END} seconds"
 
-if [ "${USER}" == "debian" ]; then
-    LOG_FDR="/media/debian/logs/"
-    if [ -e ${LOG_FDR} ]; then
-        echo "sucesso" | sudo -S rsync -ah --update --stats --progress ../logs/* ${LOG_FDR}
-        rm -rf logs/*
-    else
-        udisksctl mount --block-device=/dev/vde
-        sleep 5
-        echo "sucesso" | sudo -S rsync -ah --update --stats --progress ../logs/* ${LOG_FDR}
-        rm -rf logs/*
-    fi
-fi
+popd
+
+#if [ "${USER}" == "debian" ]; then
+#    ls -s ${CS_LOG_OUTPUT} logs/
+#fi
+#    LOG_FDR="/media/debian/logs/"
+#    if [ -e ${LOG_FDR} ]; then
+#        echo "sucesso" | sudo -S rsync -ah --update --progress logs/* ${LOG_FDR}
+#        rm -rf logs/*
+#    else
+#        udisksctl mount --block-device=/dev/vde
+#        sleep 5
+#        echo "sucesso" | sudo -S rsync -ah --update --progress logs/* ${LOG_FDR}
+#        rm -rf logs/*
+#    fi
+#fi

@@ -91,8 +91,8 @@ class MBFD:
                             self.rollback_list.append(
                                 {'vnode': vnode, 'connect': connect, 'disconnect': disconnect, 'pnode': pnode})
                             if pnode == None:
-                                if self.dbg: print "Migrate AAHAHAHAHAHA -- just added a vnode without pnode %s" % (
-                                    vnode.get_id())
+                                print("Migrate AAHAHAHAHAHA -- just added a vnode without pnode %s"
+                                      % (vnode.get_id()))
                             return destination
                         # Failure
         return -1
@@ -103,8 +103,8 @@ class MBFD:
         for h in self.resources:
             sum_nodes = 0
             for vm in h.get_virtual_resources():
-                if self.dbg: print "%s %s %s %s" % (vm.get_id(), vm.get_vcpu_usage(), vm.get_vcpu_network(),
-                                                    int(math.ceil(vm.get_vcpu_usage() + vm.get_vcpu_network())))
+                if self.dbg: print("%s %s %s %s" % (vm.get_id(), vm.get_vcpu_usage(), vm.get_vcpu_network(),
+                                                    int(math.ceil(vm.get_vcpu_usage() + vm.get_vcpu_network()))))
                 sum_nodes = sum_nodes + int(math.ceil(vm.get_vcpu_usage() + vm.get_vcpu_network()))
                 if sum_nodes > h.get_total_cpu():
                     sla = sla + 1

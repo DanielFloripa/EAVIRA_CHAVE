@@ -112,9 +112,9 @@ class GlobalController(Controller):
         if region_d is None:
             self.region_d = localcontroller_d
         else:
-            self.region_d = region_d  # dicionario de objetos regiao
-        self.localcontroller_d = localcontroller_d  # dicionario de objetos local controller
-        self.demand = demand  # Objeto
+            self.region_d = region_d
+        self.localcontroller_d = localcontroller_d
+        self.demand = demand
         self.logger = sla.g_logger()
         self.az_list = self.__discover_az_list()
         self.az_2_lc = self.__set_lc_id_from_az_id()
@@ -130,7 +130,6 @@ class GlobalController(Controller):
         for lc_id, lc_obj in self.localcontroller_d.viewitems():
             for az in lc_obj.az_list:
                 az.lc_id = lc_obj.lc_id
-                #self.logger.info("AZ_id %s da az_list do lc %s" % (az.az_id, lc_id))
                 az_list.append(az)
         return az_list
 

@@ -8,12 +8,12 @@ import math
 from Chave import *
 from Controller import *
 from DistInfra import *
-from Demand import Demand
+from Demand import *
 from Eucalyptus import *
 from SLAHelper import *
+from Physical import *
+from Virtual import *
 
-from Physical import PhysicalMachine
-from Virtual import VirtualMachine
 from itertools import combinations
 
 
@@ -155,7 +155,8 @@ class AvailabilityZone(Infrastructure):
         h.activate_hypervisor_dom0()
         try:
             self.host_list.append(h)
-        except:
+        except Exception as e:
+            self.logger.exception(type(e))
             self.logger.error("Problem on add new host", id)
             return False
         self.azNodes += 1
@@ -264,8 +265,8 @@ class AvailabilityZone(Infrastructure):
                 return False
             if hostid == vm_host_id:
                 if host.deallocate(vm):
-                    self.logger.info("Deallocated SUCESS! {0} {1} from {2} {3} ".format(
-                        vm.vm_id, hostid, vm.az_id, vm.pool_id))
+                    self.logger.info("Deallocated SUCESS! {0} {1} from {2} {3} typ: {4}".format(
+                        vm.vm_id, hostid, vm.az_id, vm.pool_id, vm.type))
                     return True
                 else:
                     self.logger.error("Problem on deallocate: {0} != {1} {2} {3}".format(

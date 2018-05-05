@@ -30,38 +30,40 @@ from SLAHelper import *
 
 
 def main():
-    # Setting objects demand, az, lc, region, gc
-    sla.init_metrics(is_print=False)
+    """
+    main() decribes all architecture and define the main objects
+    :return: None
+    """
+
+    '''Setting objects demand, az, lc, region, gc '''
     demand = Demand(sla)
     demand.create_vms_from_sources()
-    # Get specific values using dict: 'all_xx_dict['DSn']'
-    # print len(demand.all_operations_dicts), len(demand.all_vms_dict), len(demand.all_ha_dict)
+    '''Get specific values using dict: 'all_xx_dict['DSn']' '''
 
     az_list, demand_list = [], []
     for i, azid in enumerate(demand.az_id):
         vm_d, op_d, ha_d = demand.get_demand_from_az(azid)
-        #logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
+        # logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
         az = AvailabilityZone(sla, azid, vm_d, op_d, ha_d)
         if az.create_infrastructure(first_time=True, is_on=True):
             az_list.append(az)
         else:
-            logger.error("Problem on create infra for AZ#%s: %s" % (i, azid))
+            logger.error("Problem on create infra for AZ#{0}: {1}".format(i, azid))
 
     lcontroller_d, region_d = dict(), dict()
     lcontroller_d["lc0"] = LocalController(sla, "lc0", az_list[0:3])
     lcontroller_d["lc1"] = LocalController(sla, "lc1", az_list[3:6])
 
-    # Regiao é dispensável aqui, mas útil para suportar arquiteturas mais complexas
+    '''Regiao é dispensável aqui, mas útil para suportar arquiteturas mais complexas'''
     region_d['rg0'] = Region(sla, "rg0", lcontroller_d['lc0'])
     region_d['rg1'] = Region(sla, "rg1", lcontroller_d['lc1'])
 
     api = GlobalController(sla, demand, lcontroller_d, region_d)
 
-    ''' Lets test the api: '''
-    # print "api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-ABC443B3', 'DS1')
-    # print "api_response", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4')
-    # print "api_response", api.get_az_from_lc('DS4')
-    # exit(1)
+    ''' Lets test the api? '''
+    if sla.g_algorithm() == "TEST":
+        test(api)
+
     # ################### Begin the algorithms ###############
     start = time.time()
     if sla.g_algorithm() == "CHAVE":
@@ -79,32 +81,12 @@ def main():
     elapsed = time.time() - start
     # ################### End the algorithms ###############
 
-    slav = api.get_total_SLA_violations_from_cloud()
-    energy = api.get_total_energy_consumption_from_cloud()
-    overb_list = api.get_list_overb_amount_from_cloud()
+    sla.metrics('global', 'set', 'sla_violations_i', api.get_total_SLA_violations_from_cloud())
+    sla.metrics('global', 'set', 'overbooking_i', api.get_list_overb_amount_from_cloud())
 
-    if sla.g_output_type() == "CSV":
-        w = csv.writer(open(sla.g_data_output()+".csv", "w"))
-        for key, val in sla.g_metrics_dict().viewitems():
-            logger.info(key, val)
-            w.writerow([key, val])
-    elif sla.g_output_type() == "JSON":
-        json_f = json.dumps(sla.g_metrics_dict(), indent=True, sort_keys=False)
-        f = open(sla.g_data_output()+".json", "w")
-        f.write(json_f)
-        f.close()
+    output_stream(sla)
 
-    '''fp=open(sla.g_log_output()+".mem", "w")
-    all_objects = muppy.get_objects()
-    sum1 = summary.summarize(all_objects)
-    #summary.print_(sum1)
-    for line in summary.format_(sum1):
-        fp.write("{0}\n".format(line))
-    fp.write("\nElapśed time: {0}\n".format(elapsed))
-    fp.close()'''
-
-    exit(0)
-
+    sys.exit(0)
 
 
 if __name__ == '__main__':
@@ -160,6 +142,9 @@ if __name__ == '__main__':
     sla.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
     sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
     sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
+    user = str(os.environ["USER"])
+    if user == "debian":
+        os.symlink(sla.g_log_output(), "../logs/" + sla.g_date() + ".log")
     sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]))
     sla.az_selection(str(os.environ["CS_AZ_SELECTION"]))
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
@@ -168,13 +153,56 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     hdlr = logging.FileHandler(sla.g_log_output())
     hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER"),
-                      datefmt='%H:%M:%S'))
+                                        datefmt='%H:%M:%S'))
     logger.addHandler(hdlr)
     # se primeiro parametro der erro, use o segundo:
-    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.DEBUG)))
+    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.INFO)))
     sla.logger(logger)
     sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
     # From now, we can't change the SLA parameters
+    sla.init_metrics(is_print=False)
+
     sla.set_sla_lock(True)
 
     main()
+
+
+def test(api):
+    print("api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-ABC443B3', 'DS1'))
+    print("api_response", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4'))
+    print("api_response", api.get_az_from_lc('DS4'))
+    exit(1)
+
+
+def output_stream(sla, elapsed):
+    types = sla.g_output_type().split(sla.K_SEP)
+
+    if "CSV" in types:
+        w = csv.writer(open(sla.g_data_output() + ".csv", "w"))
+        for key, val in sla.g_metrics_dict().viewitems():
+            logger.info(key, val)
+            w.writerow([key, val])
+
+    if "JSON" in types:
+        json_f = json.dumps(sla.g_metrics_dict(),
+                            indent=True,
+                            sort_keys=False)
+        f = open(sla.g_data_output() + ".json", "w")
+        f.write(json_f)
+        f.close()
+
+    if "SQLITE" in types:
+        print("Not yet implemented")
+
+    if "TEXT" in types:
+        print("Not yet implemented")
+
+    if "MEM" in types:
+        fp = open(sla.g_log_output() + ".mem", "w")
+        all_objects = muppy.get_objects()
+        sum1 = summary.summarize(all_objects)
+        # summary.print_(sum1)
+        for line in summary.format_(sum1):
+            fp.write("{0}\n".format(line))
+        fp.write("\nElapśed time: {0}\n".format(elapsed))
+        fp.close()

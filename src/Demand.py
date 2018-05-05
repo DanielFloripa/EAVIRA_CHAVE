@@ -1,8 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+CHAVE-Sim: The simulator for research based in clouds architecture
+    CHAVE: Consolidation with High Availability on virtualyzed environments
+"""
+
 from copy import deepcopy
 import random
 from math import sqrt
 from numpy import std, mean
 import numpy as np
+import logging
 import sys
 
 from Virtual import VirtualMachine
@@ -14,6 +22,7 @@ from SLAHelper import *
 
 
 class Demand(object):
+
     def __init__(self, sla):
         self.sla = sla
         self.algorithm = sla.g_algorithm()
@@ -51,6 +60,7 @@ class Demand(object):
             self.all_ha_dicts[id] = self._get_vms_from_source(source_file)
 
     def __get_availab_from_source(self, source_file):
+
         av_source_file = source_file.split(".txt")[0] + "-ha.txt"
         av_demand_dict = dict()
         with open(av_source_file, "r") as ha_source:
@@ -58,7 +68,7 @@ class Demand(object):
             #self.logger.info("HA for {0} is {1}".format(source_file, av_demand_dict['this_az']))
             for demand in ha_source:
                 demand = demand.split()
-                #  ha_ts = demand[0]  # <- not used!
+                #  ha_ts = demand[0]  # <- not used here!
                 vm_id = demand[1]
                 av_tax = float(demand[2])
                 av_demand_dict[vm_id] = av_tax
@@ -83,19 +93,23 @@ class Demand(object):
                 state = str(operation[0])
                 timestamp = int(operation[1])
                 this_vm_id = str(operation[2])
-                op_id = str(this_vm_id + '_' + state)
-                # Todo: ver se funciona mesmo!!
-                az_id = self._get_az_id(source_file)
-                type = "VM"
+                op_id = str(this_vm_id + self.sla.K_SEP + state)
+
+                az_id = self._get_this_az_id(source_file)
+                av_vm = availab_dict[this_vm_id]
+                av_az = availab_dict['this_az']
+                if self.sla.is_required_ha(av_vm, av_az):
+                    type = self.sla.CRITICAL
+                else:
+                    type = self.sla.REGULAR
+
                 if state == "START":
-                    #if self.algorithm == "CHAVE":  # Will allocate later
-                    host = "None"
-                    if self.algorithm == "EUCA":
-                        host = str(operation[3])  # Default allocation from EUCA_files
-                    #else:
-                    #    self.logger.error("We must decide which algorithm will be used!")
-                    #    exit(1)
-                    av_vm = availab_dict[this_vm_id]
+
+                    if self.algorithm == "CHAVE":
+                        host = "None"
+                    else:
+                        host = str(operation[3])  # Use the default allocation from EUCA_files
+
                     vcpu = int(operation[4])
                     vram = self.vmRam_default * vcpu
                     lifetime = 0
@@ -105,7 +119,7 @@ class Demand(object):
                     vms_list.append(vm)
                     for_testing_vm_list.append(vm)
                     operations_dict[op_id] = vm
-                    if self.__require_ha(av_vm, availab_dict['this_az']):
+                    if type is self.sla.CRITICAL:
                         self.ha_only_dict[this_vm_id] = vm
 
                 elif state == "STOP":
@@ -114,13 +128,13 @@ class Demand(object):
                     lifetime = 0
                     try:
                         lifetime = timestamp - int(vm_to_stop.timestamp)
-                    except:
+                    except Exception as e:
+                        self.logger.exception(type(e))
                         self.logger.error("Problem on %s 'lifetime': %s %s %s \n %s" %
                                           (last_op_id, lifetime, timestamp,
                                            vm_to_stop.timestamp, sys.exc_info()[0]))
                     host = vm_to_stop.get_host_id()
                     vcpu = vm_to_stop.get_vcpu()
-                    av_vm = vm_to_stop.ha
                     vram = vm_to_stop.get_vram()
 
                     vm = VirtualMachine(this_vm_id, vcpu, vram, 
@@ -133,7 +147,8 @@ class Demand(object):
                     try:
                         vmindex = for_testing_vm_list.index(vm_to_stop)
                         for_testing_vm_list.pop(vmindex)
-                    except:
+                    except Exception as e:
+                        self.logger.exception(type(e))
                         self.logger.error("On pop VM from %s \n %s" %
                                           (op_id, sys.exc_info()[0]))
             if for_testing_vm_list:  # Se tiver algo, entao sobrou alguma vm
@@ -141,19 +156,16 @@ class Demand(object):
                                   % for_testing_vm_list)
         return vms_list, operations_dict, availab_dict
 
-    def __require_ha(self, av_vm, av_az):
-        if av_vm > av_az:
-            return True
-        return False
-
     # TODO: criar para GVT
     def get_vms_from_gvt(self, source_file):
         pass
 
-    def _get_az_id(self, source_file):
+    def _get_this_az_id(self, source_file):
         for id in self.az_id:
-            if source_file.rfind(id):
+            if source_file.rfind(id) > 0:
                 return id
+        self.logger.error("Not found azId from source_file {0}".format(source_file))
+        exit(0)
 
     def define_host_for_vm(self):
         pass
