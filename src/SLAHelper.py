@@ -13,7 +13,7 @@ import numpy as np
 import logging
 from collections import OrderedDict
 
-k_values = ['total_alloc_i', 'overbooking_i', 'max_host_on_i', 'total_energy_f', 'sla_violations_i']
+k_values = ['total_alloc_i', 'max_host_on_i', 'total_energy_f', 'overbooking_i', 'sla_violations_i']
 k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'sla_break_l', 'req_size', 'total_alloc_l', 'dc_load_l']
 key_list = k_values + k_lists
 command_list = ['set', 'add', 'sum', 'get', 'avg', 'init']

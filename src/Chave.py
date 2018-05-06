@@ -82,7 +82,6 @@ class Chave(object):
                 target=self.az_optimized_placement,
                 args=[az, lock])
         for lc_id, lc_obj in self.api.get_localcontroller_d().items():
-            #self.buffer_lc_replicas_d[lc_obj.get_id()] = OrderedDict()
             self.thread_dict[str(lc_id)] = threading.Thread(
                 name="Tr_" + str(lc_id),
                 target=self.region_replication,
@@ -92,7 +91,7 @@ class Chave(object):
             self.logger.debug("Executing thread for: {0}".format(
                 t_obj.getName()))
             t_obj.start()
-            t_obj.join(1000)
+            #t_obj.join(1000)
             # Join Threads? NO!
         while True:
             for t_id, t_obj in self.thread_dict.items():
@@ -114,10 +113,6 @@ class Chave(object):
         while len(op_dict_temp.items()) > 0 and not self.exceptions:
 
             for op_id, vm in op_dict_temp.items():
-                # MIGRATE FIRST
-                #            if pm == "MigrationFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
-                #                dc = chave.migrate(dc)
-                #                print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
                 self.resume_energy_hour(az)
                 new_host_on, off = az.each_cycle_get_hosts_on()
                 if new_host_on > max_host_on:
@@ -198,18 +193,7 @@ class Chave(object):
         '''while self.thread_dict['gvt'].isAlive():
             time.sleep(60)
             self.logger.info("AAAAAAAAAAA {0}".format(self.global_time))
-            pass
-            # PLACEMENT FIRST
-            #        if pm == "PlacementFirst" and (chave.is_time_to_migrate(this_cycle) or dc.has_fragmentation()):
-            #            dc = chave.migrate(dc)
-            ##            last_host_list = dc.get_host_list()
-            ##            empty_host_list = dc.create_infrastructure()
-            ##            new_host_list = chave.migrate(last_host_list, empty_host_list)
-            ##            dc.set_host_list(new_host_list)
-            #            print "migrating at:", this_cycle, "with:", chave.get_last_number_of_migrations(), "migrations"
-            ##self.logger.info("Last arrival:" + str(arrival_time) + ", lastCicle:" + str(
-            #    self.global_time) + ", len(op_dict):" + str(len(op_dict_temp.items())))
-            # #time.sleep(5)'''
+        '''
 
     def best_host(self, vm, az):
         for host in az.host_list:
@@ -365,22 +349,6 @@ class Chave(object):
             time.sleep(60)
             self.logger.info("BBBBBBBBBBB {0}".format(self.global_time))'''
 
-    '''
-    def region_replication(self, lc_obj):
-        self.logger.info("Into thread for REPLICATION: {0}".format(lc_obj.get_id()))
-        this_lc_azs = [az.get_id() for az in lc_obj.az_list]
-        while self.global_time < self.api.demand.max_timestamp: #self.thread_dict['gvt'].isAlive():
-            #while self.buffer_vm_replicas_d.items() > 0:
-            for vm_id, vm_r in self.buffer_vm_replicas_d.items():
-                if vm_r.az_id in this_lc_azs:
-                    az = self.choose_az_for_vm_replica(vm_r, lc_obj.az_list)
-                    vm_r.az_id = az.get_id()
-                    if self.place([vm_r], az):
-                        self.logger.info("Allocating REPLICA {0} on {1}".format(
-                            vm_r.vm_id, vm_r.az_id))
-                        vm_in_exec = self.buffer_vm_replicas_d.pop(vm_r.vm_id)
-                        self.executing_replicas_d[vm_r.vm_id] = vm_r
-    '''
 
     def require_replica(self, vm, az):
         if type(vm.type) is str and type(vm.ha) is float and type(az.availability) is float:
