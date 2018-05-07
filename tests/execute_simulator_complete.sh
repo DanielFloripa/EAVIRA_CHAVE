@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source chave.conf
+source ../chave.conf
 
 CLEAR="false"
 

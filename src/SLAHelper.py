@@ -13,10 +13,18 @@ import numpy as np
 import logging
 from collections import OrderedDict
 
-k_values = ['total_alloc_i', 'max_host_on_i', 'total_energy_f', 'overbooking_i', 'sla_violations_i']
+k_values = ['total_alloc_i', 'max_host_on_i', 'total_energy_f', 'overbooking_i', 'sla_violations_i', 'elapsed_time_i']
 k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'sla_break_l', 'req_size', 'total_alloc_l', 'dc_load_l']
 key_list = k_values + k_lists
-command_list = ['set', 'add', 'sum', 'get', 'avg', 'init']
+command_list = ['set', 'add', 'sum', 'get', 'avg', 'rst', 'init']
+
+CRITICAL = 'critical'
+REPLICA = 'replica'
+REGULAR = 'regular'
+K_SEP = '_'
+F_SEP = '-'
+HOST_ON = True
+HOST_OFF = False
 
 
 class SLAHelper(object):
@@ -205,7 +213,10 @@ class SLAHelper(object):
 
     def init_metrics(self, is_print=False):
         m = len(k_values)
-        for az_id in self.__az_id_list:
+
+        temp_list = list(self.__az_id_list)
+        temp_list.append('global')
+        for az_id in temp_list:
             self.__metrics_dict[az_id] = OrderedDict()
             for i, k in enumerate(key_list):
                 if i < m:

@@ -94,7 +94,7 @@ class VirtualMachine(object):
 
     def set_host_id(self, hostid):
         self.host_id = hostid
-        self.logger.debug("Host id %s defined for %s " % (self.host_id, self.vm_id))
+        self.logger.debug("Host id {} defined for {} t:{}, az:{}".format(self.host_id, self.vm_id, self.type, self.az_id))
 
     def get_host_id(self):
         return self.host_id

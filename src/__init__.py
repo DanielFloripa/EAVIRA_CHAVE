@@ -12,8 +12,11 @@ __maintainer__ = "Daniel Camargo"
 __email__ = "daniel@colmeia.udesc.br"
 __status__ = "Test"
 
+import numpy as np
+import matplotlib.pyplot as plt
 import argparse
 import logging
+from collections import OrderedDict
 import time
 from datetime import datetime
 import csv
@@ -27,6 +30,63 @@ from DistInfra import *
 from Demand import *
 from Eucalyptus import *
 from SLAHelper import *
+
+
+def test(api):
+    print("\n api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-648A423A', 'AZ1'))
+    print("\n api_response: ", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'AZ4'))
+    print("\n api_response: ", api.get_az_from_lc('AZ4'))
+    exit(1)
+
+def output_stream(sla):
+    types = sla.g_output_type().split(sla.K_SEP)
+    logger.info("Saving results in {0}".format(types))
+    if "CSV" in types:
+        w = csv.writer(open(sla.g_data_output() + ".csv", "w"))
+        for key, val in sla.g_metrics_dict().viewitems():
+            logger.info(key, val)
+            w.writerow([key, val])
+
+    if "JSON" in types:
+        json_f = json.dumps(sla.g_metrics_dict(),
+                            indent=True,
+                            sort_keys=False)
+        f = open(sla.g_data_output() + ".json", "w")
+        f.write(json_f)
+        f.close()
+
+    if "SQLITE" in types:
+        print("Not yet implemented")
+
+    if "TEXT" in types:
+        print("Not yet implemented")
+
+    if "MEM" in types:
+        fp = open(sla.g_log_output() + ".mem", "w")
+        all_objects = muppy.get_objects()
+        sum1 = summary.summarize(all_objects)
+        # summary.print_(sum1)
+        for line in summary.format_(sum1):
+            fp.write("{0}\n".format(line))
+        #fp.write("\nElapśed time: {0}\n".format(elapsed))
+        fp.close()
+
+    logger.info("Saved in {0}".format(sla.g_log_output()))
+
+def plot_all():
+    for k, v in sla.g_metrics_dict().items():
+        ene_l = v.get('energy_avg_l')
+        x = list(k)  # list() needed for python 3.x
+        y = list(ene_l)  # ditto
+        if len(x) > 0 and len(y):
+            plt.plot(x, y, '-')
+            plt.show()
+
+def print_all():
+    for k, v in sla.g_metrics_dict().items():
+        print("\n{}: ".format(k))
+        for kv, vv in v.items():
+            print("\t{}: {}".format(kv, vv))
 
 
 def main():
@@ -83,10 +143,11 @@ def main():
 
     sla.metrics('global', 'set', 'sla_violations_i', api.get_total_SLA_violations_from_cloud())
     sla.metrics('global', 'set', 'overbooking_i', api.get_list_overb_amount_from_cloud())
+    sla.metrics('global', 'set', 'elapsed_time_i', elapsed)
 
     output_stream(sla)
+    #plot_all()
 
-    sys.exit(0)
 
 
 if __name__ == '__main__':
@@ -152,57 +213,15 @@ if __name__ == '__main__':
     # Para os logs de mensagens:
     logger = logging.getLogger(__name__)
     hdlr = logging.FileHandler(sla.g_log_output())
-    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER"),
-                                        datefmt='%H:%M:%S'))
+    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER")))
     logger.addHandler(hdlr)
     # se primeiro parametro der erro, use o segundo:
-    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.INFO)))
+    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.DEBUG)))
     sla.logger(logger)
     sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
-    # From now, we can't change the SLA parameters
     sla.init_metrics(is_print=False)
 
+    # From now, we can't change this SLA parameters
     sla.set_sla_lock(True)
 
     main()
-
-
-def test(api):
-    print("api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-ABC443B3', 'DS1'))
-    print("api_response", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'DS4'))
-    print("api_response", api.get_az_from_lc('DS4'))
-    exit(1)
-
-
-def output_stream(sla, elapsed):
-    types = sla.g_output_type().split(sla.K_SEP)
-
-    if "CSV" in types:
-        w = csv.writer(open(sla.g_data_output() + ".csv", "w"))
-        for key, val in sla.g_metrics_dict().viewitems():
-            logger.info(key, val)
-            w.writerow([key, val])
-
-    if "JSON" in types:
-        json_f = json.dumps(sla.g_metrics_dict(),
-                            indent=True,
-                            sort_keys=False)
-        f = open(sla.g_data_output() + ".json", "w")
-        f.write(json_f)
-        f.close()
-
-    if "SQLITE" in types:
-        print("Not yet implemented")
-
-    if "TEXT" in types:
-        print("Not yet implemented")
-
-    if "MEM" in types:
-        fp = open(sla.g_log_output() + ".mem", "w")
-        all_objects = muppy.get_objects()
-        sum1 = summary.summarize(all_objects)
-        # summary.print_(sum1)
-        for line in summary.format_(sum1):
-            fp.write("{0}\n".format(line))
-        fp.write("\nElapśed time: {0}\n".format(elapsed))
-        fp.close()

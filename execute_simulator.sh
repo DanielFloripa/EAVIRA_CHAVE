@@ -14,7 +14,7 @@ fi
 mkdir ${CS_LOG_PATH} 2> /dev/null
 mkdir ${CS_DATA_PATH} 2> /dev/null
 
-TEST_LIST=( 'CHAVE' ) # 'EUCA' 'MM' MBFD )
+TEST_LIST=('CHAVE' ) # 'EUCA' 'MM' MBFD )
 PM_LIST=( 'PlacementFirst' ) # 'MigrationFirst' )
 FF_LIST=( 'FFD2I') # 'FF3D')
 WITH_OVERB=( 'False' ) # 'True' ) # Shared, or Dedicated

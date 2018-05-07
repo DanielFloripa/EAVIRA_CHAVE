@@ -5,6 +5,7 @@ import traceback
 import re
 import math
 from itertools import permutations
+from EnergyMonitor import *
 
 SWITCH=1
 MACHINE=2
@@ -40,12 +41,17 @@ class PhysicalMachine(object):
         self.max_dom0 = 209.0  # 202.43 from input->energy
         self.min_dom0 = 118.11
         self.energy_table = self.__fetch_energy_info()
+        self.emon = EnergyMonitor(self.min_energy, self.logger)
         #
         self.percent_cpu_management = 0.00  # 12.5% from total CPUs
         self.management_cpu = math.ceil(self.percent_cpu_management * self.default_cpu)
         self.management_ram = self.ram2cpu * self.management_cpu
         self.management_cons_dict = self.__get_management_consumption()
         self.is_hypervisor_activated = False
+        self.list_energy = []
+        self.queue_vms = []
+        self.queue_vms.append('base')
+        self.energy_cons = 0
 
     def __repr__(self):
         return repr((self.host_id, self.cpu, self.ram, "vml:", self.virtual_machine_list, self.algorithm, self.az_id,
@@ -62,6 +68,7 @@ class PhysicalMachine(object):
             self.ram -= vm.vram
             vm.host_id = self.host_id
             self.virtual_machine_list.append(vm)
+            self.emon.alloc(vm.vm_id,)
             return True
         self.sla_violations_list.append({vm.vm_id: "allocate"})
         return False
@@ -145,11 +152,11 @@ class PhysicalMachine(object):
     def set_host_off(self):
         if not self.has_virtual_resources() and self.is_on is True:
             self.is_on = False
-            self.logger.info("NEW state: %s turned on? %s" % (self.host_id, self.is_on))
+            self.logger.info("NEW state in {0}: {1} turned on? {2}".format(self.az_id, self.host_id, self.is_on))
             return True
         if self.has_virtual_resources() and self.is_on is True:
             return False
-            self.logger.critical("OOOPS: %s Resources: %s is on? %s " %
+        self.logger.critical("OOOPS: %s Resources: %s is on? %s " %
                                  (self.host_id, self.has_virtual_resources(), self.is_on))
         return False
 
@@ -234,10 +241,10 @@ class PhysicalMachine(object):
 
     def get_energy_consumption(self):
         if (not self.has_virtual_resources()) and (self.is_on is True):
-            self.logger.debug("PM on empty Energy: Return min energy")
+            self.logger.info("PM on empty Energy: Return min energy")
             return self.get_min_energy()
         elif not self.is_on:
-            self.logger.debug("PM off Energy: Return 0.0")
+            self.logger.info("PM off Energy: Return {}".format(0))
             return 0.0
         else:
             p = (float(self.default_cpu) - float(self.cpu)) / float(self.default_cpu)
@@ -283,6 +290,7 @@ class PhysicalMachine(object):
         usage = sum([vm.get_vcpu_usage() for vm in self.get_virtual_resources()])
         return self.energy_table[usage]
 
+    @staticmethod
     def __fetch_energy_info(self):
         host_energy = open('../input/energy/processador.dad', 'r')
         host_table = dict()

@@ -195,12 +195,15 @@ class GlobalController(Controller):
         return self.az.mbfd(vi)
 
     def get_list_overb_amount_from_cloud(self):
+        return 0.3
         pass
 
     def get_total_energy_consumption_from_cloud(self):
+        return 0.2
         pass
 
     def get_total_SLA_violations_from_cloud(self):
+        return 0.1
         pass
 
 #################################################

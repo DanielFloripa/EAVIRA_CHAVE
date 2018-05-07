@@ -8,7 +8,6 @@ import threading
 from collections import OrderedDict
 import time
 from DistInfra import *
-from SLAHelper import *
 
 
 class Chave(object):
@@ -39,12 +38,11 @@ class Chave(object):
         self.global_hour = -1
         self.global_time = -1
         self.exceptions = False
-        self.replicas_execution_d = dict()
+        self.executing_replicas_d = dict()
         self.replication_pool_d = dict()
         # key['lcid_azid_vmid'] =
         #       {'critical':[AZc, VMc],
         #        'replicas':[[AZr1,VMr1],[...], [AZrn,VMrn]]}
-        self.lock = threading.Lock()
 
     def __repr__(self):
         return repr([self.logger, self.nit, self.trigger_to_migrate,
@@ -58,12 +56,11 @@ class Chave(object):
         while self.global_time < self.api.demand.max_timestamp + 1 and not self.exceptions:
             self.global_time += self.window_time
             if self.global_time % 60 == 0:
-                time.sleep(0.1)
+                time.sleep(0.001)
             if self.global_time % 3600 == 0:
                 self.global_hour += 1
                 self.logger.debug("GVT s:%s, h:%s" % (self.global_time, self.global_hour))
-                # Todo: try syncronize all threads
-                time.sleep(1)
+                time.sleep(0.01)
         self.logger.info("End of GVT!")
 
     def run(self):
@@ -72,33 +69,39 @@ class Chave(object):
         In this version, we use Threads for running infrastructures in parallel
         :return: Void
         '''
-        semaph = threading.Semaphore(1)
+        lock = threading.Lock()
         self.thread_dict['gvt'] = threading.Thread(
             name="T_gvt",
             target=self.gvt,
             args=[0])
         # Creating Thread list
         for az in self.api.get_az_list():
-            self.replicas_execution_d[az.az_id] = dict()
+            self.executing_replicas_d[az.az_id] = dict()
             self.thread_dict[str(az.az_id)] = threading.Thread(
-                name="T_" + str(az.az_id),
+                name="Tz_" + str(az.az_id),
                 target=self.az_optimized_placement,
-                args=[az, semaph])
+                args=[az, lock])
         for lc_id, lc_obj in self.api.get_localcontroller_d().items():
             self.thread_dict[str(lc_id)] = threading.Thread(
-                name="T_" + str(lc_id),
+                name="Tr_" + str(lc_id),
                 target=self.region_replication,
-                args=[lc_obj, semaph])
+                args=[lc_obj, lock])
         # Release Threads
         for t_id, t_obj in self.thread_dict.items():
             self.logger.debug("Executing thread for: {0}".format(
                 t_obj.getName()))
             t_obj.start()
-            t_obj.join(2)
-            # Join Threads? NEVER!
-        #self.debug_threads()
+            #t_obj.join(1000)
+            # Join Threads? NO!
+        while True:
+            for t_id, t_obj in self.thread_dict.items():
+                if not t_obj.isAlive():
+                    #self.exceptions = True
+                    self.logger.error("Thread {0} is dead!".format(t_obj.getName()))
+                    raise RuntimeError("Thread {0} is dead!".format(t_obj.getName()))
 
-    def az_optimized_placement(self, az, semaph):
+    def az_optimized_placement(self, az, lock):
+        self.logger.info("Passando pela az: {0}".format(az.az_id))
         requisitions_queue = []
         req_size, req_size2, energy = 0, 0, 0.0
         max_host_on = 0
@@ -107,9 +110,16 @@ class Chave(object):
         FORCE_PLACE = False
         arrival_time = 0
 
-        while (len(op_dict_temp.items()) > 0 and not self.exceptions) or \
-                self.global_time < self.api.demand.max_timestamp + 1:
+        while len(op_dict_temp.items()) > 0 and not self.exceptions:
+
             for op_id, vm in op_dict_temp.items():
+                self.resume_energy_hour(az)
+                new_host_on, off = az.each_cycle_get_hosts_on()
+                if new_host_on > max_host_on:
+                    max_host_on = new_host_on
+                    self.sla.metrics(az.az_id, 'set', 'max_host_on_i', max_host_on)
+                    self.logger.info("New max host on: {0} at {1} sec".format(max_host_on, arrival_time))
+
                 arrival_time = vm.timestamp
                 if arrival_time <= self.global_time:
                     this_state = op_id.split('_')[1]
@@ -121,61 +131,50 @@ class Chave(object):
                         if (self.is_time_to_place(self.global_time) or
                             self.window_size_is_full(req_size)) or \
                                 FORCE_PLACE is True:
-                            with semaph:
-                                status, placed_list = self.one_thread_place(requisitions_queue, az)
-                                if status:
-                                    # Mede o consumo e quantidade de hosts ativos após o placement
-                                    self.avg_energy_h(az)
-                                    new_host_on, off = az.each_cycle_get_hosts_on()
-                                    if new_host_on > max_host_on:
-                                        max_host_on = new_host_on
-                                        self.sla.metrics(az.az_id, 'set', 'max_host_on_i', max_host_on)
-                                        self.logger.info(
-                                            "New max host on: {0} at {1} sec".format(max_host_on, arrival_time))
+                            status, placed_list = self.one_thread_place(lock, requisitions_queue, az)
+                            if status:
+                                for vmq in placed_list:
+                                    vms_in_execution[vmq.vm_id] = vmq
 
-                                    for vmq in placed_list:
-                                        vms_in_execution[vmq.vm_id] = vmq
-
-                                    for vmop in requisitions_queue:
-                                        del op_dict_temp[vmop.vm_id+"_START"]
-                                    # TODO: We measure energy consumption on each placement
-                                    self.measure_energy(az, "START")
-                                    requisitions_queue = []
-                                    self.sla.metrics(az.get_id(), 'set', "req_size", req_size)
-                                    req_size = 0
-                                    FORCE_PLACE = False
-                                else:
-                                    self.logger.error("Problem on place queue: {0}".format(requisitions_queue))
-                                    #raise ConnectionAbortedError
+                                for vmop in requisitions_queue:
+                                    del op_dict_temp[vmop.vm_id+"_START"]
+                                # TODO: We measure energy consumption on each placement
+                                self.measure_energy(az)
+                                requisitions_queue = []
+                                self.sla.metrics(az.get_id(), 'set', "req_size", req_size)
+                                req_size = 0
+                                FORCE_PLACE = False
+                            else:
+                                self.logger.error("Problem on place queue: {0}".format(requisitions_queue))
+                                #raise ConnectionAbortedError
                     # For 'STOP' state:
                     elif this_state == "STOP" and vm not in requisitions_queue:  # não adicionado na ultima janela
                         exec_vm = None
                         try:
                             exec_vm = vms_in_execution.pop(vm.vm_id)
-
                         except IndexError:
                             self.logger.error("Problem INDEX on pop vm {0}".format(vm.vm_id))
                         except KeyError:
                             self.logger.error("Problem KEY on pop vm {0} {1}".format(vm.vm_id, exec_vm))
-
+                        #                           #exit(1)
                         if exec_vm is not None:
                             if az.deallocate_on_host(exec_vm):
-                                self.measure_energy(az, "DEFAULT")
+                                self.measure_energy(az)
                                 del op_dict_temp[op_id]
                             else:
                                 self.logger.error("Problem for deallocate {0}".format(exec_vm.vm_id))
-
-                            if exec_vm.vm_id in self.replicas_execution_d.keys():
-                                    pop_r = self.replicas_execution_d.pop(exec_vm.vm_id)
-                                    azid_r = pop_r.az_id
-                                    lc_id = self.api.get_lc_id_from_az_id(pop_r.az_id)
-                                    if self.api.localcontroller_d[lc_id].az_dict[azid_r].deallocate_on_host(pop_r):
-                                        self.measure_energy(self.api.localcontroller_d[lc_id].az_dict[azid_r], REPLICA)
+                                #if exec_vm.vm_id in self.executing_replicas_d:
+                            if vm.pool_id is not None:
+                                if vm.pool_id in self.replication_pool_d.keys():
+                                    pop_vm_replica = self.executing_replicas_d.pop(exec_vm.vm_id)
+                                    azid_replica = pop_vm_replica.az_id
+                                    lc_id = self.api.get_lc_id_from_az_id(pop_vm_replica.az_id)
+                                    self.api.localcontroller_d[lc_id].az_dict[azid_replica].deallocate_on_host(pop_vm_replica)
+                                else:
+                                    self.logger.error("NOT FOUND {0}".format(self.replication_pool_d[vm.pool_id]))
+                                    pass
                             else:
-                                #self.logger.error("{1} NOT FOUND IN: {0}".format(self.replicas_execution_d, exec_vm.vm_id))
-                                # Pode não ser uma réplica, então não vamos ficar adicionando no log
                                 pass
-
                         else:
                             self.logger.error("Problem for deallocate: VM is None. Original {0}".format(vm))
                     else:
@@ -220,8 +219,8 @@ class Chave(object):
                     return host, True
         return None, False
 
-    def one_thread_place(self, vm_list, az, type=None):
-        with self.lock:
+    def one_thread_place(self, lock, vm_list, az, type=None):
+        with lock:
             r_bool, r_list = self.place(vm_list, az, type)
             return r_bool, r_list
 
@@ -275,13 +274,13 @@ class Chave(object):
                 #break
         try:
             temp_az_list.remove(critical_az)
-            #self.logger.debug("In {0}-{1} Removed {2}=?{3}, remaining {4} azs".format(
-            #    vm.vm_id, vm.type, vm.az_id, critical_az.az_id, len(temp_az_list)))
+            self.logger.debug("In {0}-{1} Removed {2}=?{3}, from {4}".format(
+                vm.vm_id, vm.type, vm.az_id, critical_az.az_id, len(temp_az_list)))
         except ValueError:
             self.logger.error("azid {0} ({1}) not in list {2}".format(vm.az_id, critical_az, temp_az_list))
         except Exception as e:
             self.logger.exception(type(e))
-            self.logger.error("UNKNOWN azid {0} ({1}) not in list {2}".format(vm.az_id, critical_az, temp_az_list))
+            self.logger.error("UNKNOWN: azid {0} ({1}) not in list {2}".format(vm.az_id, critical_az, temp_az_list))
 
         for az in temp_az_list:
             if az.azCores > min_cpu[0]:
@@ -309,52 +308,51 @@ class Chave(object):
                 break
         if best_az is None:
             best_az = temp_az_list[randint(0, len(temp_az_list)-1)]
-            self.logger.debug("AZ selection algorithm {3} fails, place VM {0} (from {1}) randomized in {2}".format(
-                vm.vm_id, vm.az_id, best_az, az_select))
+            self.logger.error("VM {0} (from {1}) is NONE, force selected for {2}".format(
+                vm.vm_id, vm.az_id, best_az))
         self.logger.info("VM {0} (from {1}) will be replicated for {2}".format(
             vm.vm_id, critical_az.az_id, best_az.az_id))
         return best_az
 
-    def region_replication(self, lc_obj, semaph):
+    def region_replication(self, lc_obj, lock):
         this_lc_azs = [az.get_id() for az in lc_obj.az_list]
-        while self.global_time <= self.api.demand.max_timestamp: # or not self.exceptions:
-            if len(self.replication_pool_d.items()) > 0:
-                for pool_id, pool_d in self.replication_pool_d.items():
-                    lc_pool = pool_id.split('_')[0]
-                    if lc_pool == lc_obj.lc_id:
-                        # for type, pool_t_l in pool_d:
-                        vm_r = pool_d[self.sla.REPLICA][0][1]
-                        if vm_r.az_id in this_lc_azs:
-                            az = self.choose_az_for_vm_replica(vm_r, lc_obj.az_list)
-                            with semaph:
-                                r_bool, r_list = self.one_thread_place([vm_r], az, REPLICA)
-                            if r_bool:
-                                self.logger.info("Allocating REPLICA {0} on {1}".format(
+        if len(self.replication_pool_d.items()) > 0:
+            for pool_id, pool_d in self.replication_pool_d.items():
+                lc_pool = pool_id.split('_')[0]
+                if lc_pool == lc_obj.lc_id:
+                    # for type, pool_t_l in pool_d:
+                    vm_r = pool_d[self.sla.REPLICA][0][1]
+                    if vm_r.az_id in this_lc_azs:
+                        az = self.choose_az_for_vm_replica(vm_r, lc_obj.az_list)
+                        r_bool, r_list = self.one_thread_place(lock, [vm_r], az, self.sla.REPLICA)
+                        if r_bool:
+                            self.logger.info("Allocating REPLICA {0} on {1}".format(
+                                vm_r.vm_id, vm_r.az_id))
+                            try:
+                                #vm_in_exec = self.buffer_vm_replicas_d.pop(vm_r.vm_id)
+                                self.executing_replicas_d[vm_r.vm_id] = vm_r
+                            except Exception as e:
+                                self.logger.exception(type(e))
+                                self.logger.error("Problem to allocating REPLICA {0} on {1}".format(
                                     vm_r.vm_id, vm_r.az_id))
-                                try:
-                                    self.replicas_execution_d[vm_r.vm_id] = vm_r
-                                    self.replication_pool_d.pop(vm_r.pool_id)
-                                except Exception as e:
-                                    self.logger.exception(type(e))
-                                    self.logger.error("Problem to allocating REPLICA {0} on {1} Err:{2}".format(
-                                        vm_r.vm_id, vm_r.az_id, e))
-                            else:
-                                self.logger.error("On place REPLICA {0}".format(pool_id))
                         else:
-                            pass
-                            #self.logger.error("pool:{2} az_id {0} not in {1}".format(vm_r.az_id, this_lc_azs, pool_id))
+                            self.logger.error("On place REPLICA {0}".format(pool_id))
                     else:
                         pass
-                        #self.logger.error("pool {0} != {1} lc_obj.lc_id".format(pool_id, lc_obj.lc_id))
+                        #self.logger.error("pool:{2} az_id {0} not in {1}".format(vm_r.az_id, this_lc_azs, pool_id))
+                else:
+                    pass
+                    #self.logger.error("pool {0} != {1} lc_obj.lc_id".format(pool_id, lc_obj.lc_id))
         self.logger.info("Exit for {0} {1} {2}".format(
             threading.currentThread().getName(), self.global_time, lc_obj.lc_id))
         '''while self.thread_dict['gvt'].isAlive():
             time.sleep(60)
             self.logger.info("BBBBBBBBBBB {0}".format(self.global_time))'''
 
+
     def require_replica(self, vm, az):
         if type(vm.type) is str and type(vm.ha) is float and type(az.availability) is float:
-            if vm.ha > az.availability and vm.type != REPLICA:
+            if vm.ha > az.availability and vm.type != self.sla.REPLICA:
                 self.logger.info("{0}-{1} require replication! {2}=?{3}".format(vm.vm_id, vm.type, vm.az_id, az.az_id))
                 return True
             return False
@@ -367,14 +365,13 @@ class Chave(object):
         if pool_id not in self.replication_pool_d:
             attr = vm.getattr()
             vm_replica = VirtualMachine(*attr)
-            vm_replica.type = REPLICA
-            vm.type = CRITICAL
+            vm_replica.type = self.sla.REPLICA
+            vm.type = self.sla.CRITICAL
+            #self.buffer_vm_replicas_d[vm_replica.vm_id] = vm_replica
             vm_replica.pool_id = pool_id
             vm.pool_id = pool_id
-            self.replication_pool_d[pool_id] = {CRITICAL: [az, vm], REPLICA: [["", vm_replica]]}
-            self.logger.info("Pool {0} created for replication".format(pool_id))
+            self.replication_pool_d[pool_id] = {self.sla.CRITICAL: [az, vm], self.sla.REPLICA: [["", vm_replica]]}
             return True
-        self.logger.error("Pool {0} already in replication_pool_d[]!".format(pool_id))
         return False
 
     def migrate(self, az):
@@ -407,34 +404,25 @@ class Chave(object):
                                       str(eachHost.overb_count))
             return new_az
 
-    def measure_energy(self, az, type):
+    def measure_energy(self, az):
         energy = az.get_az_energy_consumption()
-        self.logger.debug("Energy at {} from {} sec is {} WH".format(self.global_time, type, energy))
-        x = self.sla.metrics(az.az_id, 'set', 'energy_l', energy)
-        y = self.sla.metrics(az.az_id, 'set', 'energy_hour_l', energy)
-        if x and y:
-            return True
-        self.logger.error("Metrics problem: {} {} {} {} {}".format(
-            x, y, energy, self.global_hour, self.global_time))
+        self.sla.metrics(az.az_id, 'set', 'energy_l', energy)
+        self.sla.metrics(az.az_id, 'set', 'energy_hour_l', energy)
 
-
-    def avg_energy_h(self, az):
+    def resume_energy_hour(self, az):
         if (self.global_time % 3600) == 0:
-            avg_last_hour = self.sla.metrics(az.az_id, 'avg', 'energy_hour_l')
-            if avg_last_hour is False:
+            mean_last_hour = self.sla.metrics(az.az_id, 'avg', 'energy_hour_l')
+            if mean_last_hour is False:
                 return False
-            x = self.sla.metrics(az.az_id, 'set', 'energy_avg_l', avg_last_hour)
-            y = self.sla.metrics(az.az_id, 'rst', 'energy_hour_l')
-            z = self.sla.metrics(az.az_id, 'add', 'total_energy_f', avg_last_hour)
-            if x and y and z:
-                self.logger.info("Media da ultima HORA: {0} WH at {1} h ({2} s)".format(
-                    avg_last_hour, self.global_hour, self.global_time))
-                return True
-            self.logger.error("Problem on metrics: {0} {1} {2} for {3} WH at {4} h ({5} s)".format(
-                x, y, z, avg_last_hour, self.global_hour, self.global_time))
+            self.logger.info("Media da ultima HORA: {0} at {1}h or {2}".format(
+                mean_last_hour, self.global_hour, self.global_time))
+            self.sla.metrics(az.az_id, 'set', 'energy_avg_l', mean_last_hour)
+            self.sla.metrics(az.az_id, 'rst', 'energy_hour_l')
+            self.sla.metrics(az.az_id, 'add', 'total_energy_f', mean_last_hour)
+            return True
         return False
 
-    '''def set_demand(self, demand):
+    def set_demand(self, demand):
         self.demand = demand
         self.all_vms_dict = demand.all_vms_dict
         self.all_op_dict = demand.all_op_dict()
@@ -456,7 +444,7 @@ class Chave(object):
             host_list.sort(key=lambda e: e.cpu)
         elif self.ff_mode == "FF3D":  # decrescente
             host_list.sort(key=lambda e: e.cpu, reverse=True)
-        return host_list  # se nenhuma configuração'''
+        return host_list  # se nenhuma configuração
 
     def get_last_number_of_migrations(self):
         ret = self.last_number_of_migrations
@@ -478,12 +466,9 @@ class Chave(object):
             return True
         return False
 
-    def debug_threads(self):
-        while threading.active_count() > 0:
-            for t_id, t_obj in self.thread_dict.items():
-                if not t_obj.isAlive():
-                    self.exceptions = True
-                    self.logger.error("Thread {0} is dead!".format(t_obj.getName()))
+    def alocate_vm_list_on_dc(self, vm_list):
+        pass
 
+    def dealocate_vm_list_on_dc(self, vm_list):
         pass
 
