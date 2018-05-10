@@ -4,11 +4,11 @@
 import argparse
 from collections import OrderedDict
 
-FULL = 60*60
+FULL = 3600.0
 
 class EnergyMonitor():
-    def __init__(self, base, logger):
-     
+    def __init__(self, base, em_id, logger):
+        self.em_id = em_id
         self.base = base
         self.logger = logger
         self.__hlist = []
@@ -32,7 +32,7 @@ class EnergyMonitor():
         self.__nxt_hlist.append([0, 'base', self.base])
         self.__nxt_queue.append('base')
         if all:
-            self.alloc('base', 0, self.base)
+            self.alloc('base', 0, self.base, log=False)
         return True
 
     def get_consumption_list(self):
@@ -42,7 +42,6 @@ class EnergyMonitor():
         return self.total_consumption
 
     def get_watt_hour(self):
-        consumo = 0
         if len(self.__queue) > 1:
             while len(self.__queue) > 1:
                 try:
@@ -50,7 +49,8 @@ class EnergyMonitor():
                     self.__nxt_queue.append(active)
                     for subl in self.__hlist:
                         if active in subl:
-                            self.logger.debug("Remaining active {}, subl {}:".format(active, subl))
+                            self.logger.debug("{0} Remaining active {1}, subl {2}:".format(
+                                self.em_id, active, subl))
                             self.__nxt_hlist.append([0, active, subl[2]])
                             self.dealloc(active, FULL, subl[2])
                             break
@@ -64,63 +64,81 @@ class EnergyMonitor():
             except IndexError:
                 pass
 
+        consumo = 0
         for i, ll in enumerate(self.__hlist):
             try:
-                consumo += ((self.__hlist[i+1][0] - ll[0])/FULL) * ll[2]
-                self.logger.debug("\n{0} += ({1} - {2})/FULL * {3}".format(consumo, self.__hlist[i + 1][0], ll[0], ll[2]))
-                # self.logger.debug("{0} += ({1}) * {2}".format(consumo, (self.__hlist[i + 1][0] - ll[0])/FULL, ll[2]))
+                consumo = consumo + ((float(self.__hlist[i + 1][0]) - float(ll[0])) / FULL) * float(ll[2])
+                self.logger.debug("{0}: {1}+= ({2}-{3})/{4} * {5}".format(
+                    self.em_id, consumo, self.__hlist[i+1][0], ll[0], FULL, ll[2]))
+                # self.logger.debug("{0} += ({1}) * {2}".format(consumo, (
+                # self.em_id, self.__hlist[i + 1][0] - ll[0])/FULL, ll[2]))
             except IndexError:
                 continue
 
         self.__hlist = list(self.__nxt_hlist)
         self.__queue = list(self.__nxt_queue)
-        self.logger.debug("AVG hour {}".format(consumo))
-        self.logger.debug("To next hour lst:{}, que:{}".format(self.__hlist, self.__queue))
-        self.hour += 1
         self.total_consumption += consumo
         self.general_cons_list.append(consumo)
+        self.logger.debug("{0}: At hour {1}: {2} Wh, and total is {3} Wh".format(
+            self.em_id, self.hours, consumo, self.total_consumption))
+        self.logger.debug("{0}: To next hour l:{1}, q:{2}".format(
+            self.em_id, self.__hlist, self.__queue))
+        self.hours += 1
+        return consumo
 
-    def alloc(self, id, time, cons):
-        self.__hlist.append([time, id, cons, '++'])
-        self.__queue.append(id)
-        self.logger.debug("\nAlc lst:{}: {}\nQue: {}".format(id, self.__hlist, self.__queue))
+    # Todo:
+    def get_watt_partial(self):
+        pass
 
-    def dealloc(self, id, time, cons):
-        templ = self.__hlist.pop()
-        self.__hlist.append(templ)
-        self.__hlist.append([time, id, cons, '--'])
+    def alloc(self, vm_id, time, cons, log=False):
+        if time > FULL:
+            time = time % FULL
+        self.__hlist.append([time, vm_id, cons, '++'])
+        self.__queue.append(vm_id)
+        if log:
+            self.logger.debug("\n{0}: (Alloc {1}) l:{2}\nQ:{3}".format(self.em_id, vm_id, self.__hlist, self.__queue))
+
+    def dealloc(self, vm_id, time, cons, log=False):
+        if time > FULL:
+            time = time % FULL
+        #templ = self.__hlist.pop()
+        #self.__hlist.append(templ)
+        self.__hlist.append([time, vm_id, cons, '--'])
         top = ''
         try:
-            i = self.__queue.index(id)
+            i = self.__queue.index(vm_id)
             self.__queue.pop(i)
             top = self.__queue[-1]
         except IndexError:
             pass
+        except ValueError:
+            self.logger.error("{0} ValueError on: {1}".format(self.em_id, self.__queue))
         self.__hlist.append([time, top, cons, '<<'])
-        #l.append([time, templ[1], cons, '<<'])
-        self.logger.debug("\nDalc lst:{}: {}\nQue: {}".format(id, self.__hlist, self.__queue))
+        if log:
+            self.logger.debug("\n{0}: (Dealloc {1}) l:{2}\nQ:{3}".format(self.em_id, vm_id, self.__hlist, self.__queue))
 
     @staticmethod
-    def test():
-        e = EnergyMonitor(130)
+    def test(logger):
+
+        e = EnergyMonitor(130, 'host_test', logger)
         # add 1
         e.alloc('vm1', 0, 140)
         # add 2
         e.alloc('vm2', 10, 155)
         # add 3
-        e.alloc('vm3', 12, 215)
+        e.alloc('vm3', 20, 215)
         # rm 2
-        e.dealloc('vm2', 20, 200)
+        e.dealloc('vm2', 25, 200)
         # rm 3
-        e.dealloc('vm3', 37, 140)
+        e.dealloc('vm3', 30, 140)
         # rm 1
-        e.dealloc('vm1', 40, 130)
+        e.dealloc('vm1', 40, 130) # ou zero
         # add 4
-        e.alloc('vm4', 45, 140)
+        e.alloc('vm4', 45, 185
+                )
         # rm 4
-        e.dealloc('vm4', 55, 130)
-        e.alloc('vm5', 56, 140)
-        e.alloc('vm6', 58, 155)
-        self.logger.debug("\nDONE!!!")
+        e.dealloc('vm4', 55, 130) # ou zero
+        e.alloc('vm5', 57, 155)
+        logger.debug("\nDONE!!!")
         e.get_watt_hour()
 

@@ -5,20 +5,10 @@ CHAVE-Sim: The simulator for research based in clouds architecture
     CHAVE: Consolidation with High Availability on virtualyzed environments
 """
 
-from copy import deepcopy
-import random
-from math import sqrt
-from numpy import std, mean
-import numpy as np
-import logging
 import sys
 
-from Virtual import VirtualMachine
-from SLAHelper import *
-from Controller import *
-from DistInfra import *
-from Eucalyptus import *
-from SLAHelper import *
+from Architecture.Virtual import VirtualMachine
+from Users.SLAHelper import *
 
 
 class Demand(object):
@@ -93,15 +83,15 @@ class Demand(object):
                 state = str(operation[0])
                 timestamp = int(operation[1])
                 this_vm_id = str(operation[2])
-                op_id = str(this_vm_id + self.sla.K_SEP + state)
+                op_id = str(this_vm_id + K_SEP + state)
 
                 az_id = self._get_this_az_id(source_file)
                 av_vm = availab_dict[this_vm_id]
                 av_az = availab_dict['this_az']
                 if self.sla.is_required_ha(av_vm, av_az):
-                    type = self.sla.CRITICAL
+                    type = CRITICAL
                 else:
-                    type = self.sla.REGULAR
+                    type = REGULAR
 
                 if state == "START":
 
@@ -119,7 +109,7 @@ class Demand(object):
                     vms_list.append(vm)
                     for_testing_vm_list.append(vm)
                     operations_dict[op_id] = vm
-                    if type is self.sla.CRITICAL:
+                    if type is CRITICAL:
                         self.ha_only_dict[this_vm_id] = vm
 
                 elif state == "STOP":

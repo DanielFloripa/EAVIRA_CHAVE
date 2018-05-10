@@ -12,39 +12,48 @@ __maintainer__ = "Daniel Camargo"
 __email__ = "daniel@colmeia.udesc.br"
 __status__ = "Test"
 
-import numpy as np
-import matplotlib.pyplot as plt
-import argparse
-import logging
-from collections import OrderedDict
-import time
+#import matplotlib.pyplot as plt
 from datetime import datetime
+import os
 import csv
 import json
-from pympler import summary, tracker, muppy, refbrowser
+from pympler import summary, muppy
 
-# From packages:
-from Chave import *
-from Controller import *
-from DistInfra import *
-from Demand import *
-from Eucalyptus import *
-from SLAHelper import *
+# From our packages:
+from Algorithms.Chave import *
+from Algorithms.MBFD import *
+from Algorithms.MM import *
+from Algorithms.Eucalyptus import *
+from Architecture.Controller import *
+from Architecture.Infra import *
+from Users.Demand import *
+from Users.SLAHelper import *
 
 
 def test(api):
+    """
+    Todo a test in in api
+    :param api:
+    :return:
+    """
     print("\n api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-648A423A', 'AZ1'))
     print("\n api_response: ", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'AZ4'))
     print("\n api_response: ", api.get_az_from_lc('AZ4'))
     exit(1)
 
+
 def output_stream(sla):
-    types = sla.g_output_type().split(sla.K_SEP)
+    """
+    Deal with outputs
+    :param sla:
+    :return:
+    """
+    types = sla.g_output_type().split(K_SEP)
     logger.info("Saving results in {0}".format(types))
     if "CSV" in types:
         w = csv.writer(open(sla.g_data_output() + ".csv", "w"))
         for key, val in sla.g_metrics_dict().viewitems():
-            logger.info(key, val)
+            logger.info("k:{}, v:{}".format(key, val))
             w.writerow([key, val])
 
     if "JSON" in types:
@@ -70,9 +79,9 @@ def output_stream(sla):
             fp.write("{0}\n".format(line))
         #fp.write("\nElapśed time: {0}\n".format(elapsed))
         fp.close()
-
     logger.info("Saved in {0}".format(sla.g_log_output()))
 
+'''
 def plot_all():
     for k, v in sla.g_metrics_dict().items():
         ene_l = v.get('energy_avg_l')
@@ -81,8 +90,13 @@ def plot_all():
         if len(x) > 0 and len(y):
             plt.plot(x, y, '-')
             plt.show()
+'''
 
 def print_all():
+    """
+    Just for print :)
+    :return:
+    """
     for k, v in sla.g_metrics_dict().items():
         print("\n{}: ".format(k))
         for kv, vv in v.items():
@@ -103,9 +117,9 @@ def main():
     az_list, demand_list = [], []
     for i, azid in enumerate(demand.az_id):
         vm_d, op_d, ha_d = demand.get_demand_from_az(azid)
-        # logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
+        logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
         az = AvailabilityZone(sla, azid, vm_d, op_d, ha_d)
-        if az.create_infrastructure(first_time=True, is_on=True):
+        if az.create_infrastructure(first_time=True, host_state=HOST_OFF):
             az_list.append(az)
         else:
             logger.error("Problem on create infra for AZ#{0}: {1}".format(i, azid))
@@ -133,11 +147,11 @@ def main():
         euca = Eucalyptus(api)
         euca.run()
     elif sla.g_algorithm() == "MM":
-        mm = 1
-        api.run(mm)
-    elif sla.algorithm() == "MBFD":
-        mbfd = 1
-        api.run(mbfd)
+        mm = MM(api)
+        mm.run()
+    elif sla.g_algorithm() == "MBFD":
+        mbfd = MBFD(api)
+        mbfd.run()
     elapsed = time.time() - start
     # ################### End the algorithms ###############
 
@@ -152,7 +166,7 @@ def main():
 
 if __name__ == '__main__':
     '''
-    Lets get the parameters from args and from Linux environment, 
+    Get the parameters from args and from Linux environment, 
     create the SLAHelper Object and put them all into object.
     This part we can't need change
     '''
@@ -162,7 +176,7 @@ if __name__ == '__main__':
     parser.add_argument('-alg', dest='alg', action='store', nargs=1, type=str, required=True,
                         help='algorithm type: CHAVE | EUCA')
     parser.add_argument('-pm', dest='pm', action='store', nargs=1, type=str, required=True,
-                        help='placement or migration')
+                        help='placement or migration order')
     parser.add_argument('-ff', dest='ff', action='store', nargs=1, type=str, required=True,
                         help='first fit algorithm')
     parser.add_argument('-in', dest='input', action='store', nargs='+', required=True,
@@ -207,6 +221,7 @@ if __name__ == '__main__':
     if user == "debian":
         os.symlink(sla.g_log_output(), "../logs/" + sla.g_date() + ".log")
     sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]))
+    sla.enable_emon(eval(os.environ["CS_ENABLE_EMON"]))
     sla.az_selection(str(os.environ["CS_AZ_SELECTION"]))
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
     sla.frag_percentual(float(os.environ.get('CS_FRAG_PERCENT')))

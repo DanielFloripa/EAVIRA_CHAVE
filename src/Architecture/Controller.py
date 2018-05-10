@@ -1,21 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-from collections import OrderedDict
-import random
-import operator
 # From packages:
-from Chave import *
-from Controller import *
-from DistInfra import *
-from Demand import Demand
-from Eucalyptus import *
-from SLAHelper import *
+from Users.SLAHelper import *
 
 """
-Class: Controller
-Description: Controller is the class that manages what operations are performed
+Class: Architecture
+Description: Architecture is the class that manages what operations are performed
 Have two subclass: global and local
 """
 
@@ -36,6 +27,7 @@ class Controller(object):
     def get_algorithm(self):
         return self.algorithm
 
+    # Todo: review this code to use later
     def create_lcontroller_list(self, az_list):
         s_noa = self.sla.g_number_of_azs()
         s_mapr = self.sla.g_max_az_per_region()

@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import threading
-import time
 from Users.SLAHelper import *
 
 
-class Eucalyptus(object):
+class MM(object):
     def __init__(self, api):
         self.api = api
         self.sla = api.sla
@@ -31,9 +30,9 @@ class Eucalyptus(object):
         self.global_time = -1
 
     def __repr__(self):
-        return repr([self])
+        return repr([self.__get])
 
-    def gvt(self):
+    def gvt(self, max):
         self.logger.info("Init GVT in {0} to {1}".format
                          (self.global_time, self.api.demand.max_timestamp))
         while self.global_time < self.api.demand.max_timestamp + 1 and not self.exceptions:

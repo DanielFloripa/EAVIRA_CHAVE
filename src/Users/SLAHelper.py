@@ -13,8 +13,9 @@ import numpy as np
 import logging
 from collections import OrderedDict
 
-k_values = ['total_alloc_i', 'max_host_on_i', 'total_energy_f', 'overbooking_i', 'sla_violations_i', 'elapsed_time_i']
-k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'sla_break_l', 'req_size', 'total_alloc_l', 'dc_load_l']
+# Just some global vars
+k_values = ['energy_mon_total', 'max_host_on_i', 'total_energy_f', 'overbooking_i', 'sla_violations_i', 'elapsed_time_i']
+k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'energy_mon_hour', 'req_size', 'total_alloc_l', 'dc_load_l']
 key_list = k_values + k_lists
 command_list = ['set', 'add', 'sum', 'get', 'avg', 'rst', 'init']
 
@@ -61,6 +62,7 @@ class SLAHelper(object):
         self.__ff = ""  # str()
         self.__algorithm = ""  # str()
         self.__has_overbooking = False  # bool
+        self.__enable_emon = False  # bool
         self.__window_time = 0  # int
         self.__window_size = 0  # int
         self.__number_of_azs = 0  # int
@@ -307,6 +309,12 @@ class SLAHelper(object):
         self.__has_overbooking = has_overbooking
         return True
 
+    def enable_emon(self, enable_emon):
+        if self.is_sla_lock():
+            return False
+        self.__enable_emon = enable_emon
+        return True
+
     def window_time(self, window_time):
         if self.is_sla_lock():
             return False
@@ -447,6 +455,9 @@ class SLAHelper(object):
 
     def g_has_overbooking(self):
         return self.__has_overbooking
+
+    def g_enable_emon(self):
+        return self.__enable_emon
 
     def g_window_time(self):
         return self.__window_time

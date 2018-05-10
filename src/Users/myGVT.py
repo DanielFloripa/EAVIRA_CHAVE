@@ -1,7 +1,6 @@
 # GVT = Global Virtual Time
 
-import argparse
-from Controller import *
+from Architecture.Controller import *
 from collections import OrderedDict
 import numpy as np
 import sys

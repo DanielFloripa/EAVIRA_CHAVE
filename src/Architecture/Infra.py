@@ -1,18 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from random import randrange, uniform, random, randint
-from copy import deepcopy
-import math
 # From packages:
-from Chave import *
-from Controller import *
-from DistInfra import *
-from Demand import *
-from Eucalyptus import *
-from SLAHelper import *
-from Physical import *
-from Virtual import *
 
 from itertools import combinations
 
@@ -84,7 +73,7 @@ class AvailabilityZone(Infrastructure):
         Infrastructure.__init__(self, sla)
         self.sla = sla
         self.az_id = az_id
-        self.lc_id = None
+        self.lc_id = None  # until instance object
         self.logger = sla.g_logger()
         self.has_overbooking = sla.g_has_overbooking()
         self.algorithm = sla.g_algorithm()
@@ -104,7 +93,7 @@ class AvailabilityZone(Infrastructure):
         self.resources = self.host_list
 
     def __repr__(self):
-        return repr(['node:',self.azNodes, 'core:', self.azCores, 'av:', self.availability,
+        return repr(['node:', self.azNodes, 'core:', self.azCores, 'av:', self.availability,
                      'id:', self.az_id, 'ram:', self.azRam, 'alg:', self.algorithm])
 
     # Return the unique hexadecimal footprint from each object
@@ -120,27 +109,29 @@ class AvailabilityZone(Infrastructure):
                                 self.azRam,
                                 self.algorithm,
                                 self.az_id,
+                                self.sla,
                                 self.logger)
-            h.activate_hypervisor_dom0()
+            h.activate_hypervisor_dom0(log=False)
             h.state = host_state
             host_list.append(h)
-        self.logger.info("AZ {2} created {0} hosts, availab: {1}".format(
-            len(host_list), self.availability, self.az_id))
+        self.logger.info("{0} created {1} hosts :: {2} cores, av: {3}".format(
+            self.az_id, len(host_list), self.azCores, self.availability))
         if first_time:
             self.host_list = host_list
             return True
         return host_list
 
-    def add_new_host_to_list(self):
+    def add_new_host_to_list(self, host_state=True):
         id = self.azNodes
         h = PhysicalMachine('NODE' + str(id),
                             self.azCores,
                             self.azRam,
                             self.algorithm,
                             self.az_id,
+                            self.sla,
                             self.logger)
-        h.state = True
-        h.activate_hypervisor_dom0()
+        h.state = host_state
+        h.activate_hypervisor_dom0(log=True)
         try:
             self.host_list.append(h)
         except Exception as e:
@@ -238,7 +229,7 @@ class AvailabilityZone(Infrastructure):
                 return False
         return False
 
-    def deallocate_on_host(self, vm):
+    def deallocate_on_host(self, vm, timestamp):
         vm_host_id = vm.host_id
         for host in self.host_list:
             hostid = host.get_id()
@@ -252,7 +243,7 @@ class AvailabilityZone(Infrastructure):
                     vm_host_id, host, vm.az_id, vm.type))
                 return False
             if hostid == vm_host_id:
-                if host.deallocate(vm):
+                if host.deallocate(vm, timestamp):
                     self.logger.info("Deallocated SUCESS! {0} {1} from {2} {3} typ: {4}".format(
                         vm.vm_id, hostid, vm.az_id, vm.pool_id, vm.type))
                     return True
@@ -323,8 +314,14 @@ class AvailabilityZone(Infrastructure):
     def get_id(self):
         return self.az_id
 
-    def get_az_energy_consumption(self):
+    def get_az_energy_consumption2(self):
         return sum([host.get_energy_consumption() for host in self.host_list if host.has_virtual_resources()])
+
+    def get_az_watt_hour(self):
+        total_az_hour = 0
+        for host in self.host_list:
+            total_az_hour += host.get_emon_hour()
+        return total_az_hour
 
 
     '''def get_dc_node_load(self):

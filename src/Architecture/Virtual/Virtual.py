@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import random
-import re
 import math
-import Physical
+
 
 class VirtualMachine(object):
     def __init__(self, vm_id, vcpu, vram, ha, type, host_id, az_id, timestamp, lifetime, logger):

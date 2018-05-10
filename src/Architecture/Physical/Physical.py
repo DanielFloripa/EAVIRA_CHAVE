@@ -4,18 +4,13 @@
 import traceback
 import re
 import math
-from itertools import permutations
-from EnergyMonitor import *
+from Users.SLAHelper import *
 
-SWITCH=1
-MACHINE=2
-
-S_ON = True
-S_OFF = False
 
 class PhysicalMachine(object):
-    def __init__(self, host_id, cpu, ram, algorithm, az_id, logger):
+    def __init__(self, host_id, cpu, ram, algorithm, az_id, sla, logger):
         self.logger = logger
+        self.sla = sla
         self.az_id = az_id
         self.host_id = host_id
         self.cpu = cpu  # Esse CPU/RAM mudam com overbooking
@@ -41,9 +36,12 @@ class PhysicalMachine(object):
         self.max_dom0 = 209.0  # 202.43 from input->energy
         self.min_dom0 = 118.11
         self.energy_table = self.__fetch_energy_info()
-        self.emon = EnergyMonitor(self.min_energy, self.logger)
-        #
+        if self.sla.g_enable_emon():
+            self.emon = EnergyMonitor(self.min_energy,
+                                      'em' + K_SEP + self.az_id + K_SEP + self.host_id,
+                                      self.logger)
         self.percent_cpu_management = 0.00  # 12.5% from total CPUs
+
         self.management_cpu = math.ceil(self.percent_cpu_management * self.default_cpu)
         self.management_ram = self.ram2cpu * self.management_cpu
         self.management_cons_dict = self.__get_management_consumption()
@@ -68,12 +66,16 @@ class PhysicalMachine(object):
             self.ram -= vm.vram
             vm.host_id = self.host_id
             self.virtual_machine_list.append(vm)
-            self.emon.alloc(vm.vm_id, vm.timestamp, self.energy_table[self.cpu])
+            # Todo: ver tempo da VM se está ok!
+            time = vm.timestamp
+            this_energy = self.get_cpu_energy_usage()
+            if self.sla.g_enable_emon():
+                self.emon.alloc(vm.vm_id, time, this_energy, log=True)
             return True
         self.sla_violations_list.append({vm.vm_id: "allocate"})
         return False
 
-    def deallocate(self, vm):
+    def deallocate(self, vm, timestamp):
         try:
             self.virtual_machine_list.remove(vm)
         except Exception as e:
@@ -92,7 +94,9 @@ class PhysicalMachine(object):
                 self.logger.info("DONE! "+self.get_id()+" has no overb.")
             else:
                 self.logger.info("Not yet:"+str(self.default_cpu+self.cpu)+" still > "+str(self.default_cpu))
-        self.emon.dealloc(vm.vm_id, (vm.timestamp + vm.lifetime), self.energy_table[self.cpu])
+        this_energy = self.get_cpu_energy_usage()
+        if self.sla.g_enable_emon():
+            self.emon.dealloc(vm.vm_id, timestamp, this_energy, log=True)
         return True
 
     def get_host_SLA_violations_total(self):
@@ -139,23 +143,24 @@ class PhysicalMachine(object):
 
     def force_set_host_on(self):
         if not self.has_virtual_resources():
-            self.is_on = True
+            self.is_on = HOST_ON
+            self.activate_hypervisor_dom0(log=True)
             self.logger.info("NEW state: %s turned on? %s" % (self.host_id, self.is_on))
             return True
         elif self.has_virtual_resources() and not self.is_on:
             self.logger.error("Logic problem?, state OFF with resources??? Setting this ON...")
-            self.is_on = True
+            self.is_on = HOST_ON
             return False
         self.logger.critical("OOOPS: %s Resources: %s is on? %s " %
                              (self.host_id, self.has_virtual_resources(), self.is_on))
         return False
 
     def set_host_off(self):
-        if not self.has_virtual_resources() and self.is_on is True:
-            self.is_on = False
+        if not self.has_virtual_resources() and self.is_on is HOST_ON:
+            self.is_on = HOST_OFF
             self.logger.info("NEW state in {0}: {1} turned on? {2}".format(self.az_id, self.host_id, self.is_on))
             return True
-        if self.has_virtual_resources() and self.is_on is True:
+        if self.has_virtual_resources() and self.is_on is HOST_ON:
             return False
         self.logger.critical("OOOPS: %s Resources: %s is on? %s " %
                                  (self.host_id, self.has_virtual_resources(), self.is_on))
@@ -230,25 +235,44 @@ class PhysicalMachine(object):
             return self.max_energy
         return self.max_dom0
 
-    def activate_hypervisor_dom0(self):
+    def activate_hypervisor_dom0(self, log=False):
         if not self.is_hypervisor_activated:
             self.cpu = self.cpu - self.management_cpu
             self.ram = self.ram - self.management_ram
-            #self.logger.debug("dom0 activated for %s cpu:%s ram%s mang:%s" %
-            #                  (self.host_id, self.cpu, self.ram, self.management_cpu))
+            if log:
+                self.logger.debug("dom0 activated for {0} cpu:{1} ram:{2} mngMT:{3}".format(
+                              self.host_id, self.cpu, self.ram, self.management_cpu))
             self.is_hypervisor_activated = True
             return True
         return False
 
-    def get_emon(self, hour):
-        return self.emon.get_watt_hour(), self.emon.get_consumption_list(), self.emon.get_total_consumption()
+    def get_emon_hour(self):
+        if self.is_on and self.sla.g_enable_emon():
+            return self.emon.get_watt_hour()
+        else:
+            return 0
+
+    def get_emon_partial(self):
+        if self.sla.g_enable_emon():
+            return self.emon.get_watt_partial()
+        return False
+
+    def get_emon_consumption_list(self):
+        if self.sla.g_enable_emon():
+            return self.emon.get_consumption_list()
+        return False
+
+    def get_emon_total_consumption(self):
+        if self.sla.g_enable_emon():
+            return self.emon.get_total_consumption()
+
 
     def get_energy_consumption(self):
-        if (not self.has_virtual_resources()) and (self.is_on is True):
-            self.logger.info("PM on empty Energy: Return min energy")
+        if (not self.has_virtual_resources()) and (self.is_on is HOST_ON):
+            self.logger.info("Host on but empty. Return min energy")
             return self.get_min_energy()
         elif not self.is_on:
-            self.logger.info("PM off Energy: Return {}".format(0))
+            self.logger.info("Host off. Return {}".format(0))
             return 0.0
         else:
             p = (float(self.default_cpu) - float(self.cpu)) / float(self.default_cpu)
@@ -288,6 +312,16 @@ class PhysicalMachine(object):
                 'min': min(soma_list),
                 'list': soma_list}
 
+    def get_cpu_energy_usage(self):
+        if self.cpu > self.default_cpu:
+            usage = self.default_cpu
+        else:
+            usage = int(self.default_cpu - self.cpu)
+            if usage == 0:  # state is off
+                return 0
+        self.logger.debug("USAGE in {0}: {1}".format(self.host_id, usage))
+        return self.energy_table[usage]
+
     def get_total_vcpu_energy_usage(self):
         # due to overbooking we can have more vcpus than previously discussed.
         # In this case, I'm assuming the power consumption isn't impacted and returning the max value
@@ -295,7 +329,7 @@ class PhysicalMachine(object):
         return self.energy_table[usage]
 
     @staticmethod
-    def __fetch_energy_info(self):
+    def __fetch_energy_info():
         host_energy = open('../input/energy/processador.dad', 'r')
         host_table = dict()
         temp_list = []
