@@ -1,0 +1,1401 @@
+INFO    | MainThread| SLAHelper| set_sla_lock ] --> SLA sate is locked? R: True
+INFO    | MainThread| DistInfra| create_infrastructure ] --> AZ1 created 13 hosts :: 24 cores, av: 0.999
+INFO    | MainThread| DistInfra| create_infrastructure ] --> AZ2 created 7 hosts :: 12 cores, av: 0.999
+INFO    | MainThread| DistInfra| create_infrastructure ] --> AZ3 created 7 hosts :: 8 cores, av: 0.999
+INFO    | MainThread| DistInfra| create_infrastructure ] --> AZ4 created 12 hosts :: 8 cores, av: 0.999
+INFO    | MainThread| DistInfra| create_infrastructure ] --> AZ5 created 31 hosts :: 32 cores, av: 0.999
+INFO    | MainThread| DistInfra| create_infrastructure ] --> AZ6 created 31 hosts :: 32 cores, av: 0.999
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_gvt
+INFO    | T_gvt   | Chave   | gvt      ] --> Init GVT in -1 to 13982
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_AZ1
+INFO    | T_gvt   | Chave   | gvt      ] --> GVT 0hs (0s) has False Wh from total 0 Wh
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_AZ2
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_AZ3
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_AZ4
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_AZ5
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_AZ6
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_lc0
+DEBUG   | MainThread| Chave   | run      ] --> Executing thread for: T_lc1
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_gvt for MainThread
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-5521424F-regular (vcpu:2) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-5521424F t:regular, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-5521424F in NODE0 regular AZ1
+INFO    | T_AZ1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-5521424F) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++']]
+Q:['base', 'i-5521424F']
+INFO    | T_AZ1   | Chave   | az_optimized_placement ] --> New max host on: 1 at ts: 0 s gt: 93
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 93 from START sec is 147.1 WH
+INFO    | T_AZ3   | Chave   | best_host ] --> Best host for i-DE9842F4-regular (vcpu:1) is NODE0 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ3   | Virtual | set_host_id ] --> Host id NODE0 defined for i-DE9842F4 t:regular, az:AZ3
+INFO    | T_AZ3   | Chave   | place    ] --> Allocating i-DE9842F4 in NODE0 regular AZ3
+INFO    | T_AZ3   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ3   | EnergyMonitor| alloc    ] --> 
+em_AZ3_NODE0: (Alloc i-DE9842F4) l:[[0, 'base', 118.11, '++'], [1, 'i-DE9842F4', 139.91, '++']]
+Q:['base', 'i-DE9842F4']
+INFO    | T_AZ3   | Chave   | az_optimized_placement ] --> New max host on: 1 at ts: 1 s gt: 93
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 93 from START sec is 139.91 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-0B284069-regular (vcpu:4) is NODE0 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE0 defined for i-0B284069 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-0B284069 in NODE0 regular AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE0: (Alloc i-0B284069) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++']]
+Q:['base', 'i-0B284069']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 1 at ts: 0 s gt: 93
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 157.08 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-153C3F8D-regular (vcpu:4) is NODE0 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE0 defined for i-153C3F8D t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-153C3F8D in NODE0 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE0: (Alloc i-153C3F8D) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++']]
+Q:['base', 'i-0B284069', 'i-153C3F8D']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 172.52 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-261C3FE2-critical (vcpu:4) is NODE1 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ4   | Chave   | require_replica ] --> i-261C3FE2-critical require replication! AZ4=?AZ4
+INFO    | T_AZ4   | Chave   | replicate_vm ] --> Pool lc1_AZ4_i-261C3FE2 created for replication
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE1 defined for i-261C3FE2 t:critical, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-261C3FE2 in NODE1 critical AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE1 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE1: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE1: (Alloc i-261C3FE2) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++']]
+Q:['base', 'i-261C3FE2']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 2 at ts: 0 s gt: 93
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ5 has 0.0% hosts actives
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 329.6 WH
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ6 has 0.0% hosts actives
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-8C814313-regular (vcpu:4) is NODE1 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc1   | Chave   | choose_az_for_vm_replica ] --> AZ selection algorithm LB fails, place VM i-261C3FE2 (from AZ4) randomized in ['node:', 31, 'core:', 32, 'av:', 0.999, 'id:', 'AZ6', 'ram:', 128, 'alg:', 'CHAVE']
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE1 defined for i-8C814313 t:regular, az:AZ4
+INFO    | T_lc1   | Chave   | choose_az_for_vm_replica ] --> VM i-261C3FE2 (from AZ4) will be replicated for AZ6
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-8C814313 in NODE1 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE1: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE1: (Alloc i-8C814313) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-8C814313', 172.52, '++']]
+Q:['base', 'i-261C3FE2', 'i-8C814313']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 345.04 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-ABEE41D5-critical (vcpu:4) is NODE2 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ4   | Chave   | require_replica ] --> i-ABEE41D5-critical require replication! AZ4=?AZ4
+INFO    | T_AZ4   | Chave   | replicate_vm ] --> Pool lc1_AZ4_i-ABEE41D5 created for replication
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE2 defined for i-ABEE41D5 t:critical, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-ABEE41D5 in NODE2 critical AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE2 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE2: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE2: (Alloc i-ABEE41D5) l:[[0, 'base', 118.11, '++'], [0, 'i-ABEE41D5', 157.08, '++']]
+Q:['base', 'i-ABEE41D5']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 3 at ts: 0 s gt: 93
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 502.12 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-C10A3ED2-regular (vcpu:4) is NODE2 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE2 defined for i-C10A3ED2 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-C10A3ED2 in NODE2 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE2: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE2: (Alloc i-C10A3ED2) l:[[0, 'base', 118.11, '++'], [0, 'i-ABEE41D5', 157.08, '++'], [0, 'i-C10A3ED2', 172.52, '++']]
+Q:['base', 'i-ABEE41D5', 'i-C10A3ED2']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 517.56 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-C11E42E0-regular (vcpu:4) is NODE3 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE3 defined for i-C11E42E0 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-C11E42E0 in NODE3 regular AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE3 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE3: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE3: (Alloc i-C11E42E0) l:[[0, 'base', 118.11, '++'], [0, 'i-C11E42E0', 157.08, '++']]
+Q:['base', 'i-C11E42E0']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 4 at ts: 0 s gt: 93
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 674.64 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-D1594203-regular (vcpu:4) is NODE3 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE3 defined for i-D1594203 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-D1594203 in NODE3 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE3: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE3: (Alloc i-D1594203) l:[[0, 'base', 118.11, '++'], [0, 'i-C11E42E0', 157.08, '++'], [0, 'i-D1594203', 172.52, '++']]
+Q:['base', 'i-C11E42E0', 'i-D1594203']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 690.08 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-E6EE3FCB-regular (vcpu:4) is NODE4 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE4 defined for i-E6EE3FCB t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-E6EE3FCB in NODE4 regular AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE4 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE4: (Alloc i-E6EE3FCB) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++']]
+Q:['base', 'i-E6EE3FCB']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 5 at ts: 0 s gt: 93
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 93 from START sec is 847.16 WH
+INFO    | T_lc1   | Chave   | best_host ] --> Best host for i-261C3FE2-replica (vcpu:4) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-261C3FE2 t:replica, az:AZ4
+INFO    | T_lc1   | Chave   | place    ] --> Allocating i-261C3FE2 in NODE0 replica AZ6
+INFO    | T_lc1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_lc1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_lc1   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-261C3FE2) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++']]
+Q:['base', 'i-261C3FE2']
+INFO    | T_lc1   | Chave   | region_replication ] --> Allocating REPLICA i-261C3FE2 on AZ6
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ5 has 0.0% hosts actives
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ6 has 3.22580645161% hosts actives
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-XX11094D-regular (vcpu:4) is NODE0 (cpu:12.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-XX11094D t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-XX11094D in NODE0 regular AZ2
+INFO    | T_lc1   | Chave   | choose_az_for_vm_replica ] --> VM i-ABEE41D5 (from AZ4) will be replicated for AZ6
+INFO    | T_AZ2   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-XX11094D) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++']]
+Q:['base', 'i-XX11094D']
+INFO    | T_AZ2   | Chave   | az_optimized_placement ] --> New max host on: 1 at ts: 10 s gt: 93
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 93 from START sec is 157.08 WH
+INFO    | T_lc1   | Chave   | best_host ] --> Best host for i-ABEE41D5-replica (vcpu:4) is NODE0 (cpu:28.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-ABEE41D5 t:replica, az:AZ4
+INFO    | T_lc1   | Chave   | place    ] --> Allocating i-ABEE41D5 in NODE0 replica AZ6
+DEBUG   | T_lc1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_lc1   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-ABEE41D5) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++']]
+Q:['base', 'i-261C3FE2', 'i-ABEE41D5']
+INFO    | T_lc1   | Chave   | region_replication ] --> Allocating REPLICA i-ABEE41D5 on AZ6
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-2BFF3F02-regular (vcpu:1) is NODE4 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE4 defined for i-2BFF3F02 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-2BFF3F02 in NODE4 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 5
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE4: (Alloc i-2BFF3F02) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++']]
+Q:['base', 'i-E6EE3FCB', 'i-2BFF3F02']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 170 from START sec is 851.66 WH
+INFO    | T_AZ2   | Physical| set_host_off ] --> NEW state in AZ2: NODE0 turned on? False
+ERROR   | T_AZ2   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-XX11094D) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-XX11094D NODE0 from AZ2 None typ: regular
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 252 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE4: (Dealloc i-2BFF3F02) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++'], [637, 'i-2BFF3F02', 157.08, '--'], [637, 'i-E6EE3FCB', 157.08, '<<']]
+Q:['base', 'i-E6EE3FCB']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-2BFF3F02 NODE4 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 759 from DEFAULT sec is 847.16 WH
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-ADC2465C-critical (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ5   | Chave   | require_replica ] --> i-ADC2465C-critical require replication! AZ5=?AZ5
+INFO    | T_AZ5   | Chave   | replicate_vm ] --> Pool lc1_AZ5_i-ADC2465C created for replication
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ4 has 41.6666666667% hosts actives
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ6 has 3.22580645161% hosts actives
+INFO    | T_lc1   | Chave   | choose_az_for_vm_replica ] --> VM i-ADC2465C (from AZ5) will be replicated for AZ4
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-ADC2465C t:critical, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-ADC2465C in NODE0 critical AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-ADC2465C) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++']]
+Q:['base', 'i-ADC2465C']
+INFO    | T_AZ5   | Chave   | az_optimized_placement ] --> New max host on: 1 at ts: 783 s gt: 791
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 791 from START sec is 147.1 WH
+INFO    | T_lc1   | Chave   | best_host ] --> Best host for i-ADC2465C-replica (vcpu:2) is NODE4 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc1   | Virtual | set_host_id ] --> Host id NODE4 defined for i-ADC2465C t:replica, az:AZ5
+INFO    | T_lc1   | Chave   | place    ] --> Allocating i-ADC2465C in NODE4 replica AZ4
+DEBUG   | T_lc1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 6
+DEBUG   | T_lc1   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE4: (Alloc i-ADC2465C) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++'], [637, 'i-2BFF3F02', 157.08, '--'], [637, 'i-E6EE3FCB', 157.08, '<<'], [783, 'i-ADC2465C', 166.61, '++']]
+Q:['base', 'i-E6EE3FCB', 'i-ADC2465C']
+INFO    | T_lc1   | Chave   | region_replication ] --> Allocating REPLICA i-ADC2465C on AZ4
+INFO    | T_AZ6   | Chave   | best_host ] --> Best host for i-41C93F29-regular (vcpu:2) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ6   | Virtual | set_host_id ] --> Host id NODE0 defined for i-41C93F29 t:regular, az:AZ6
+INFO    | T_AZ6   | Chave   | place    ] --> Allocating i-41C93F29 in NODE0 regular AZ6
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 10
+DEBUG   | T_AZ6   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-41C93F29) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++']]
+Q:['base', 'i-261C3FE2', 'i-ABEE41D5', 'i-41C93F29']
+INFO    | T_AZ6   | Chave   | az_optimized_placement ] --> New max host on: 1 at ts: 1091 s gt: 1107
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 1107 from START sec is 178.66 WH
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-796244E3-regular (vcpu:1) is NODE0 (cpu:22.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-796244E3 t:regular, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-796244E3 in NODE0 regular AZ1
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-796244E3) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++']]
+Q:['base', 'i-5521424F', 'i-796244E3']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 1200 from START sec is 153.2 WH
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-4811094D-regular (vcpu:1) is NODE0 (cpu:12.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-4811094D t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-4811094D in NODE0 regular AZ2
+INFO    | T_AZ2   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-4811094D) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++']]
+Q:['base', 'i-4811094D']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 1236 from START sec is 139.91 WH
+INFO    | T_AZ2   | Physical| set_host_off ] --> NEW state in AZ2: NODE0 turned on? False
+ERROR   | T_AZ2   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-4811094D) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-4811094D NODE0 from AZ2 None typ: regular
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 1436 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-796244E3) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<']]
+Q:['base', 'i-5521424F']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-796244E3 NODE0 from AZ1 None typ: regular
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 1502 from DEFAULT sec is 147.1 WH
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-ADC2465C) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-ADC2465C NODE0 from AZ5 lc1_AZ5_i-ADC2465C typ: critical
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 1529 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 4
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE4: (Dealloc i-ADC2465C) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++'], [637, 'i-2BFF3F02', 157.08, '--'], [637, 'i-E6EE3FCB', 157.08, '<<'], [783, 'i-ADC2465C', 166.61, '++'], [1490, 'i-ADC2465C', 157.08, '--'], [1490, 'i-E6EE3FCB', 157.08, '<<']]
+Q:['base', 'i-E6EE3FCB']
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-ADC2465C NODE4 from AZ4 lc1_AZ5_i-ADC2465C typ: replica
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 1558 from replica sec is 847.16 WH
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-41C93F29) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<']]
+Q:['base', 'i-261C3FE2', 'i-ABEE41D5']
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-41C93F29 NODE0 from AZ6 None typ: regular
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 1824 from DEFAULT sec is 172.52 WH
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-AEA14226-regular (vcpu:4) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-AEA14226 t:regular, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-AEA14226 in NODE0 regular AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-AEA14226) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++']]
+Q:['base', 'i-AEA14226']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 1824 from START sec is 157.08 WH
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-AEA14226) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-AEA14226 NODE0 from AZ5 None typ: regular
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 2276 from DEFAULT sec is 0 WH
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-BE563F1A-regular (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-BE563F1A t:regular, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-BE563F1A in NODE0 regular AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-BE563F1A) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++']]
+Q:['base', 'i-BE563F1A']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 2667 from START sec is 147.1 WH
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-49F207B6-regular (vcpu:1) is NODE0 (cpu:12.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-49F207B6 t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-49F207B6 in NODE0 regular AZ2
+INFO    | T_AZ2   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-49F207B6) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++']]
+Q:['base', 'i-49F207B6']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 2667 from START sec is 139.91 WH
+INFO    | T_AZ6   | Chave   | best_host ] --> Best host for i-8BAF4413-regular (vcpu:2) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ6   | Virtual | set_host_id ] --> Host id NODE0 defined for i-8BAF4413 t:regular, az:AZ6
+INFO    | T_AZ6   | Chave   | place    ] --> Allocating i-8BAF4413 in NODE0 regular AZ6
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 10
+DEBUG   | T_AZ6   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-8BAF4413) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++']]
+Q:['base', 'i-261C3FE2', 'i-ABEE41D5', 'i-8BAF4413']
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 2898 from START sec is 178.66 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-1D5646FD-regular (vcpu:4) is NODE4 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE4 defined for i-1D5646FD t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-1D5646FD in NODE4 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE4: (Alloc i-1D5646FD) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++'], [637, 'i-2BFF3F02', 157.08, '--'], [637, 'i-E6EE3FCB', 157.08, '<<'], [783, 'i-ADC2465C', 166.61, '++'], [1490, 'i-ADC2465C', 157.08, '--'], [1490, 'i-E6EE3FCB', 157.08, '<<'], [2984, 'i-1D5646FD', 172.52, '++']]
+Q:['base', 'i-E6EE3FCB', 'i-1D5646FD']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 2990 from START sec is 862.6 WH
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-B9184208-critical (vcpu:1) is NODE0 (cpu:22.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ1   | Chave   | require_replica ] --> i-B9184208-critical require replication! AZ1=?AZ1
+INFO    | T_AZ1   | Chave   | replicate_vm ] --> Pool lc0_AZ1_i-B9184208 created for replication
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-B9184208 t:critical, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-B9184208 in NODE0 critical AZ1
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-B9184208) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++']]
+Q:['base', 'i-5521424F', 'i-B9184208']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 3011 from START sec is 153.2 WH
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ2 has 14.2857142857% hosts actives
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ3 has 14.2857142857% hosts actives
+INFO    | T_lc0   | Chave   | choose_az_for_vm_replica ] --> VM i-B9184208 (from AZ1) will be replicated for AZ2
+INFO    | T_lc0   | Chave   | best_host ] --> Best host for i-B9184208-replica (vcpu:1) is NODE0 (cpu:11.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc0   | Virtual | set_host_id ] --> Host id NODE0 defined for i-B9184208 t:replica, az:AZ1
+INFO    | T_lc0   | Chave   | place    ] --> Allocating i-B9184208 in NODE0 replica AZ2
+DEBUG   | T_lc0   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_lc0   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-B9184208) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++']]
+Q:['base', 'i-49F207B6', 'i-B9184208']
+INFO    | T_lc0   | Chave   | region_replication ] --> Allocating REPLICA i-B9184208 on AZ2
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE0: (Dealloc i-153C3F8D) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<']]
+Q:['base', 'i-0B284069']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-153C3F8D NODE0 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3124 from DEFAULT sec is 847.16 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-E0A63BDD-regular (vcpu:4) is NODE0 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE0 defined for i-E0A63BDD t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-E0A63BDD in NODE0 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE0: (Alloc i-E0A63BDD) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<'], [3153, 'i-E0A63BDD', 172.52, '++']]
+Q:['base', 'i-0B284069', 'i-E0A63BDD']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3159 from START sec is 862.6 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE4: (Dealloc i-1D5646FD) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++'], [637, 'i-2BFF3F02', 157.08, '--'], [637, 'i-E6EE3FCB', 157.08, '<<'], [783, 'i-ADC2465C', 166.61, '++'], [1490, 'i-ADC2465C', 157.08, '--'], [1490, 'i-E6EE3FCB', 157.08, '<<'], [2984, 'i-1D5646FD', 172.52, '++'], [3187, 'i-1D5646FD', 157.08, '--'], [3187, 'i-E6EE3FCB', 157.08, '<<']]
+Q:['base', 'i-E6EE3FCB']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-1D5646FD NODE4 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3207 from DEFAULT sec is 847.16 WH
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-310005BF-regular (vcpu:1) is NODE0 (cpu:10.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-310005BF t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-310005BF in NODE0 regular AZ2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-310005BF) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++'], [3212, 'i-310005BF', 153.2, '++']]
+Q:['base', 'i-49F207B6', 'i-B9184208', 'i-310005BF']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 3218 from START sec is 153.2 WH
+INFO    | T_gvt   | Chave   | gvt      ] --> GVT 1hs (3600s) has False Wh from total 0 Wh
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-8BAF4413) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<']]
+Q:['base', 'i-261C3FE2', 'i-ABEE41D5']
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-8BAF4413 NODE0 from AZ6 None typ: regular
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 3602 from DEFAULT sec is 172.52 WH
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-74F842C4-regular (vcpu:4) is NODE4 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-B9184208) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<']]
+Q:['base', 'i-5521424F']
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE4 defined for i-74F842C4 t:regular, az:AZ4
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-B9184208 NODE0 from AZ1 lc0_AZ1_i-B9184208 typ: critical
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-74F842C4 in NODE4 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 8
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-BE563F1A) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<']]
+Q:['base']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 3605 from DEFAULT sec is 147.1 WH
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE4: (Alloc i-74F842C4) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++'], [637, 'i-2BFF3F02', 157.08, '--'], [637, 'i-E6EE3FCB', 157.08, '<<'], [783, 'i-ADC2465C', 166.61, '++'], [1490, 'i-ADC2465C', 157.08, '--'], [1490, 'i-E6EE3FCB', 157.08, '<<'], [2984, 'i-1D5646FD', 172.52, '++'], [3187, 'i-1D5646FD', 157.08, '--'], [3187, 'i-E6EE3FCB', 157.08, '<<'], [3305, 'i-74F842C4', 172.52, '++']]
+Q:['base', 'i-E6EE3FCB', 'i-74F842C4']
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-BE563F1A NODE0 from AZ5 None typ: regular
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 3605 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3605 from START sec is 862.6 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-53FF4310-regular (vcpu:4) is NODE5 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE5 defined for i-53FF4310 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-53FF4310 in NODE5 regular AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE5 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE5: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE5: (Alloc i-53FF4310) l:[[0, 'base', 118.11, '++'], [3319, 'i-53FF4310', 157.08, '++']]
+Q:['base', 'i-53FF4310']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 6 at ts: 3319 s gt: 3605
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3605 from START sec is 1019.68 WH
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-956A3CDB-regular (vcpu:4) is NODE5 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE5 defined for i-956A3CDB t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-956A3CDB in NODE5 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE5: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE5: (Alloc i-956A3CDB) l:[[0, 'base', 118.11, '++'], [3319, 'i-53FF4310', 157.08, '++'], [3319, 'i-956A3CDB', 172.52, '++']]
+Q:['base', 'i-53FF4310', 'i-956A3CDB']
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-B9184208) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++'], [3212, 'i-310005BF', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-310005BF', 147.1, '<<']]
+Q:['base', 'i-49F207B6', 'i-310005BF']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3605 from START sec is 1035.12 WH
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-B9184208 NODE0 from AZ2 lc0_AZ1_i-B9184208 typ: replica
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-B3B2408C-regular (vcpu:4) is NODE6 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE6 defined for i-B3B2408C t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-B3B2408C in NODE6 regular AZ4
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 3605 from replica sec is 147.1 WH
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE6 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE6: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE6: (Alloc i-B3B2408C) l:[[0, 'base', 118.11, '++'], [3319, 'i-B3B2408C', 157.08, '++']]
+Q:['base', 'i-B3B2408C']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 7 at ts: 3319 s gt: 3605
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3605 from START sec is 1192.2 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-F0834357-regular (vcpu:4) is NODE6 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE6 defined for i-F0834357 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-F0834357 in NODE6 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE6: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE6: (Alloc i-F0834357) l:[[0, 'base', 118.11, '++'], [3319, 'i-B3B2408C', 157.08, '++'], [3319, 'i-F0834357', 172.52, '++']]
+Q:['base', 'i-B3B2408C', 'i-F0834357']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3605 from START sec is 1207.64 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-FE144161-regular (vcpu:4) is NODE7 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE7 defined for i-FE144161 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-FE144161 in NODE7 regular AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE7 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE7: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE7: (Alloc i-FE144161) l:[[0, 'base', 118.11, '++'], [3319, 'i-FE144161', 157.08, '++']]
+Q:['base', 'i-FE144161']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 8 at ts: 3319 s gt: 3605
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3605 from START sec is 1364.72 WH
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-3CD1084F-regular (vcpu:1) is NODE0 (cpu:10.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3CD1084F t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-3CD1084F in NODE0 regular AZ2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-3CD1084F) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++'], [3212, 'i-310005BF', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-310005BF', 147.1, '<<'], [3412, 'i-3CD1084F', 153.2, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 3605 from START sec is 153.2 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-486140F1-regular (vcpu:4) is NODE7 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE7 defined for i-486140F1 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-486140F1 in NODE7 regular AZ4
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE7: 8
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE7: (Alloc i-486140F1) l:[[0, 'base', 118.11, '++'], [3319, 'i-FE144161', 157.08, '++'], [3320, 'i-486140F1', 172.52, '++']]
+Q:['base', 'i-FE144161', 'i-486140F1']
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3606 from START sec is 1380.16 WH
+INFO    | T_AZ4   | Chave   | best_host ] --> Best host for i-CDCA4589-regular (vcpu:4) is NODE8 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Virtual | set_host_id ] --> Host id NODE8 defined for i-CDCA4589 t:regular, az:AZ4
+INFO    | T_AZ4   | Chave   | place    ] --> Allocating i-CDCA4589 in NODE8 regular AZ4
+INFO    | T_AZ4   | Physical| force_set_host_on ] --> NEW state: NODE8 turned on? True
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE8: 4
+DEBUG   | T_AZ4   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE8: (Alloc i-CDCA4589) l:[[0, 'base', 118.11, '++'], [3320, 'i-CDCA4589', 157.08, '++']]
+Q:['base', 'i-CDCA4589']
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> New max host on: 9 at ts: 3320 s gt: 3606
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 3606 from START sec is 1537.24 WH
+INFO    | T_AZ6   | Chave   | best_host ] --> Best host for i-F5D44252-regular (vcpu:4) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ6   | Virtual | set_host_id ] --> Host id NODE0 defined for i-F5D44252 t:regular, az:AZ6
+INFO    | T_AZ6   | Chave   | place    ] --> Allocating i-F5D44252 in NODE0 regular AZ6
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 12
+DEBUG   | T_AZ6   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-F5D44252) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++']]
+Q:['base', 'i-261C3FE2', 'i-ABEE41D5', 'i-F5D44252']
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 3745 from START sec is 184.79 WH
+INFO    | T_AZ1   | Physical| set_host_off ] --> NEW state in AZ1: NODE0 turned on? False
+ERROR   | T_AZ1   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-5521424F) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-5521424F NODE0 from AZ1 None typ: regular
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 3967 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE2: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE2: (Dealloc i-ABEE41D5) l:[[0, 'base', 118.11, '++'], [0, 'i-ABEE41D5', 157.08, '++'], [0, 'i-C10A3ED2', 172.52, '++'], [494.0, 'i-ABEE41D5', 157.08, '--'], [494.0, 'i-C10A3ED2', 157.08, '<<']]
+Q:['base', 'i-C10A3ED2']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-ABEE41D5 NODE2 from AZ4 lc1_AZ4_i-ABEE41D5 typ: critical
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4102 from DEFAULT sec is 1521.8 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-ABEE41D5) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<']]
+Q:['base', 'i-261C3FE2', 'i-F5D44252']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-ABEE41D5 NODE0 from AZ6 lc1_AZ4_i-ABEE41D5 typ: replica
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4106 from replica sec is 172.52 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE2 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE2: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE2: (Dealloc i-C10A3ED2) l:[[0, 'base', 118.11, '++'], [0, 'i-ABEE41D5', 157.08, '++'], [0, 'i-C10A3ED2', 172.52, '++'], [494.0, 'i-ABEE41D5', 157.08, '--'], [494.0, 'i-C10A3ED2', 157.08, '<<'], [494.0, 'i-C10A3ED2', 118.11, '--'], [494.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-C10A3ED2 NODE2 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4119 from DEFAULT sec is 1364.72 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE0: (Dealloc i-0B284069) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<'], [3153, 'i-E0A63BDD', 172.52, '++'], [495.0, 'i-0B284069', 157.08, '--'], [495.0, 'i-E0A63BDD', 157.08, '<<']]
+Q:['base', 'i-E0A63BDD']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-0B284069 NODE0 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4123 from DEFAULT sec is 1349.28 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE3: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE3: (Dealloc i-D1594203) l:[[0, 'base', 118.11, '++'], [0, 'i-C11E42E0', 157.08, '++'], [0, 'i-D1594203', 172.52, '++'], [495.0, 'i-D1594203', 157.08, '--'], [495.0, 'i-C11E42E0', 157.08, '<<']]
+Q:['base', 'i-C11E42E0']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-D1594203 NODE3 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4137 from DEFAULT sec is 1333.84 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE4: (Dealloc i-E6EE3FCB) l:[[0, 'base', 118.11, '++'], [0, 'i-E6EE3FCB', 157.08, '++'], [165, 'i-2BFF3F02', 161.58, '++'], [637, 'i-2BFF3F02', 157.08, '--'], [637, 'i-E6EE3FCB', 157.08, '<<'], [783, 'i-ADC2465C', 166.61, '++'], [1490, 'i-ADC2465C', 157.08, '--'], [1490, 'i-E6EE3FCB', 157.08, '<<'], [2984, 'i-1D5646FD', 172.52, '++'], [3187, 'i-1D5646FD', 157.08, '--'], [3187, 'i-E6EE3FCB', 157.08, '<<'], [3305, 'i-74F842C4', 172.52, '++'], [495.0, 'i-E6EE3FCB', 157.08, '--'], [495.0, 'i-74F842C4', 157.08, '<<']]
+Q:['base', 'i-74F842C4']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-E6EE3FCB NODE4 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4140 from DEFAULT sec is 1318.4 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE1: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE1: (Dealloc i-8C814313) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-8C814313', 172.52, '++'], [502.0, 'i-8C814313', 157.08, '--'], [502.0, 'i-261C3FE2', 157.08, '<<']]
+Q:['base', 'i-261C3FE2']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-8C814313 NODE1 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4143 from DEFAULT sec is 1302.96 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE1 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE1: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE1: (Dealloc i-261C3FE2) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-8C814313', 172.52, '++'], [502.0, 'i-8C814313', 157.08, '--'], [502.0, 'i-261C3FE2', 157.08, '<<'], [503.0, 'i-261C3FE2', 118.11, '--'], [503.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-261C3FE2 NODE1 from AZ4 lc1_AZ4_i-261C3FE2 typ: critical
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4143 from DEFAULT sec is 1145.88 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-261C3FE2) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<']]
+Q:['base', 'i-F5D44252']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-261C3FE2 NODE0 from AZ6 lc1_AZ4_i-261C3FE2 typ: replica
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4151 from replica sec is 157.08 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE3 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE3: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE3: (Dealloc i-C11E42E0) l:[[0, 'base', 118.11, '++'], [0, 'i-C11E42E0', 157.08, '++'], [0, 'i-D1594203', 172.52, '++'], [495.0, 'i-D1594203', 157.08, '--'], [495.0, 'i-C11E42E0', 157.08, '<<'], [503.0, 'i-C11E42E0', 118.11, '--'], [503.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-C11E42E0 NODE3 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 4161 from DEFAULT sec is 988.8 WH
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-3FC3072C-regular (vcpu:1) is NODE0 (cpu:9.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3FC3072C t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-3FC3072C in NODE0 regular AZ2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-3FC3072C) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++'], [3212, 'i-310005BF', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-310005BF', 147.1, '<<'], [3412, 'i-3CD1084F', 153.2, '++'], [612.0, 'i-3FC3072C', 157.08, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 4218 from START sec is 157.08 WH
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-D1EA44ED-regular (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-D1EA44ED t:regular, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-D1EA44ED in NODE0 regular AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-D1EA44ED) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++']]
+Q:['base', 'i-D1EA44ED']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 4356 from START sec is 147.1 WH
+INFO    | T_AZ6   | Physical| set_host_off ] --> NEW state in AZ6: NODE0 turned on? False
+ERROR   | T_AZ6   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-F5D44252) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-F5D44252 NODE0 from AZ6 None typ: regular
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 4776 from DEFAULT sec is 0 WH
+INFO    | T_AZ6   | Chave   | best_host ] --> Best host for i-38CA4055-regular (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ6   | Virtual | set_host_id ] --> Host id NODE0 defined for i-38CA4055 t:regular, az:AZ6
+INFO    | T_AZ6   | Chave   | place    ] --> Allocating i-38CA4055 in NODE0 regular AZ6
+INFO    | T_AZ6   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ6   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-38CA4055) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++']]
+Q:['base', 'i-38CA4055']
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 4776 from START sec is 147.1 WH
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-6A01454E-regular (vcpu:2) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-6A01454E t:regular, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-6A01454E in NODE0 regular AZ1
+INFO    | T_AZ1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-6A01454E) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<'], [1166.0, 'i-6A01454E', 147.1, '++']]
+Q:['base', 'i-6A01454E']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 4789 from START sec is 147.1 WH
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-3447420E-regular (vcpu:1) is NODE0 (cpu:22.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3447420E t:regular, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-3447420E in NODE0 regular AZ1
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-3447420E) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<'], [1166.0, 'i-6A01454E', 147.1, '++'], [1197.0, 'i-3447420E', 153.2, '++']]
+Q:['base', 'i-6A01454E', 'i-3447420E']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 4797 from START sec is 153.2 WH
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-3447420E) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<'], [1166.0, 'i-6A01454E', 147.1, '++'], [1197.0, 'i-3447420E', 153.2, '++'], [1407.0, 'i-3447420E', 147.1, '--'], [1407.0, 'i-6A01454E', 147.1, '<<']]
+Q:['base', 'i-6A01454E']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3447420E NODE0 from AZ1 None typ: regular
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 5016 from DEFAULT sec is 147.1 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE5: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE5: (Dealloc i-53FF4310) l:[[0, 'base', 118.11, '++'], [3319, 'i-53FF4310', 157.08, '++'], [3319, 'i-956A3CDB', 172.52, '++'], [1451.0, 'i-53FF4310', 157.08, '--'], [1451.0, 'i-956A3CDB', 157.08, '<<']]
+Q:['base', 'i-956A3CDB']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-53FF4310 NODE5 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5056 from DEFAULT sec is 973.36 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE5 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE5: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE5: (Dealloc i-956A3CDB) l:[[0, 'base', 118.11, '++'], [3319, 'i-53FF4310', 157.08, '++'], [3319, 'i-956A3CDB', 172.52, '++'], [1451.0, 'i-53FF4310', 157.08, '--'], [1451.0, 'i-956A3CDB', 157.08, '<<'], [1451.0, 'i-956A3CDB', 118.11, '--'], [1451.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-956A3CDB NODE5 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5069 from DEFAULT sec is 816.28 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE6: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE6: (Dealloc i-F0834357) l:[[0, 'base', 118.11, '++'], [3319, 'i-B3B2408C', 157.08, '++'], [3319, 'i-F0834357', 172.52, '++'], [1451.0, 'i-F0834357', 157.08, '--'], [1451.0, 'i-B3B2408C', 157.08, '<<']]
+Q:['base', 'i-B3B2408C']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-F0834357 NODE6 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5069 from DEFAULT sec is 800.84 WH
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE7: 4
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE7: (Dealloc i-FE144161) l:[[0, 'base', 118.11, '++'], [3319, 'i-FE144161', 157.08, '++'], [3320, 'i-486140F1', 172.52, '++'], [1451.0, 'i-FE144161', 157.08, '--'], [1451.0, 'i-486140F1', 157.08, '<<']]
+Q:['base', 'i-486140F1']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-FE144161 NODE7 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5072 from DEFAULT sec is 785.4 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE7 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE7: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE7: (Dealloc i-486140F1) l:[[0, 'base', 118.11, '++'], [3319, 'i-FE144161', 157.08, '++'], [3320, 'i-486140F1', 172.52, '++'], [1451.0, 'i-FE144161', 157.08, '--'], [1451.0, 'i-486140F1', 157.08, '<<'], [1458.0, 'i-486140F1', 118.11, '--'], [1458.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-486140F1 NODE7 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5084 from DEFAULT sec is 628.32 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE6 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE6: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE6: (Dealloc i-B3B2408C) l:[[0, 'base', 118.11, '++'], [3319, 'i-B3B2408C', 157.08, '++'], [3319, 'i-F0834357', 172.52, '++'], [1451.0, 'i-F0834357', 157.08, '--'], [1451.0, 'i-B3B2408C', 157.08, '<<'], [1458.0, 'i-B3B2408C', 118.11, '--'], [1458.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-B3B2408C NODE6 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5095 from DEFAULT sec is 471.24 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE8 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE8: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE8: (Dealloc i-CDCA4589) l:[[0, 'base', 118.11, '++'], [3320, 'i-CDCA4589', 157.08, '++'], [1458.0, 'i-CDCA4589', 118.11, '--'], [1458.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-CDCA4589 NODE8 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5108 from DEFAULT sec is 314.16 WH
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE0 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+INFO    | T_AZ6   | Physical| set_host_off ] --> NEW state in AZ6: NODE0 turned on? False
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-44760829-regular (vcpu:1) is NODE0 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-D1EA44ED) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-D1EA44ED NODE0 from AZ5 None typ: regular
+ERROR   | T_AZ6   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-38CA4055) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++'], [1685.0, 'i-38CA4055', 118.11, '--'], [1685.0, 'base', 118.11, '<<']]
+Q:['base']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 5430 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-44760829 t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-44760829 in NODE0 regular AZ2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 5
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE0: (Dealloc i-E0A63BDD) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<'], [3153, 'i-E0A63BDD', 172.52, '++'], [495.0, 'i-0B284069', 157.08, '--'], [495.0, 'i-E0A63BDD', 157.08, '<<'], [1458.0, 'i-E0A63BDD', 118.11, '--'], [1458.0, 'base', 118.11, '<<']]
+Q:['base']
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-44760829) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++'], [3212, 'i-310005BF', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-310005BF', 147.1, '<<'], [3412, 'i-3CD1084F', 153.2, '++'], [612.0, 'i-3FC3072C', 157.08, '++'], [1812.0, 'i-44760829', 161.58, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 5430 from START sec is 161.58 WH
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-E0A63BDD NODE0 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 5431 from DEFAULT sec is 157.08 WH
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-38CA4055 NODE0 from AZ6 None typ: regular
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 5437 from DEFAULT sec is 0 WH
+INFO    | T_AZ1   | Physical| set_host_off ] --> NEW state in AZ1: NODE0 turned on? False
+ERROR   | T_AZ1   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-6A01454E) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<'], [1166.0, 'i-6A01454E', 147.1, '++'], [1197.0, 'i-3447420E', 153.2, '++'], [1407.0, 'i-3447420E', 147.1, '--'], [1407.0, 'i-6A01454E', 147.1, '<<'], [2283.0, 'i-6A01454E', 118.11, '--'], [2283.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-6A01454E NODE0 from AZ1 None typ: regular
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 5987 from DEFAULT sec is 0 WH
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-7EBF44E7-regular (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-7EBF44E7 t:regular, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-7EBF44E7 in NODE0 regular AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-7EBF44E7) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++']]
+Q:['base', 'i-7EBF44E7']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 6189 from START sec is 147.1 WH
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-47CB0883-critical (vcpu:1) is NODE0 (cpu:7.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ2   | Chave   | require_replica ] --> i-47CB0883-critical require replication! AZ2=?AZ2
+INFO    | T_AZ2   | Chave   | replicate_vm ] --> Pool lc0_AZ2_i-47CB0883 created for replication
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-47CB0883 t:critical, az:AZ2
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ1 has 0.0% hosts actives
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-47CB0883 in NODE0 critical AZ2
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ3 has 14.2857142857% hosts actives
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 6
+INFO    | T_lc0   | Chave   | choose_az_for_vm_replica ] --> VM i-47CB0883 (from AZ2) will be replicated for AZ3
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-47CB0883) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++'], [3212, 'i-310005BF', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-310005BF', 147.1, '<<'], [3412, 'i-3CD1084F', 153.2, '++'], [612.0, 'i-3FC3072C', 157.08, '++'], [1812.0, 'i-44760829', 161.58, '++'], [2812.0, 'i-47CB0883', 166.61, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 6426 from START sec is 166.61 WH
+INFO    | T_lc0   | Chave   | best_host ] --> Best host for i-47CB0883-replica (vcpu:1) is NODE0 (cpu:7.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc0   | Virtual | set_host_id ] --> Host id NODE0 defined for i-47CB0883 t:replica, az:AZ2
+INFO    | T_lc0   | Chave   | place    ] --> Allocating i-47CB0883 in NODE0 replica AZ3
+DEBUG   | T_lc0   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_lc0   | EnergyMonitor| alloc    ] --> 
+em_AZ3_NODE0: (Alloc i-47CB0883) l:[[0, 'base', 118.11, '++'], [1, 'i-DE9842F4', 139.91, '++'], [2812.0, 'i-47CB0883', 147.1, '++']]
+Q:['base', 'i-DE9842F4', 'i-47CB0883']
+INFO    | T_lc0   | Chave   | region_replication ] --> Allocating REPLICA i-47CB0883 on AZ3
+INFO    | T_AZ6   | Chave   | best_host ] --> Best host for i-0D943F1D-regular (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ6   | Virtual | set_host_id ] --> Host id NODE0 defined for i-0D943F1D t:regular, az:AZ6
+INFO    | T_AZ6   | Chave   | place    ] --> Allocating i-0D943F1D in NODE0 regular AZ6
+INFO    | T_AZ6   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ6   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-0D943F1D) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++'], [1685.0, 'i-38CA4055', 118.11, '--'], [1685.0, 'base', 118.11, '<<'], [2884.0, 'i-0D943F1D', 147.1, '++']]
+Q:['base', 'i-0D943F1D']
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 6501 from START sec is 147.1 WH
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-3E704225-critical (vcpu:2) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ1   | Chave   | require_replica ] --> i-3E704225-critical require replication! AZ1=?AZ1
+INFO    | T_AZ1   | Chave   | replicate_vm ] --> Pool lc0_AZ1_i-3E704225 created for replication
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ2 has 14.2857142857% hosts actives
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3E704225 t:critical, az:AZ1
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ3 has 14.2857142857% hosts actives
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-3E704225 in NODE0 critical AZ1
+INFO    | T_lc0   | Chave   | choose_az_for_vm_replica ] --> VM i-3E704225 (from AZ1) will be replicated for AZ2
+INFO    | T_AZ1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-3E704225) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<'], [1166.0, 'i-6A01454E', 147.1, '++'], [1197.0, 'i-3447420E', 153.2, '++'], [1407.0, 'i-3447420E', 147.1, '--'], [1407.0, 'i-6A01454E', 147.1, '<<'], [2283.0, 'i-6A01454E', 118.11, '--'], [2283.0, 'base', 118.11, '<<'], [2965.0, 'i-3E704225', 147.1, '++']]
+Q:['base', 'i-3E704225']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 6565 from START sec is 147.1 WH
+INFO    | T_lc0   | Chave   | best_host ] --> Best host for i-3E704225-replica (vcpu:2) is NODE0 (cpu:6.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc0   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3E704225 t:replica, az:AZ1
+INFO    | T_lc0   | Chave   | place    ] --> Allocating i-3E704225 in NODE0 replica AZ2
+DEBUG   | T_lc0   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_lc0   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-3E704225) l:[[0, 'base', 118.11, '++'], [10, 'i-XX11094D', 157.08, '++'], [200, 'i-XX11094D', 118.11, '--'], [200, 'base', 118.11, '<<'], [1233, 'i-4811094D', 139.91, '++'], [1392, 'i-4811094D', 118.11, '--'], [1392, 'base', 118.11, '<<'], [2391, 'i-49F207B6', 139.91, '++'], [2999, 'i-B9184208', 147.1, '++'], [3212, 'i-310005BF', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-310005BF', 147.1, '<<'], [3412, 'i-3CD1084F', 153.2, '++'], [612.0, 'i-3FC3072C', 157.08, '++'], [1812.0, 'i-44760829', 161.58, '++'], [2812.0, 'i-47CB0883', 166.61, '++'], [2965.0, 'i-3E704225', 172.52, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-3E704225']
+INFO    | T_lc0   | Chave   | region_replication ] --> Allocating REPLICA i-3E704225 on AZ2
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-A3994159-regular (vcpu:1) is NODE0 (cpu:22.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-A3994159 t:regular, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-A3994159 in NODE0 regular AZ1
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-A3994159) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<'], [1166.0, 'i-6A01454E', 147.1, '++'], [1197.0, 'i-3447420E', 153.2, '++'], [1407.0, 'i-3447420E', 147.1, '--'], [1407.0, 'i-6A01454E', 147.1, '<<'], [2283.0, 'i-6A01454E', 118.11, '--'], [2283.0, 'base', 118.11, '<<'], [2965.0, 'i-3E704225', 147.1, '++'], [2997.0, 'i-A3994159', 153.2, '++']]
+Q:['base', 'i-3E704225', 'i-A3994159']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 6732 from START sec is 153.2 WH
+INFO    | T_AZ3   | Chave   | best_host ] --> Best host for i-59673D29-regular (vcpu:1) is NODE0 (cpu:6.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ3   | Virtual | set_host_id ] --> Host id NODE0 defined for i-59673D29 t:regular, az:AZ3
+INFO    | T_AZ3   | Chave   | place    ] --> Allocating i-59673D29 in NODE0 regular AZ3
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ3   | EnergyMonitor| alloc    ] --> 
+em_AZ3_NODE0: (Alloc i-59673D29) l:[[0, 'base', 118.11, '++'], [1, 'i-DE9842F4', 139.91, '++'], [2812.0, 'i-47CB0883', 147.1, '++'], [2977.0, 'i-59673D29', 153.2, '++']]
+Q:['base', 'i-DE9842F4', 'i-47CB0883', 'i-59673D29']
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 6732 from START sec is 153.2 WH
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-A3994159) l:[[0, 'base', 118.11, '++'], [0, 'i-5521424F', 147.1, '++'], [1197, 'i-796244E3', 153.2, '++'], [1480, 'i-796244E3', 147.1, '--'], [1480, 'i-5521424F', 147.1, '<<'], [2999, 'i-B9184208', 153.2, '++'], [3240, 'i-B9184208', 147.1, '--'], [3240, 'i-5521424F', 147.1, '<<'], [303.0, 'i-5521424F', 118.11, '--'], [303.0, 'base', 118.11, '<<'], [1166.0, 'i-6A01454E', 147.1, '++'], [1197.0, 'i-3447420E', 153.2, '++'], [1407.0, 'i-3447420E', 147.1, '--'], [1407.0, 'i-6A01454E', 147.1, '<<'], [2283.0, 'i-6A01454E', 118.11, '--'], [2283.0, 'base', 118.11, '<<'], [2965.0, 'i-3E704225', 147.1, '++'], [2997.0, 'i-A3994159', 153.2, '++'], [3218.0, 'i-A3994159', 147.1, '--'], [3218.0, 'i-3E704225', 147.1, '<<']]
+Q:['base', 'i-3E704225']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-A3994159 NODE0 from AZ1 None typ: regular
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 6835 from DEFAULT sec is 147.1 WH
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+INFO    | T_AZ6   | Physical| set_host_off ] --> NEW state in AZ6: NODE0 turned on? False
+ERROR   | T_AZ6   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-7EBF44E7) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++'], [3318.0, 'i-7EBF44E7', 118.11, '--'], [3318.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-7EBF44E7 NODE0 from AZ5 None typ: regular
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 6927 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-0D943F1D) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++'], [1685.0, 'i-38CA4055', 118.11, '--'], [1685.0, 'base', 118.11, '<<'], [2884.0, 'i-0D943F1D', 147.1, '++'], [3321.0, 'i-0D943F1D', 118.11, '--'], [3321.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-0D943F1D NODE0 from AZ6 None typ: regular
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 6930 from DEFAULT sec is 0 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0 Remaining active i-3E704225, subl [2965.0, 'i-3E704225', 147.1, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 0.0+= (0-0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 48.91075+= (1197-0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 60.9539722222+= (1480-1197)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 60.9539722222+= (1480-1480)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 123.022+= (2999-1480)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 133.277888889+= (3240-2999)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 133.277888889+= (3240-3240)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 13.2688055556+= (303.0-3240)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 13.2688055556+= (303.0-303.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 41.5823972222+= (1166.0-303.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 42.8490916667+= (1197.0-1166.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 51.7857583333+= (1407.0-1197.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 51.7857583333+= (1407.0-1407.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 87.5800916667+= (2283.0-1407.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 87.5800916667+= (2283.0-2283.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 109.955375+= (2965.0-2283.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 111.262930556+= (2997.0-2965.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 120.667708333+= (3218.0-2997.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 120.667708333+= (3218.0-3218.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 136.276652778+= (3600.0-3218.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 136.276652778+= (3600.0-3600.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: At hour 0: 136.276652778 Wh, and total is 136.276652778 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: To next hour l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1]], q:['base', 'i-3E704225']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-49F207B6, subl [2391, 'i-49F207B6', 139.91, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-310005BF, subl [3212, 'i-310005BF', 153.2, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-3CD1084F, subl [3412, 'i-3CD1084F', 153.2, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-3FC3072C, subl [612.0, 'i-3FC3072C', 157.08, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-44760829, subl [1812.0, 'i-44760829', 161.58, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-47CB0883, subl [2812.0, 'i-47CB0883', 166.61, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-3E704225, subl [2965.0, 'i-3E704225', 172.52, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.328083333333+= (10-0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 8.61841666667+= (200-10)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 8.61841666667+= (200-200)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 42.509425+= (1233-200)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 48.6887833333+= (1392-1233)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 48.6887833333+= (1392-1392)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 81.4643083333+= (2391-1392)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 105.093552778+= (2999-2391)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 113.796969444+= (3212-2999)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 114.988525+= (3240-3212)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 114.988525+= (3240-3240)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 122.016636111+= (3412-3240)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 2.86108055556+= (612.0-3412)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 55.2210805556+= (1812.0-612.0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 100.104413889+= (2812.0-1812.0)/3600.0 * 161.58
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 107.185338889+= (2965.0-2812.0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-2965.0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 161.58
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 161.58
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 137.61595+= (3600.0-3600.0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: At hour 0: 137.61595 Wh, and total is 137.61595 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: To next hour l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52]], q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-3E704225']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0 Remaining active i-DE9842F4, subl [1, 'i-DE9842F4', 139.91, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0 Remaining active i-47CB0883, subl [2812.0, 'i-47CB0883', 147.1, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0 Remaining active i-59673D29, subl [2977.0, 'i-59673D29', 153.2, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 0.0328083333333+= (1-0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 109.2792+= (2812.0-1)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 116.021283333+= (2977.0-2812.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 142.533394444+= (3600.0-2977.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 142.533394444+= (3600.0-3600.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 142.533394444+= (3600.0-3600.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 142.533394444+= (3600.0-3600.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 142.533394444+= (3600.0-3600.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 142.533394444+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: At hour 0: 142.533394444 Wh, and total is 142.533394444 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: To next hour l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2]], q:['base', 'i-DE9842F4', 'i-47CB0883', 'i-59673D29']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4 Remaining active i-74F842C4, subl [3305, 'i-74F842C4', 172.52, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 0.0+= (0-0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 7.1995+= (165-0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 28.3844333333+= (637-165)/3600.0 * 161.58
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 28.3844333333+= (637-637)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 34.7549+= (783-637)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 67.4752527778+= (1490-783)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 67.4752527778+= (1490-1490)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 132.663452778+= (2984-1490)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 142.391663889+= (3187-2984)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 142.391663889+= (3187-3187)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 147.540397222+= (3305-3187)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 12.8789527778+= (495.0-3305)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 12.8789527778+= (495.0-495.0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 148.360452778+= (3600.0-495.0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 148.360452778+= (3600.0-3600.0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: At hour 0: 148.360452778 Wh, and total is 148.360452778 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: To next hour l:[[0, 'base', 118.11], [0, 'i-74F842C4', 172.52]], q:['base', 'i-74F842C4']
+INFO    | T_gvt   | Chave   | gvt      ] --> GVT 2hs (7200s) has 564.78645 Wh from total 564.78645 Wh
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-52AF08F8-regular (vcpu:1) is NODE0 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-52AF08F8 t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-52AF08F8 in NODE0 regular AZ2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 9
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-52AF08F8) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-3E704225', 'i-52AF08F8']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 7201 from START sec is 175.2 WH
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ3   | EnergyMonitor| dealloc  ] --> 
+em_AZ3_NODE0: (Dealloc i-59673D29) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<']]
+Q:['base', 'i-DE9842F4', 'i-47CB0883']
+INFO    | T_AZ3   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-59673D29 NODE0 from AZ3 None typ: regular
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 7234 from DEFAULT sec is 147.1 WH
+INFO    | T_AZ1   | Physical| set_host_off ] --> NEW state in AZ1: NODE0 turned on? False
+ERROR   | T_AZ1   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-3E704225) l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [423.0, 'i-3E704225', 118.11, '--'], [423.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3E704225 NODE0 from AZ1 lc0_AZ1_i-3E704225 typ: critical
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 7655 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 7
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-3E704225) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-52AF08F8']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3E704225 NODE0 from AZ2 lc0_AZ1_i-3E704225 typ: replica
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 7664 from replica sec is 168.99 WH
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-53214187-regular (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-53214187 t:regular, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-53214187 in NODE0 regular AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-53214187) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++'], [3318.0, 'i-7EBF44E7', 118.11, '--'], [3318.0, 'base', 118.11, '<<'], [741.0, 'i-53214187', 147.1, '++']]
+Q:['base', 'i-53214187']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 7944 from START sec is 147.1 WH
+INFO    | T_AZ6   | Chave   | best_host ] --> Best host for i-DD84430B-critical (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ6   | Chave   | require_replica ] --> i-DD84430B-critical require replication! AZ6=?AZ6
+INFO    | T_AZ6   | Chave   | replicate_vm ] --> Pool lc1_AZ6_i-DD84430B created for replication
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ4 has 8.33333333333% hosts actives
+DEBUG   | T_AZ6   | Virtual | set_host_id ] --> Host id NODE0 defined for i-DD84430B t:critical, az:AZ6
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ5 has 3.22580645161% hosts actives
+INFO    | T_AZ6   | Chave   | place    ] --> Allocating i-DD84430B in NODE0 critical AZ6
+INFO    | T_AZ6   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+INFO    | T_lc1   | Chave   | choose_az_for_vm_replica ] --> VM i-DD84430B (from AZ6) will be replicated for AZ4
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ6   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-DD84430B) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++'], [1685.0, 'i-38CA4055', 118.11, '--'], [1685.0, 'base', 118.11, '<<'], [2884.0, 'i-0D943F1D', 147.1, '++'], [3321.0, 'i-0D943F1D', 118.11, '--'], [3321.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++']]
+Q:['base', 'i-DD84430B']
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 8294 from START sec is 147.1 WH
+INFO    | T_lc1   | Chave   | best_host ] --> Best host for i-DD84430B-replica (vcpu:2) is NODE0 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-DD84430B t:replica, az:AZ6
+INFO    | T_lc1   | Chave   | place    ] --> Allocating i-DD84430B in NODE0 replica AZ4
+INFO    | T_lc1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_lc1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_lc1   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE0: (Alloc i-DD84430B) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<'], [3153, 'i-E0A63BDD', 172.52, '++'], [495.0, 'i-0B284069', 157.08, '--'], [495.0, 'i-E0A63BDD', 157.08, '<<'], [1458.0, 'i-E0A63BDD', 118.11, '--'], [1458.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++']]
+Q:['base', 'i-DD84430B']
+INFO    | T_lc1   | Chave   | region_replication ] --> Allocating REPLICA i-DD84430B on AZ4
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-367C4239-regular (vcpu:2) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-367C4239 t:regular, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-367C4239 in NODE0 regular AZ1
+INFO    | T_AZ1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-367C4239) l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [423.0, 'i-3E704225', 118.11, '--'], [423.0, 'base', 118.11, '<<'], [1165.0, 'i-367C4239', 147.1, '++']]
+Q:['base', 'i-367C4239']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 8367 from START sec is 147.1 WH
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-BED34065-critical (vcpu:1) is NODE0 (cpu:22.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ1   | Chave   | require_replica ] --> i-BED34065-critical require replication! AZ1=?AZ1
+INFO    | T_AZ1   | Chave   | replicate_vm ] --> Pool lc0_AZ1_i-BED34065 created for replication
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-BED34065 t:critical, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-BED34065 in NODE0 critical AZ1
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ2 has 14.2857142857% hosts actives
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-BED34065) l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [423.0, 'i-3E704225', 118.11, '--'], [423.0, 'base', 118.11, '<<'], [1165.0, 'i-367C4239', 147.1, '++'], [1198.0, 'i-BED34065', 153.2, '++']]
+Q:['base', 'i-367C4239', 'i-BED34065']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 8405 from START sec is 153.2 WH
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ3 has 14.2857142857% hosts actives
+INFO    | T_lc0   | Chave   | choose_az_for_vm_replica ] --> VM i-BED34065 (from AZ1) will be replicated for AZ2
+INFO    | T_lc0   | Chave   | best_host ] --> Best host for i-BED34065-replica (vcpu:1) is NODE0 (cpu:5.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc0   | Virtual | set_host_id ] --> Host id NODE0 defined for i-BED34065 t:replica, az:AZ1
+INFO    | T_lc0   | Chave   | place    ] --> Allocating i-BED34065 in NODE0 replica AZ2
+DEBUG   | T_lc0   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_lc0   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-BED34065) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-52AF08F8', 'i-BED34065']
+INFO    | T_lc0   | Chave   | region_replication ] --> Allocating REPLICA i-BED34065 on AZ2
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-53214187) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++'], [3318.0, 'i-7EBF44E7', 118.11, '--'], [3318.0, 'base', 118.11, '<<'], [741.0, 'i-53214187', 147.1, '++'], [1386.0, 'i-53214187', 118.11, '--'], [1386.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-53214187 NODE0 from AZ5 None typ: regular
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 8734 from DEFAULT sec is 0 WH
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ3   | EnergyMonitor| dealloc  ] --> 
+em_AZ3_NODE0: (Dealloc i-DE9842F4) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<']]
+Q:['base', 'i-47CB0883']
+INFO    | T_AZ3   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-DE9842F4 NODE0 from AZ3 None typ: regular
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 8744 from DEFAULT sec is 139.91 WH
+INFO    | T_AZ3   | Chave   | best_host ] --> Best host for i-1DCF40C2-regular (vcpu:1) is NODE0 (cpu:7.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ3   | Virtual | set_host_id ] --> Host id NODE0 defined for i-1DCF40C2 t:regular, az:AZ3
+INFO    | T_AZ3   | Chave   | place    ] --> Allocating i-1DCF40C2 in NODE0 regular AZ3
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+INFO    | T_AZ6   | Physical| set_host_off ] --> NEW state in AZ6: NODE0 turned on? False
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-BED34065) l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [423.0, 'i-3E704225', 118.11, '--'], [423.0, 'base', 118.11, '<<'], [1165.0, 'i-367C4239', 147.1, '++'], [1198.0, 'i-BED34065', 153.2, '++'], [1451.0, 'i-BED34065', 147.1, '--'], [1451.0, 'i-367C4239', 147.1, '<<']]
+Q:['base', 'i-367C4239']
+ERROR   | T_AZ6   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ3   | EnergyMonitor| alloc    ] --> 
+em_AZ3_NODE0: (Alloc i-1DCF40C2) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++']]
+Q:['base', 'i-47CB0883', 'i-1DCF40C2']
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 8747 from START sec is 147.1 WH
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-BED34065 NODE0 from AZ1 lc0_AZ1_i-BED34065 typ: critical
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-DD84430B) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++'], [1685.0, 'i-38CA4055', 118.11, '--'], [1685.0, 'base', 118.11, '<<'], [2884.0, 'i-0D943F1D', 147.1, '++'], [3321.0, 'i-0D943F1D', 118.11, '--'], [3321.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++'], [1504.0, 'i-DD84430B', 118.11, '--'], [1504.0, 'base', 118.11, '<<']]
+Q:['base']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 8760 from DEFAULT sec is 147.1 WH
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-DD84430B NODE0 from AZ6 lc1_AZ6_i-DD84430B typ: critical
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 7
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 8765 from DEFAULT sec is 0 WH
+INFO    | T_AZ6   | Physical| set_host_off ] --> NEW state in AZ4: NODE0 turned on? False
+ERROR   | T_AZ6   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE0: (Dealloc i-DD84430B) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<'], [3153, 'i-E0A63BDD', 172.52, '++'], [495.0, 'i-0B284069', 157.08, '--'], [495.0, 'i-E0A63BDD', 157.08, '<<'], [1458.0, 'i-E0A63BDD', 118.11, '--'], [1458.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++'], [1504.0, 'i-DD84430B', 118.11, '--'], [1504.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-DD84430B NODE0 from AZ4 lc1_AZ6_i-DD84430B typ: replica
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 8781 from replica sec is 157.08 WH
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-BED34065) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-52AF08F8']
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-BED34065 NODE0 from AZ2 lc0_AZ1_i-BED34065 typ: replica
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 8785 from replica sec is 168.99 WH
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-CA7A42D9-regular (vcpu:4) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-CA7A42D9 t:regular, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-CA7A42D9 in NODE0 regular AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-CA7A42D9) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++'], [3318.0, 'i-7EBF44E7', 118.11, '--'], [3318.0, 'base', 118.11, '<<'], [741.0, 'i-53214187', 147.1, '++'], [1386.0, 'i-53214187', 118.11, '--'], [1386.0, 'base', 118.11, '<<'], [1631.0, 'i-CA7A42D9', 157.08, '++']]
+Q:['base', 'i-CA7A42D9']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 8836 from START sec is 157.08 WH
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-55E109F1-regular (vcpu:1) is NODE0 (cpu:5.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-55E109F1 t:regular, az:AZ2
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-55E109F1 in NODE0 regular AZ2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-55E109F1) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-52AF08F8', 'i-55E109F1']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 8971 from START sec is 172.52 WH
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ3   | EnergyMonitor| dealloc  ] --> 
+em_AZ3_NODE0: (Dealloc i-1DCF40C2) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++'], [1903.0, 'i-1DCF40C2', 139.91, '--'], [1903.0, 'i-47CB0883', 139.91, '<<']]
+Q:['base', 'i-47CB0883']
+INFO    | T_AZ3   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-1DCF40C2 NODE0 from AZ3 None typ: regular
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 9127 from DEFAULT sec is 139.91 WH
+INFO    | T_AZ1   | Physical| set_host_off ] --> NEW state in AZ1: NODE0 turned on? False
+ERROR   | T_AZ1   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+INFO    | T_AZ3   | Chave   | best_host ] --> Best host for i-3C754083-regular (vcpu:1) is NODE0 (cpu:7.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ3   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3C754083 t:regular, az:AZ3
+INFO    | T_AZ3   | Chave   | place    ] --> Allocating i-3C754083 in NODE0 regular AZ3
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ3   | EnergyMonitor| alloc    ] --> 
+em_AZ3_NODE0: (Alloc i-3C754083) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++'], [1903.0, 'i-1DCF40C2', 139.91, '--'], [1903.0, 'i-47CB0883', 139.91, '<<'], [2047.0, 'i-3C754083', 147.1, '++']]
+Q:['base', 'i-47CB0883', 'i-3C754083']
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 9582 from START sec is 147.1 WH
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-367C4239) l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [423.0, 'i-3E704225', 118.11, '--'], [423.0, 'base', 118.11, '<<'], [1165.0, 'i-367C4239', 147.1, '++'], [1198.0, 'i-BED34065', 153.2, '++'], [1451.0, 'i-BED34065', 147.1, '--'], [1451.0, 'i-367C4239', 147.1, '<<'], [2223.0, 'i-367C4239', 118.11, '--'], [2223.0, 'base', 118.11, '<<']]
+Q:['base']
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-CA7A42D9) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++'], [3318.0, 'i-7EBF44E7', 118.11, '--'], [3318.0, 'base', 118.11, '<<'], [741.0, 'i-53214187', 147.1, '++'], [1386.0, 'i-53214187', 118.11, '--'], [1386.0, 'base', 118.11, '<<'], [1631.0, 'i-CA7A42D9', 157.08, '++'], [2166.0, 'i-CA7A42D9', 118.11, '--'], [2166.0, 'base', 118.11, '<<']]
+Q:['base']
+DEBUG   | T_AZ3   | EnergyMonitor| dealloc  ] --> 
+em_AZ3_NODE0: (Dealloc i-3C754083) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++'], [1903.0, 'i-1DCF40C2', 139.91, '--'], [1903.0, 'i-47CB0883', 139.91, '<<'], [2047.0, 'i-3C754083', 147.1, '++'], [2473.0, 'i-3C754083', 139.91, '--'], [2473.0, 'i-47CB0883', 139.91, '<<']]
+Q:['base', 'i-47CB0883']
+INFO    | T_AZ2   | Chave   | best_host ] --> Best host for i-4DC408FF-critical (vcpu:1) is NODE0 (cpu:4.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-CA7A42D9 NODE0 from AZ5 None typ: regular
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-367C4239 NODE0 from AZ1 None typ: regular
+INFO    | T_AZ2   | Chave   | require_replica ] --> i-4DC408FF-critical require replication! AZ2=?AZ2
+INFO    | T_AZ2   | Chave   | replicate_vm ] --> Pool lc0_AZ2_i-4DC408FF created for replication
+DEBUG   | T_AZ2   | Virtual | set_host_id ] --> Host id NODE0 defined for i-4DC408FF t:critical, az:AZ2
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 9705 from DEFAULT sec is 0 WH
+INFO    | T_AZ2   | Chave   | place    ] --> Allocating i-4DC408FF in NODE0 critical AZ2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 9
+DEBUG   | T_AZ2   | EnergyMonitor| alloc    ] --> 
+em_AZ2_NODE0: (Alloc i-4DC408FF) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++'], [2112.0, 'i-4DC408FF', 175.2, '++']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-52AF08F8', 'i-55E109F1', 'i-4DC408FF']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 9705 from START sec is 175.2 WH
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 9705 from DEFAULT sec is 0 WH
+INFO    | T_AZ3   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3C754083 NODE0 from AZ3 None typ: regular
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 9706 from DEFAULT sec is 139.91 WH
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ1 has 0.0% hosts actives
+INFO    | T_lc0   | DistInfra| get_hosts_density ] --> AZ AZ3 has 14.2857142857% hosts actives
+INFO    | T_lc0   | Chave   | choose_az_for_vm_replica ] --> VM i-4DC408FF (from AZ2) will be replicated for AZ3
+INFO    | T_lc0   | Chave   | best_host ] --> Best host for i-4DC408FF-replica (vcpu:1) is NODE0 (cpu:7.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc0   | Virtual | set_host_id ] --> Host id NODE0 defined for i-4DC408FF t:replica, az:AZ2
+INFO    | T_lc0   | Chave   | place    ] --> Allocating i-4DC408FF in NODE0 replica AZ3
+DEBUG   | T_lc0   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_lc0   | EnergyMonitor| alloc    ] --> 
+em_AZ3_NODE0: (Alloc i-4DC408FF) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++'], [1903.0, 'i-1DCF40C2', 139.91, '--'], [1903.0, 'i-47CB0883', 139.91, '<<'], [2047.0, 'i-3C754083', 147.1, '++'], [2473.0, 'i-3C754083', 139.91, '--'], [2473.0, 'i-47CB0883', 139.91, '<<'], [2112.0, 'i-4DC408FF', 147.1, '++']]
+Q:['base', 'i-47CB0883', 'i-4DC408FF']
+INFO    | T_lc0   | Chave   | region_replication ] --> Allocating REPLICA i-4DC408FF on AZ3
+INFO    | T_AZ5   | Chave   | best_host ] --> Best host for i-3F7B4345-critical (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_AZ5   | Chave   | require_replica ] --> i-3F7B4345-critical require replication! AZ5=?AZ5
+INFO    | T_AZ5   | Chave   | replicate_vm ] --> Pool lc1_AZ5_i-3F7B4345 created for replication
+DEBUG   | T_AZ5   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3F7B4345 t:critical, az:AZ5
+INFO    | T_AZ5   | Chave   | place    ] --> Allocating i-3F7B4345 in NODE0 critical AZ5
+INFO    | T_AZ5   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ5   | EnergyMonitor| alloc    ] --> 
+em_AZ5_NODE0: (Alloc i-3F7B4345) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++'], [3318.0, 'i-7EBF44E7', 118.11, '--'], [3318.0, 'base', 118.11, '<<'], [741.0, 'i-53214187', 147.1, '++'], [1386.0, 'i-53214187', 118.11, '--'], [1386.0, 'base', 118.11, '<<'], [1631.0, 'i-CA7A42D9', 157.08, '++'], [2166.0, 'i-CA7A42D9', 118.11, '--'], [2166.0, 'base', 118.11, '<<'], [2542.0, 'i-3F7B4345', 147.1, '++']]
+Q:['base', 'i-3F7B4345']
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 10337 from START sec is 147.1 WH
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ4 has 8.33333333333% hosts actives
+INFO    | T_AZ1   | Chave   | best_host ] --> Best host for i-AB963FAD-regular (vcpu:1) is NODE0 (cpu:24.0). ovbCount:0, tax:0 hasOvb? False.
+INFO    | T_lc1   | DistInfra| get_hosts_density ] --> AZ AZ6 has 0.0% hosts actives
+DEBUG   | T_AZ1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-AB963FAD t:regular, az:AZ1
+INFO    | T_AZ1   | Chave   | place    ] --> Allocating i-AB963FAD in NODE0 regular AZ1
+INFO    | T_AZ1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+INFO    | T_lc1   | Chave   | choose_az_for_vm_replica ] --> VM i-3F7B4345 (from AZ5) will be replicated for AZ4
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ1   | EnergyMonitor| alloc    ] --> 
+em_AZ1_NODE0: (Alloc i-AB963FAD) l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [423.0, 'i-3E704225', 118.11, '--'], [423.0, 'base', 118.11, '<<'], [1165.0, 'i-367C4239', 147.1, '++'], [1198.0, 'i-BED34065', 153.2, '++'], [1451.0, 'i-BED34065', 147.1, '--'], [1451.0, 'i-367C4239', 147.1, '<<'], [2223.0, 'i-367C4239', 118.11, '--'], [2223.0, 'base', 118.11, '<<'], [2996.0, 'i-AB963FAD', 139.91, '++']]
+Q:['base', 'i-AB963FAD']
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 10337 from START sec is 139.91 WH
+INFO    | T_lc1   | Chave   | best_host ] --> Best host for i-3F7B4345-replica (vcpu:2) is NODE0 (cpu:8.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_lc1   | Virtual | set_host_id ] --> Host id NODE0 defined for i-3F7B4345 t:replica, az:AZ5
+INFO    | T_lc1   | Chave   | place    ] --> Allocating i-3F7B4345 in NODE0 replica AZ4
+INFO    | T_lc1   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_lc1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_lc1   | EnergyMonitor| alloc    ] --> 
+em_AZ4_NODE0: (Alloc i-3F7B4345) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<'], [3153, 'i-E0A63BDD', 172.52, '++'], [495.0, 'i-0B284069', 157.08, '--'], [495.0, 'i-E0A63BDD', 157.08, '<<'], [1458.0, 'i-E0A63BDD', 118.11, '--'], [1458.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++'], [1504.0, 'i-DD84430B', 118.11, '--'], [1504.0, 'base', 118.11, '<<'], [2542.0, 'i-3F7B4345', 147.1, '++']]
+Q:['base', 'i-3F7B4345']
+INFO    | T_lc1   | Chave   | region_replication ] --> Allocating REPLICA i-3F7B4345 on AZ4
+INFO    | T_AZ3   | Chave   | best_host ] --> Best host for i-7CA34122-regular (vcpu:1) is NODE0 (cpu:6.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ3   | Virtual | set_host_id ] --> Host id NODE0 defined for i-7CA34122 t:regular, az:AZ3
+INFO    | T_AZ3   | Chave   | place    ] --> Allocating i-7CA34122 in NODE0 regular AZ3
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_AZ3   | EnergyMonitor| alloc    ] --> 
+em_AZ3_NODE0: (Alloc i-7CA34122) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++'], [1903.0, 'i-1DCF40C2', 139.91, '--'], [1903.0, 'i-47CB0883', 139.91, '<<'], [2047.0, 'i-3C754083', 147.1, '++'], [2473.0, 'i-3C754083', 139.91, '--'], [2473.0, 'i-47CB0883', 139.91, '<<'], [2112.0, 'i-4DC408FF', 147.1, '++'], [2635.0, 'i-7CA34122', 153.2, '++']]
+Q:['base', 'i-47CB0883', 'i-4DC408FF', 'i-7CA34122']
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 10337 from START sec is 153.2 WH
+INFO    | T_AZ6   | Chave   | best_host ] --> Best host for i-9343446A-regular (vcpu:2) is NODE0 (cpu:32.0). ovbCount:0, tax:0 hasOvb? False.
+DEBUG   | T_AZ6   | Virtual | set_host_id ] --> Host id NODE0 defined for i-9343446A t:regular, az:AZ6
+INFO    | T_AZ6   | Chave   | place    ] --> Allocating i-9343446A in NODE0 regular AZ6
+INFO    | T_AZ6   | Physical| force_set_host_on ] --> NEW state: NODE0 turned on? True
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ6   | EnergyMonitor| alloc    ] --> 
+em_AZ6_NODE0: (Alloc i-9343446A) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++'], [1685.0, 'i-38CA4055', 118.11, '--'], [1685.0, 'base', 118.11, '<<'], [2884.0, 'i-0D943F1D', 147.1, '++'], [3321.0, 'i-0D943F1D', 118.11, '--'], [3321.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++'], [1504.0, 'i-DD84430B', 118.11, '--'], [1504.0, 'base', 118.11, '<<'], [2885.0, 'i-9343446A', 147.1, '++']]
+Q:['base', 'i-9343446A']
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 10358 from START sec is 147.1 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0 Remaining active i-AB963FAD, subl [2996.0, 'i-AB963FAD', 139.91, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 0.0+= (0-0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 17.28425+= (423.0-0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 17.28425+= (423.0-423.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 41.6280333333+= (1165.0-423.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 42.97645+= (1198.0-1165.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 53.7430055556+= (1451.0-1198.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 53.7430055556+= (1451.0-1451.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 85.2877833333+= (2223.0-1451.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 85.2877833333+= (2223.0-2223.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 110.648625+= (2996.0-2223.0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 134.122413889+= (3600.0-2996.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: 134.122413889+= (3600.0-3600.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: At hour 1: 134.122413889 Wh, and total is 270.399066667 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ1_NODE0: To next hour l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [0, 'i-AB963FAD', 139.91]], q:['base', 'i-3E704225', 'i-AB963FAD']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-49F207B6, subl [0, 'i-49F207B6', 139.91]:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-310005BF, subl [0, 'i-310005BF', 153.2]:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-3CD1084F, subl [0, 'i-3CD1084F', 153.2]:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-3FC3072C, subl [0, 'i-3FC3072C', 157.08]:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-44760829, subl [0, 'i-44760829', 161.58]:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-47CB0883, subl [0, 'i-47CB0883', 166.61]:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-52AF08F8, subl [3529.0, 'i-52AF08F8', 175.2, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-55E109F1, subl [1764.0, 'i-55E109F1', 172.52, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0 Remaining active i-4DC408FF, subl [2112.0, 'i-4DC408FF', 175.2, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.0+= (0-0)/3600.0 * 118.11
+INFO    | T_AZ1   | Physical| set_host_off ] --> NEW state in AZ1: NODE0 turned on? False
+DEBUG   | T_AZ3   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.0+= (0-0)/3600.0 * 139.91
+ERROR   | T_AZ1   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ3   | EnergyMonitor| dealloc  ] --> 
+em_AZ3_NODE0: (Dealloc i-7CA34122) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++'], [1903.0, 'i-1DCF40C2', 139.91, '--'], [1903.0, 'i-47CB0883', 139.91, '<<'], [2047.0, 'i-3C754083', 147.1, '++'], [2473.0, 'i-3C754083', 139.91, '--'], [2473.0, 'i-47CB0883', 139.91, '<<'], [2112.0, 'i-4DC408FF', 147.1, '++'], [2635.0, 'i-7CA34122', 153.2, '++'], [3199.0, 'i-7CA34122', 147.1, '--'], [3199.0, 'i-4DC408FF', 147.1, '<<']]
+Q:['base', 'i-47CB0883', 'i-4DC408FF']
+DEBUG   | T_AZ1   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ1   | EnergyMonitor| dealloc  ] --> 
+em_AZ1_NODE0: (Dealloc i-AB963FAD) l:[[0, 'base', 118.11], [0, 'i-3E704225', 147.1], [0, 'i-AB963FAD', 139.91], [3227.0, 'i-AB963FAD', 118.11, '--'], [3227.0, 'i-3E704225', 118.11, '<<']]
+Q:['base', 'i-3E704225']
+INFO    | T_AZ6   | Physical| set_host_off ] --> NEW state in AZ6: NODE0 turned on? False
+INFO    | T_AZ3   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-7CA34122 NODE0 from AZ3 None typ: regular
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.0+= (0-0)/3600.0 * 153.2
+INFO    | T_AZ1   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-AB963FAD NODE0 from AZ1 None typ: regular
+DEBUG   | T_AZ1   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 0 WH
+ERROR   | T_AZ6   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ3   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 147.1 WH
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ5: NODE0 turned on? False
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.0+= (0-0)/3600.0 * 153.2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 8
+ERROR   | T_AZ2   | EnergyMonitor| dealloc  ] --> em_AZ2_NODE0 ValueError on: ['base']
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ5_NODE0: (Dealloc i-3F7B4345) l:[[0, 'base', 118.11, '++'], [783, 'i-ADC2465C', 147.1, '++'], [1490, 'i-ADC2465C', 118.11, '--'], [1490, 'base', 118.11, '<<'], [1632, 'i-AEA14226', 157.08, '++'], [2263, 'i-AEA14226', 118.11, '--'], [2263, 'base', 118.11, '<<'], [2580, 'i-BE563F1A', 147.1, '++'], [3262, 'i-BE563F1A', 118.11, '--'], [3262, 'base', 118.11, '<<'], [753.0, 'i-D1EA44ED', 147.1, '++'], [1554.0, 'i-D1EA44ED', 118.11, '--'], [1554.0, 'base', 118.11, '<<'], [2578.0, 'i-7EBF44E7', 147.1, '++'], [3318.0, 'i-7EBF44E7', 118.11, '--'], [3318.0, 'base', 118.11, '<<'], [741.0, 'i-53214187', 147.1, '++'], [1386.0, 'i-53214187', 118.11, '--'], [1386.0, 'base', 118.11, '<<'], [1631.0, 'i-CA7A42D9', 157.08, '++'], [2166.0, 'i-CA7A42D9', 118.11, '--'], [2166.0, 'base', 118.11, '<<'], [2542.0, 'i-3F7B4345', 147.1, '++'], [3225.0, 'i-3F7B4345', 118.11, '--'], [3225.0, 'base', 118.11, '<<']]
+Q:['base']
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-310005BF) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++'], [2112.0, 'i-4DC408FF', 175.2, '++'], [3600.0, 'i-49F207B6', 139.91, '--'], [3600.0, 'i-4DC408FF', 139.91, '<<'], [3600.0, 'i-310005BF', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3CD1084F', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3FC3072C', 157.08, '--'], [3600.0, 'i-4DC408FF', 157.08, '<<'], [3600.0, 'i-44760829', 161.58, '--'], [3600.0, 'i-4DC408FF', 161.58, '<<'], [3600.0, 'i-47CB0883', 166.61, '--'], [3600.0, 'i-4DC408FF', 166.61, '<<'], [3600.0, 'i-52AF08F8', 175.2, '--'], [3600.0, 'i-4DC408FF', 175.2, '<<'], [3600.0, 'i-55E109F1', 172.52, '--'], [3600.0, 'i-4DC408FF', 172.52, '<<'], [3600.0, 'i-4DC408FF', 175.2, '--'], [3600.0, 'base', 175.2, '<<'], [3212.0, 'i-310005BF', 172.52, '--'], [3212.0, '', 172.52, '<<']]
+Q:['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.0+= (0-0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.0+= (0-0)/3600.0 * 161.58
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3F7B4345 NODE0 from AZ5 lc1_AZ5_i-3F7B4345 typ: critical
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-310005BF NODE0 from AZ2 None typ: regular
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 0.0+= (0-0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 169.117522222+= (3529.0-0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 17.9588555556+= (423.0-3529.0)/3600.0 * 175.2
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 172.52 WH
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 7
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 0 WH
+INFO    | T_AZ5   | Physical| set_host_off ] --> NEW state in AZ4: NODE0 turned on? False
+ERROR   | T_AZ2   | EnergyMonitor| dealloc  ] --> em_AZ2_NODE0 ValueError on: ['base']
+DEBUG   | T_AZ6   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ6   | EnergyMonitor| dealloc  ] --> 
+em_AZ6_NODE0: (Dealloc i-9343446A) l:[[0, 'base', 118.11, '++'], [0, 'i-261C3FE2', 157.08, '++'], [0, 'i-ABEE41D5', 172.52, '++'], [1091, 'i-41C93F29', 178.66, '++'], [1591, 'i-41C93F29', 172.52, '--'], [1591, 'i-ABEE41D5', 172.52, '<<'], [2894, 'i-8BAF4413', 178.66, '++'], [3393, 'i-8BAF4413', 172.52, '--'], [3393, 'i-ABEE41D5', 172.52, '<<'], [143.0, 'i-F5D44252', 184.79, '++'], [494.0, 'i-ABEE41D5', 172.52, '--'], [494.0, 'i-F5D44252', 172.52, '<<'], [503.0, 'i-261C3FE2', 157.08, '--'], [503.0, 'i-F5D44252', 157.08, '<<'], [862.0, 'i-F5D44252', 118.11, '--'], [862.0, 'base', 118.11, '<<'], [1090.0, 'i-38CA4055', 147.1, '++'], [1685.0, 'i-38CA4055', 118.11, '--'], [1685.0, 'base', 118.11, '<<'], [2884.0, 'i-0D943F1D', 147.1, '++'], [3321.0, 'i-0D943F1D', 118.11, '--'], [3321.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++'], [1504.0, 'i-DD84430B', 118.11, '--'], [1504.0, 'base', 118.11, '<<'], [2885.0, 'i-9343446A', 147.1, '++'], [3341.0, 'i-9343446A', 118.11, '--'], [3341.0, 'base', 118.11, '<<']]
+Q:['base']
+INFO    | T_AZ6   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-9343446A NODE0 from AZ6 None typ: regular
+DEBUG   | T_AZ6   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 0 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 17.9588555556+= (423.0-423.0)/3600.0 * 168.99
+ERROR   | T_AZ5   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-3CD1084F) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++'], [2112.0, 'i-4DC408FF', 175.2, '++'], [3600.0, 'i-49F207B6', 139.91, '--'], [3600.0, 'i-4DC408FF', 139.91, '<<'], [3600.0, 'i-310005BF', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3CD1084F', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3FC3072C', 157.08, '--'], [3600.0, 'i-4DC408FF', 157.08, '<<'], [3600.0, 'i-44760829', 161.58, '--'], [3600.0, 'i-4DC408FF', 161.58, '<<'], [3600.0, 'i-47CB0883', 166.61, '--'], [3600.0, 'i-4DC408FF', 166.61, '<<'], [3600.0, 'i-52AF08F8', 175.2, '--'], [3600.0, 'i-4DC408FF', 175.2, '<<'], [3600.0, 'i-55E109F1', 172.52, '--'], [3600.0, 'i-4DC408FF', 172.52, '<<'], [3600.0, 'i-4DC408FF', 175.2, '--'], [3600.0, 'base', 175.2, '<<'], [3212.0, 'i-310005BF', 172.52, '--'], [3212.0, '', 172.52, '<<'], [3212.0, 'i-3CD1084F', 168.99, '--'], [3212.0, '', 168.99, '<<']]
+Q:['base']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3CD1084F NODE0 from AZ2 None typ: regular
+DEBUG   | T_AZ5   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 54.3386472222+= (1198.0-423.0)/3600.0 * 168.99
+DEBUG   | T_AZ5   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE0: (Dealloc i-3F7B4345) l:[[0, 'base', 118.11, '++'], [0, 'i-0B284069', 157.08, '++'], [0, 'i-153C3F8D', 172.52, '++'], [3110, 'i-153C3F8D', 157.08, '--'], [3110, 'i-0B284069', 157.08, '<<'], [3153, 'i-E0A63BDD', 172.52, '++'], [495.0, 'i-0B284069', 157.08, '--'], [495.0, 'i-E0A63BDD', 157.08, '<<'], [1458.0, 'i-E0A63BDD', 118.11, '--'], [1458.0, 'base', 118.11, '<<'], [1093.0, 'i-DD84430B', 147.1, '++'], [1504.0, 'i-DD84430B', 118.11, '--'], [1504.0, 'base', 118.11, '<<'], [2542.0, 'i-3F7B4345', 147.1, '++'], [3225.0, 'i-3F7B4345', 118.11, '--'], [3225.0, 'base', 118.11, '<<']]
+Q:['base']
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 168.99 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 66.4629694444+= (1451.0-1198.0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 66.4629694444+= (1451.0-1451.0)/3600.0 * 168.99
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 6
+INFO    | T_AZ5   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3F7B4345 NODE0 from AZ4 lc1_AZ5_i-3F7B4345 typ: replica
+DEBUG   | T_AZ5   | Chave   | measure_energy ] --> Energy at 10800 from replica sec is 157.08 WH
+ERROR   | T_AZ2   | EnergyMonitor| dealloc  ] --> em_AZ2_NODE0 ValueError on: ['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 81.1557111111+= (1764.0-1451.0)/3600.0 * 168.99
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-3FC3072C) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++'], [2112.0, 'i-4DC408FF', 175.2, '++'], [3600.0, 'i-49F207B6', 139.91, '--'], [3600.0, 'i-4DC408FF', 139.91, '<<'], [3600.0, 'i-310005BF', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3CD1084F', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3FC3072C', 157.08, '--'], [3600.0, 'i-4DC408FF', 157.08, '<<'], [3600.0, 'i-44760829', 161.58, '--'], [3600.0, 'i-4DC408FF', 161.58, '<<'], [3600.0, 'i-47CB0883', 166.61, '--'], [3600.0, 'i-4DC408FF', 166.61, '<<'], [3600.0, 'i-52AF08F8', 175.2, '--'], [3600.0, 'i-4DC408FF', 175.2, '<<'], [3600.0, 'i-55E109F1', 172.52, '--'], [3600.0, 'i-4DC408FF', 172.52, '<<'], [3600.0, 'i-4DC408FF', 175.2, '--'], [3600.0, 'base', 175.2, '<<'], [3212.0, 'i-310005BF', 172.52, '--'], [3212.0, '', 172.52, '<<'], [3212.0, 'i-3CD1084F', 168.99, '--'], [3212.0, '', 168.99, '<<'], [3312.0, 'i-3FC3072C', 166.61, '--'], [3312.0, '', 166.61, '<<']]
+Q:['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 97.8326444444+= (2112.0-1764.0)/3600.0 * 172.52
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-3FC3072C NODE0 from AZ2 None typ: regular
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-2112.0)/3600.0 * 175.2
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 166.61 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 139.91
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 5
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 139.91
+ERROR   | T_AZ2   | EnergyMonitor| dealloc  ] --> em_AZ2_NODE0 ValueError on: ['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-44760829) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++'], [2112.0, 'i-4DC408FF', 175.2, '++'], [3600.0, 'i-49F207B6', 139.91, '--'], [3600.0, 'i-4DC408FF', 139.91, '<<'], [3600.0, 'i-310005BF', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3CD1084F', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3FC3072C', 157.08, '--'], [3600.0, 'i-4DC408FF', 157.08, '<<'], [3600.0, 'i-44760829', 161.58, '--'], [3600.0, 'i-4DC408FF', 161.58, '<<'], [3600.0, 'i-47CB0883', 166.61, '--'], [3600.0, 'i-4DC408FF', 166.61, '<<'], [3600.0, 'i-52AF08F8', 175.2, '--'], [3600.0, 'i-4DC408FF', 175.2, '<<'], [3600.0, 'i-55E109F1', 172.52, '--'], [3600.0, 'i-4DC408FF', 172.52, '<<'], [3600.0, 'i-4DC408FF', 175.2, '--'], [3600.0, 'base', 175.2, '<<'], [3212.0, 'i-310005BF', 172.52, '--'], [3212.0, '', 172.52, '<<'], [3212.0, 'i-3CD1084F', 168.99, '--'], [3212.0, '', 168.99, '<<'], [3312.0, 'i-3FC3072C', 166.61, '--'], [3312.0, '', 166.61, '<<'], [3412.0, 'i-44760829', 161.58, '--'], [3412.0, '', 161.58, '<<']]
+Q:['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 153.2
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-44760829 NODE0 from AZ2 None typ: regular
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 153.2
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 161.58 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 157.08
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 4
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 157.08
+ERROR   | T_AZ2   | EnergyMonitor| dealloc  ] --> em_AZ2_NODE0 ValueError on: ['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 161.58
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-47CB0883) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++'], [2112.0, 'i-4DC408FF', 175.2, '++'], [3600.0, 'i-49F207B6', 139.91, '--'], [3600.0, 'i-4DC408FF', 139.91, '<<'], [3600.0, 'i-310005BF', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3CD1084F', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3FC3072C', 157.08, '--'], [3600.0, 'i-4DC408FF', 157.08, '<<'], [3600.0, 'i-44760829', 161.58, '--'], [3600.0, 'i-4DC408FF', 161.58, '<<'], [3600.0, 'i-47CB0883', 166.61, '--'], [3600.0, 'i-4DC408FF', 166.61, '<<'], [3600.0, 'i-52AF08F8', 175.2, '--'], [3600.0, 'i-4DC408FF', 175.2, '<<'], [3600.0, 'i-55E109F1', 172.52, '--'], [3600.0, 'i-4DC408FF', 172.52, '<<'], [3600.0, 'i-4DC408FF', 175.2, '--'], [3600.0, 'base', 175.2, '<<'], [3212.0, 'i-310005BF', 172.52, '--'], [3212.0, '', 172.52, '<<'], [3212.0, 'i-3CD1084F', 168.99, '--'], [3212.0, '', 168.99, '<<'], [3312.0, 'i-3FC3072C', 166.61, '--'], [3312.0, '', 166.61, '<<'], [3412.0, 'i-44760829', 161.58, '--'], [3412.0, '', 161.58, '<<'], [3512.0, 'i-47CB0883', 157.08, '--'], [3512.0, '', 157.08, '<<']]
+Q:['base']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-47CB0883 NODE0 from AZ2 lc0_AZ2_i-47CB0883 typ: critical
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 157.08 WH
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ3_NODE0: (Dealloc i-47CB0883) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [13.0, 'i-59673D29', 147.1, '--'], [13.0, 'i-47CB0883', 147.1, '<<'], [1360.0, 'i-DE9842F4', 139.91, '--'], [1360.0, 'i-47CB0883', 139.91, '<<'], [1426.0, 'i-1DCF40C2', 147.1, '++'], [1903.0, 'i-1DCF40C2', 139.91, '--'], [1903.0, 'i-47CB0883', 139.91, '<<'], [2047.0, 'i-3C754083', 147.1, '++'], [2473.0, 'i-3C754083', 139.91, '--'], [2473.0, 'i-47CB0883', 139.91, '<<'], [2112.0, 'i-4DC408FF', 147.1, '++'], [2635.0, 'i-7CA34122', 153.2, '++'], [3199.0, 'i-7CA34122', 147.1, '--'], [3199.0, 'i-4DC408FF', 147.1, '<<'], [3512.0, 'i-47CB0883', 139.91, '--'], [3512.0, 'i-4DC408FF', 139.91, '<<']]
+Q:['base', 'i-4DC408FF']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 161.58
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-47CB0883 NODE0 from AZ3 lc0_AZ2_i-47CB0883 typ: replica
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 175.2
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10800 from replica sec is 139.91 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 175.2
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 3
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 172.52
+ERROR   | T_AZ2   | EnergyMonitor| dealloc  ] --> em_AZ2_NODE0 ValueError on: ['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 172.52
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-49F207B6) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [3529.0, 'i-52AF08F8', 175.2, '++'], [423.0, 'i-3E704225', 168.99, '--'], [423.0, 'i-52AF08F8', 168.99, '<<'], [1198.0, 'i-BED34065', 172.52, '++'], [1451.0, 'i-BED34065', 168.99, '--'], [1451.0, 'i-52AF08F8', 168.99, '<<'], [1764.0, 'i-55E109F1', 172.52, '++'], [2112.0, 'i-4DC408FF', 175.2, '++'], [3600.0, 'i-49F207B6', 139.91, '--'], [3600.0, 'i-4DC408FF', 139.91, '<<'], [3600.0, 'i-310005BF', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3CD1084F', 153.2, '--'], [3600.0, 'i-4DC408FF', 153.2, '<<'], [3600.0, 'i-3FC3072C', 157.08, '--'], [3600.0, 'i-4DC408FF', 157.08, '<<'], [3600.0, 'i-44760829', 161.58, '--'], [3600.0, 'i-4DC408FF', 161.58, '<<'], [3600.0, 'i-47CB0883', 166.61, '--'], [3600.0, 'i-4DC408FF', 166.61, '<<'], [3600.0, 'i-52AF08F8', 175.2, '--'], [3600.0, 'i-4DC408FF', 175.2, '<<'], [3600.0, 'i-55E109F1', 172.52, '--'], [3600.0, 'i-4DC408FF', 172.52, '<<'], [3600.0, 'i-4DC408FF', 175.2, '--'], [3600.0, 'base', 175.2, '<<'], [3212.0, 'i-310005BF', 172.52, '--'], [3212.0, '', 172.52, '<<'], [3212.0, 'i-3CD1084F', 168.99, '--'], [3212.0, '', 168.99, '<<'], [3312.0, 'i-3FC3072C', 166.61, '--'], [3312.0, '', 166.61, '<<'], [3412.0, 'i-44760829', 161.58, '--'], [3412.0, '', 161.58, '<<'], [3512.0, 'i-47CB0883', 157.08, '--'], [3512.0, '', 157.08, '<<'], [3191.0, 'i-49F207B6', 153.2, '--'], [3191.0, '', 153.2, '<<']]
+Q:['base']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 170.248644444+= (3600.0-3600.0)/3600.0 * 175.2
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-49F207B6 NODE0 from AZ2 None typ: regular
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10800 from DEFAULT sec is 153.2 WH
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 151.365977778+= (3212.0-3600.0)/3600.0 * 175.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 151.365977778+= (3212.0-3212.0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 151.365977778+= (3212.0-3212.0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 151.365977778+= (3212.0-3212.0)/3600.0 * 168.99
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 156.060144444+= (3312.0-3212.0)/3600.0 * 168.99
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 156.060144444+= (3312.0-3312.0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 160.6882+= (3412.0-3312.0)/3600.0 * 166.61
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 160.6882+= (3412.0-3412.0)/3600.0 * 161.58
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 165.176533333+= (3512.0-3412.0)/3600.0 * 161.58
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 165.176533333+= (3512.0-3512.0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 151.170233333+= (3191.0-3512.0)/3600.0 * 157.08
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: 151.170233333+= (3191.0-3191.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: At hour 1: 151.170233333 Wh, and total is 288.786183333 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ2_NODE0: To next hour l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-52AF08F8', 175.2], [0, 'i-55E109F1', 172.52], [0, 'i-4DC408FF', 175.2]], q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-3E704225', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-52AF08F8', 'i-55E109F1', 'i-4DC408FF']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0 Remaining active i-4DC408FF, subl [2112.0, 'i-4DC408FF', 147.1, '++']:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 0.0+= (0-0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 0.0+= (0-0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 0.0+= (0-0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 0.553222222222+= (13.0-0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 0.553222222222+= (13.0-13.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 55.5931388889+= (1360.0-13.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 55.5931388889+= (1360.0-1360.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 58.1581555556+= (1426.0-1360.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 77.6489055556+= (1903.0-1426.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 77.6489055556+= (1903.0-1903.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 83.2453055556+= (2047.0-1903.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 100.652138889+= (2473.0-2047.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 100.652138889+= (2473.0-2473.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 86.622275+= (2112.0-2473.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 107.992636111+= (2635.0-2112.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 131.993969444+= (3199.0-2635.0)/3600.0 * 153.2
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 131.993969444+= (3199.0-3199.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 144.783497222+= (3512.0-3199.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 144.783497222+= (3512.0-3512.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 148.203519444+= (3600.0-3512.0)/3600.0 * 139.91
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: 148.203519444+= (3600.0-3600.0)/3600.0 * 147.1
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: At hour 1: 148.203519444 Wh, and total is 290.736913889 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ3_NODE0: To next hour l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [0, 'i-4DC408FF', 147.1]], q:['base', 'i-DE9842F4', 'i-47CB0883', 'i-59673D29', 'i-4DC408FF']
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4 Remaining active i-74F842C4, subl [0, 'i-74F842C4', 172.52]:
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 0.0+= (0-0)/3600.0 * 118.11
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 172.52+= (3600.0-0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: 172.52+= (3600.0-3600.0)/3600.0 * 172.52
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: At hour 1: 172.52 Wh, and total is 320.880452778 Wh
+DEBUG   | T_gvt   | EnergyMonitor| get_watt_hour ] --> em_AZ4_NODE4: To next hour l:[[0, 'base', 118.11], [0, 'i-74F842C4', 172.52], [0, 'i-74F842C4', 172.52]], q:['base', 'i-74F842C4', 'i-74F842C4']
+INFO    | T_gvt   | Chave   | gvt      ] --> GVT 3hs (10800s) has 606.016166667 Wh from total 1170.80261667 Wh
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 2
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-52AF08F8) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-52AF08F8', 175.2], [0, 'i-55E109F1', 172.52], [0, 'i-4DC408FF', 175.2], [29.0, 'i-52AF08F8', 147.1, '--'], [29.0, 'i-4DC408FF', 147.1, '<<']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-3E704225', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-55E109F1', 'i-4DC408FF']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-52AF08F8 NODE0 from AZ2 None typ: regular
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10916 from DEFAULT sec is 147.1 WH
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 1
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-55E109F1) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-52AF08F8', 175.2], [0, 'i-55E109F1', 172.52], [0, 'i-4DC408FF', 175.2], [29.0, 'i-52AF08F8', 147.1, '--'], [29.0, 'i-4DC408FF', 147.1, '<<'], [64.0, 'i-55E109F1', 139.91, '--'], [64.0, 'i-4DC408FF', 139.91, '<<']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-3E704225', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-4DC408FF']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-55E109F1 NODE0 from AZ2 None typ: regular
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10929 from DEFAULT sec is 139.91 WH
+INFO    | T_AZ2   | Physical| set_host_off ] --> NEW state in AZ2: NODE0 turned on? False
+ERROR   | T_AZ2   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ2_NODE0: (Dealloc i-4DC408FF) l:[[0, 'base', 118.11], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-3E704225', 172.52], [0, 'i-49F207B6', 139.91], [0, 'i-310005BF', 153.2], [0, 'i-3CD1084F', 153.2], [0, 'i-3FC3072C', 157.08], [0, 'i-44760829', 161.58], [0, 'i-47CB0883', 166.61], [0, 'i-52AF08F8', 175.2], [0, 'i-55E109F1', 172.52], [0, 'i-4DC408FF', 175.2], [29.0, 'i-52AF08F8', 147.1, '--'], [29.0, 'i-4DC408FF', 147.1, '<<'], [64.0, 'i-55E109F1', 139.91, '--'], [64.0, 'i-4DC408FF', 139.91, '<<'], [112.0, 'i-4DC408FF', 118.11, '--'], [112.0, 'i-47CB0883', 118.11, '<<']]
+Q:['base', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883', 'i-3E704225', 'i-49F207B6', 'i-310005BF', 'i-3CD1084F', 'i-3FC3072C', 'i-44760829', 'i-47CB0883']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-4DC408FF NODE0 from AZ2 lc0_AZ2_i-4DC408FF typ: critical
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 10959 from DEFAULT sec is 0 WH
+INFO    | T_AZ2   | Physical| set_host_off ] --> NEW state in AZ3: NODE0 turned on? False
+ERROR   | T_AZ2   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ2   | Physical| get_cpu_energy_usage ] --> USAGE in NODE0: 0
+DEBUG   | T_AZ2   | EnergyMonitor| dealloc  ] --> 
+em_AZ3_NODE0: (Dealloc i-4DC408FF) l:[[0, 'base', 118.11], [0, 'i-DE9842F4', 139.91], [0, 'i-47CB0883', 147.1], [0, 'i-59673D29', 153.2], [0, 'i-4DC408FF', 147.1], [112.0, 'i-4DC408FF', 118.11, '--'], [112.0, 'i-59673D29', 118.11, '<<']]
+Q:['base', 'i-DE9842F4', 'i-47CB0883', 'i-59673D29']
+INFO    | T_AZ2   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-4DC408FF NODE0 from AZ3 lc0_AZ2_i-4DC408FF typ: replica
+DEBUG   | T_AZ2   | Chave   | measure_energy ] --> Energy at 11063 from replica sec is 0 WH
+INFO    | T_gvt   | Chave   | gvt      ] --> End of GVT!
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_AZ1 for MainThread
+INFO    | T_AZ6   | Chave   | az_optimized_placement ] --> Exit for T_AZ6 13983 AZ6
+INFO    | T_AZ2   | Chave   | az_optimized_placement ] --> Exit for T_AZ2 13983 AZ2
+INFO    | T_AZ4   | Physical| set_host_off ] --> NEW state in AZ4: NODE4 turned on? False
+ERROR   | T_AZ4   | Physical| get_cpu_energy_usage ] --> Why this CPU is zeroooo???
+DEBUG   | T_AZ4   | Physical| get_cpu_energy_usage ] --> USAGE in NODE4: 0
+DEBUG   | T_AZ4   | EnergyMonitor| dealloc  ] --> 
+em_AZ4_NODE4: (Dealloc i-74F842C4) l:[[0, 'base', 118.11], [0, 'i-74F842C4', 172.52], [0, 'i-74F842C4', 172.52], [3182.0, 'i-74F842C4', 118.11, '--'], [3182.0, 'i-74F842C4', 118.11, '<<']]
+Q:['base', 'i-74F842C4']
+INFO    | T_AZ4   | DistInfra| deallocate_on_host ] --> Deallocated SUCESS! i-74F842C4 NODE4 from AZ4 None typ: regular
+DEBUG   | T_AZ4   | Chave   | measure_energy ] --> Energy at 13983 from DEFAULT sec is 0 WH
+INFO    | T_AZ4   | Chave   | az_optimized_placement ] --> Exit for T_AZ4 13983 AZ4
+INFO    | T_lc0   | Chave   | region_replication ] --> Exit for T_lc0 13983 lc0
+INFO    | T_AZ1   | Chave   | az_optimized_placement ] --> Exit for T_AZ1 13983 AZ1
+INFO    | T_AZ5   | Chave   | az_optimized_placement ] --> Exit for T_AZ5 13983 AZ5
+INFO    | T_AZ3   | Chave   | az_optimized_placement ] --> Exit for T_AZ3 13983 AZ3
+INFO    | T_lc1   | Chave   | region_replication ] --> Exit for T_lc1 13983 lc1
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_AZ2 for MainThread
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_AZ3 for MainThread
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_AZ4 for MainThread
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_AZ5 for MainThread
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_AZ6 for MainThread
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_lc0 for MainThread
+DEBUG   | MainThread| Chave   | run      ] --> Join thread T_lc1 for MainThread
+INFO    | MainThread| __init__| output_stream ] --> Saving results in ['JSON']
+INFO    | MainThread| __init__| output_stream ] --> Saved in /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/logs/18.05.08_01.18.58_CHAVE_PlacementFirst_FFD2I_1_20_False.log

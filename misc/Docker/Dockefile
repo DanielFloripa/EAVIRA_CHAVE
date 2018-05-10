@@ -1,0 +1,10 @@
+FROM python:2
+
+WORKDIR /home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/src
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD [ "python", "./main.py" ]
