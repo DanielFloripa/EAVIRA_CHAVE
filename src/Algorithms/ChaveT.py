@@ -19,9 +19,9 @@ class ChaveT(object):
         self.ff_mode = api.sla.g_ff()
         self.window_time = api.sla.g_window_time()
         self.window_size = api.sla.g_window_size()
-        self.has_overbooking = api.sla.g_has_overbooking()
+        self.has_overcommitting = api.sla.g_has_overcommitting()
         self.last_number_of_migrations = 0
-        self.dbg = []  # "overb", "migr", "probl", "ok"]
+        self.dbg = []  # "overcom", "migr", "probl", "ok"]
         self.demand = None
         self.localcontroller_list = []
         self.region_list = None
@@ -45,7 +45,7 @@ class ChaveT(object):
     def __repr__(self):
         return repr([self.logger, self.nit, self.trigger_to_migrate,
                      self.frag_percent, self.pm_mode, self.ff_mode,
-                     self.window_size, self.window_time, self.has_overbooking,
+                     self.window_size, self.window_time, self.has_overcommitting,
                      self.all_vms_dict, self.all_op_dict, self.all_ha_dict, self.sla])
 
     def energy(self):
@@ -130,7 +130,7 @@ class ChaveT(object):
             for op_id, vm in op_dict_temp.items():
 
                 if vm.timestamp <= self.global_time:
-                    this_state = op_id.split('_')[1]
+                    this_state = op_id.split(K_SEP)[1]
 
                     if this_state == "START" and vm.timestamp <= self.global_time:
                         requisitions_queue.append(vm)
@@ -219,18 +219,18 @@ class ChaveT(object):
     def best_host(self, vm, az):
         for host in az.host_list:
             if host.cpu >= vm.get_vcpu() and host.ram >= vm.get_vram():
-                self.logger.info("Best host for {0}-{1} (vcpu:{2}) is {3} (cpu:{4}). ovbCount:{5}, "
-                                 "tax:{6} hasOvb? {7}.".format(vm.get_id(), vm.type, vm.get_vcpu(),
-                                                               host.get_id(), host.cpu, host.overb_count,
-                                                               host.actual_overb, host.has_overbooking))
+                self.logger.info("Best host for {0}-{1} (vcpu:{2}) is {3} (cpu:{4}). ovcCount:{5}, "
+                                 "tax:{6} hasOvc? {7}.".format(vm.get_id(), vm.type, vm.get_vcpu(),
+                                                               host.get_id(), host.cpu, host.overcom_count,
+                                                               host.actual_overcom, host.has_overcommitting))
                 return host, True
             else:
-                if self.has_overbooking and host.can_overbooking(vm):
+                if self.has_overcommitting and host.can_overcommitting(vm):
                     self.logger.info(
-                        "Overb for {0} (vcpu:{1}), is {2} (cpu:{3}). Overb cnt:{4}, actual:{5}, has:{6}.".format(
+                        "Overcom for {0} (vcpu:{1}), is {2} (cpu:{3}). Overcom cnt:{4}, actual:{5}, has:{6}.".format(
                             vm.get_id(), vm.get_vcpu(), host.get_id(), host.cpu,
-                            host.overb_count, host.actual_overb, host.has_overbooking))
-                    host.do_overbooking(vm)
+                            host.overcom_count, host.actual_overcom, host.has_overcommitting))
+                    host.do_overcommitting(vm)
                     return host, True
         self.logger.error("PROBLEM: not found best host in len:{0} for place {1}. Try a new host. \n {2}\n{3}".format(
             len(az.host_list), vm.get_id(), vm, az))
@@ -238,9 +238,9 @@ class ChaveT(object):
             for host in az.host_list:
                 if host.cpu >= vm.get_vcpu() and host.ram >= vm.get_vram():
                     self.logger.info(
-                        "After new host, for %s (vcpu:%s) is %s (cpu:%s). ovbCount:%s, tax:%s hasOvb? %s." %
-                        (vm.get_id(), vm.get_vcpu(), host.get_id(), host.cpu, host.overb_count,
-                         host.actual_overb, host.has_overbooking))
+                        "After new host, for %s (vcpu:%s) is %s (cpu:%s). ovcCount:%s, tax:%s hasOvc? %s." %
+                        (vm.get_id(), vm.get_vcpu(), host.get_id(), host.cpu, host.overcom_count,
+                         host.actual_overcom, host.has_overcommitting))
                     return host, True
         return None, False
 
@@ -318,7 +318,7 @@ class ChaveT(object):
         for az in temp_az_list:
             if vm.vcpu > max_cpu[0]:
                 best_az = max_cpu[1]
-                best_az.has_overbooking = True
+                best_az.has_overcommitting = True
             if az_select == 'HA':
                 if float(az_max_target) < float(az.availability):
                     az_max_target = float(az.availability)
@@ -344,7 +344,7 @@ class ChaveT(object):
         while self.global_time <= self.api.demand.max_timestamp:  # or not self.exceptions:
             if len(self.replication_pool_d.items()) > 0:
                 for pool_id, pool_d in self.replication_pool_d.items():
-                    lc_pool = pool_id.split('_')[0]
+                    lc_pool = pool_id.split(K_SEP)[0]
                     if lc_pool == lc_obj.lc_id:
                         # for type, pool_t_l in pool_d:
                         vm_r = pool_d[REPLICA][0][1]
@@ -388,7 +388,7 @@ class ChaveT(object):
         return False
 
     def replicate_vm(self, vm, az):
-        pool_id = vm.lc_id + '_' + vm.az_id + '_' + vm.vm_id
+        pool_id = vm.lc_id + K_SEP + vm.az_id + K_SEP + vm.vm_id
         if pool_id not in self.replication_pool_d:
             attr = vm.getattr()
             vm_replica = VirtualMachine(*attr)
@@ -425,8 +425,8 @@ class ChaveT(object):
                     break
                 else:
                     self.last_number_of_migrations -= 1
-                    self.logger.error("PROBLEM ON MIGRATE after overbooking {} {} {}".format(
-                                      vm.get_id(), eachHost.get_id(), eachHost.overb_count))
+                    self.logger.error("PROBLEM ON MIGRATE after overcommitting {} {} {}".format(
+                                      vm.get_id(), eachHost.get_id(), eachHost.overcom_count))
             return new_az
 
     def measure_energy(self, az, vm_type):

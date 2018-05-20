@@ -6,7 +6,7 @@ import math
 
 
 class VirtualMachine(object):
-    def __init__(self, vm_id, vcpu, vram, ha, type, host_id, az_id, timestamp, lifetime, logger):
+    def __init__(self, vm_id, vcpu, vram, av, type, host_id, az_id, timestamp, lifetime, logger):
         self.logger = logger
         self.vm_id = vm_id
         self.host_id = host_id
@@ -21,20 +21,21 @@ class VirtualMachine(object):
         self.dirty_pages = random.randint(100, 1000)
         self.type = type
         self.timestamp = timestamp
-        self.ha = float(ha)
+        self.availab = float(av)
         self.linked_to = []
 
     def __repr__(self):
-        return repr(('az_id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram,
-                     'type:', self.type, 'ha:', self.ha, 'host:', self.host_id, self.az_id, self.lc_id,
+        return repr(('id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram,
+                     'type:', self.type, 'ha:', self.availab, 'host:', self.host_id, self.az_id, self.lc_id,
                      'ts:', self.timestamp, 'lt:', self.lifetime))
 
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def getattr(self):
-        return [self.vm_id, self.vcpu, self.vram, self.ha, self.type, self.host_id,
+        return [self.vm_id, self.vcpu, self.vram, self.availab, self.type, self.host_id,
                 self.az_id, self.timestamp, self.lifetime, self.logger]
+
     ##################################################
     # Input: max_it -> maximum number of iterations
     #		max_mem -> maximum amount of memory to copy
@@ -44,7 +45,7 @@ class VirtualMachine(object):
     # Output: time in seconds
     ##################################################
     def get_migration_time(self, bw):
-        if bw == 0 or self.ha == -1:
+        if bw == 0 or self.availab == -1:
             return float('inf')
         # d = random.uniform(100.0, 1000.0)
         d = self.dirty_pages
@@ -83,7 +84,7 @@ class VirtualMachine(object):
     Method: check if new requested upgrade (+ or -) is supported
             by the host
     """
-    # todo: move to Physical class
+    # todo: move to Resources class
     def can_reconfigure(self, vcpu, vram):
         pnode = self.get_host_object()
         if self.get_vcpu() + vcpu <= pnode.cpu + self.get_vcpu() and \

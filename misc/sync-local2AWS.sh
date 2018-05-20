@@ -64,12 +64,21 @@ elif [ "$1" == "install" ]; then
     cd ~
     sudo apt-get update && sudo apt-get upgrade -y
     sudo apt-get install git vim nano htop python python-numpy
+    #    This project:
+    git clone https://github.com/DanielFloripa/CHAVE-Sim.git
+    #	Parallel project:
     (wget -O - pi.dk/3 || curl pi.dk/3/ || fetch -o - http://pi.dk/3) | bash
     sudo cp -rf ~/bin/* /usr/bin
     sudo cp -rf ~/share/* /usr/share/
     rm -rf ~/bin ~/share parallel**
     parallel --version
     parallel --citation
+    # R-cran
+	sudo apt-get install r-base r-base-dev libxml2-dev libcurl4-openssl-dev libssl-dev 
+	wget https://download1.rstudio.org/rstudio-xenial-1.1.447-amd64.deb
+	sudo chmod +x rstudio-xenial-1.1.447-amd64.deb
+	sudo dpkg -i rstudio-xenial-1.1.447-amd64.deb
+	rm -rf rstudio-xenial-1.1.447-amd64.deb
 else
     echo -e "Some error in parameter, must be: \n\t $0 ssh |or| \n\t $0 sync +{send || receive} |or| \n\t $0 install USENAME"
 fi

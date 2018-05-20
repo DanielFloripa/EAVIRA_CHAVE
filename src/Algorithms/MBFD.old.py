@@ -282,7 +282,7 @@ class MBFD:
 
 
     def print_datacenter(self):
-        print('Physical Infrastructure')
+        print('Resources Infrastructure')
         for pm in self.pm_list:
             spc = '----|'
             print "pm_get_usage:", pm.get_usage()

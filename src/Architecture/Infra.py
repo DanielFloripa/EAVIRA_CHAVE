@@ -4,6 +4,7 @@
 # From packages:
 
 from itertools import combinations
+from Architecture.Resources.Physical import *
 
 
 class Infrastructure(object):
@@ -75,18 +76,21 @@ class AvailabilityZone(Infrastructure):
         self.az_id = az_id
         self.lc_id = None  # until instance object
         self.logger = sla.g_logger()
-        self.has_overbooking = sla.g_has_overbooking()
+        self.has_overcommitting = sla.g_has_overcommitting()
         self.algorithm = sla.g_algorithm()
         self.azNodes = sla.g_az_dict()[az_id]['az_nodes']
         self.azCores = sla.g_az_dict()[az_id]['az_cores']
         self.azRam = sla.g_az_dict()[az_id]['az_ram']
         self.nit = sla.g_az_dict()[az_id]['az_nit']
         self.availability = ha.get('this_az')  # first line from file
+        # Qual percentual de um host em relação ao numero total de cores?:
+        self.frag_min = float(self.azCores) / float(self.azNodes * self.azCores)
         self.vms_dict = vms
         self.op_dict = ops
         self.ha_dict = ha
         self.base_infrastructure = None
         self.host_list = []
+        self.host_list_d = dict()
         self.rollback_list = []
         self.total_SLA_violations = 0
         # @TODO: olha a gambi:
@@ -100,11 +104,12 @@ class AvailabilityZone(Infrastructure):
     def obj_id(self):
         return str(self).split(' ')[3].split('>')[0]
 
-    def create_infrastructure(self, first_time=False, host_state=True):
+    def create_infra(self, first_time=False, host_state=True):
         host_list = []
+        host_list_d = dict()
         for node in range(self.azNodes):
-            # todo: add az_id nos hosts
-            h = PhysicalMachine('NODE' + str(node),
+            host_id = 'HOST' + str(node)
+            h = PhysicalMachine(host_id,
                                 self.azCores,
                                 self.azRam,
                                 self.algorithm,
@@ -114,16 +119,18 @@ class AvailabilityZone(Infrastructure):
             h.activate_hypervisor_dom0(log=False)
             h.state = host_state
             host_list.append(h)
-        self.logger.info("{0} created {1} hosts :: {2} cores, av: {3}".format(
+            host_list_d[host_id] = h
+        self.logger.debug("{0} created {1} hosts, {2} cores and av: {3}".format(
             self.az_id, len(host_list), self.azCores, self.availability))
         if first_time:
             self.host_list = host_list
+            self.host_list_d = host_list_d
             return True
         return host_list
 
     def add_new_host_to_list(self, host_state=True):
-        id = self.azNodes
-        h = PhysicalMachine('NODE' + str(id),
+        host_id = 'HOST' + str(self.azNodes)
+        h = PhysicalMachine(host_id,
                             self.azCores,
                             self.azRam,
                             self.algorithm,
@@ -134,12 +141,13 @@ class AvailabilityZone(Infrastructure):
         h.activate_hypervisor_dom0(log=True)
         try:
             self.host_list.append(h)
+            self.host_list_d[host_id] = h
         except Exception as e:
             self.logger.exception(type(e))
-            self.logger.error("Problem on add new host", id)
+            self.logger.error("{} Problem on add new host {}".format(self.az_id, id))
             return False
         self.azNodes += 1
-        self.logger.info("ADDED %s, now we have %s." % (h.get_id(), self.azNodes))
+        self.logger.info("Done! {}, now we have {} hosts. {}.".format(h.get_id(), self.azNodes, h))
         return True
 
     def is_required_replication(self, vm):
@@ -163,19 +171,17 @@ class AvailabilityZone(Infrastructure):
                               (len_h, host_on, host_off))
         return host_on, hol
 
-    # TODO: need improvements
     def fragmentation(self):
-        remaining_res, count = 0, 0
-        s = len(self.host_list)
+        """
+        Fragmentation from active hosts
+        :return: float percentual fragmentation
+        """
+        remaining_cpu, active_hosts = 0, 0
         for host in self.host_list:
-            if host.is_on is True:
-                count += 1
-                remaining_res = host.cpu
-        if s == count:
-            return float(remaining_res) / float(self.azCores)
-        else:
-            self.logger.error("Some problem on fragmentation:"+str(s)+"!="+str(count))
-            return -1
+            if host.is_on is HOST_ON:
+                remaining_cpu += host.cpu
+                active_hosts += 1
+        return float(remaining_cpu) / float(self.azCores * self.azNodes)
 
     def get_hosts_density(self):
         state_on, state_off = 0, 0
@@ -185,14 +191,14 @@ class AvailabilityZone(Infrastructure):
             else:
                 state_off += 1
         if state_on + state_off != len(self.host_list):
-            self.logger.error("Prob on number of states {0}+{1}!={2}".format(
+            self.logger.error("Prob on number of states {}+{}!={}".format(
                 state_on, state_off, len(self.host_list)))
             return None
         actives = float(state_on) / (float(state_on) + float(state_off))
-        self.logger.info("AZ {0} has {1}% hosts actives".format(self.az_id, actives*100))
+        self.logger.info("AZ {} has {}% hosts actives".format(self.az_id, actives*100))
         return actives
 
-    def allocate_on_host(self, vm):
+    def allocate_on_host(self, vm, defined_host=None):
         for host in self.host_list:
             # vm.set_host_object()
             if vm.get_host_id() is not None:
@@ -202,23 +208,22 @@ class AvailabilityZone(Infrastructure):
                         self.logger.info("A: "+str(vm.get_id())+" on "+str(host.get_id()))
                         return True
                     else:
-                        if self.has_overbooking and host.can_overbooking(vm):
-                            self.logger.info("Overbook vm: "+str(vm.get_id())+
-                                              ", with:"+str(len(self.get_list_overb_amount())))
-                            host.do_overbooking(vm)
+                        if self.has_overcommitting and host.can_overcommitting(vm):
+                            self.logger.info("Overcommit vm: "+str(vm.get_id())+
+                                              ", with:"+str(len(self.get_list_overcom_amount())))
+                            host.do_overcommitting(vm)
                             if host.allocate(vm):
                                 self.logger.info("Alloc:"+str(vm.get_id())+" on "+str(host.get_id()))
                                 return True
-                    #return False
             elif vm.get_host_id() is "migrate":
                 vm.set_host_object(host)
                 if host.allocate(vm):
                     self.logger.info("Migr "+str(vm.get_id())+" to:"+str(host.get_id()))
                     return True
                 else:
-                    if self.has_overbooking and host.can_overbooking(vm):
-                        self.logger.info("Overbook on migr vm:"+str(vm.get_id()))
-                        host.do_overbooking(vm)
+                    if host.can_overcommitting(vm):
+                        self.logger.info("Overcommit on migr vm:"+str(vm.get_id()))
+                        host.do_overcommitting(vm)
                         if host.allocate(vm):
                             self.logger.info("Migr " + str(vm.get_id()) + " to:" + str(host.get_id()))
                             return True
@@ -229,18 +234,18 @@ class AvailabilityZone(Infrastructure):
                 return False
         return False
 
-    def deallocate_on_host(self, vm, timestamp):
+    def deallocate_on_host(self, vm, defined_host=None, timestamp=None):
         vm_host_id = vm.host_id
         for host in self.host_list:
             hostid = host.get_id()
 
             if vm_host_id is None or vm_host_id is "None":
-                self.logger.error("None found when deallocate: {0} or {1} for {2} {3}".format(
-                    vm.obj_id(), vm, hostid, vm.az_id, vm.type))
+                self.logger.error("{} found in vm_host_id when deallocate: {} or {} for {} {}".format(
+                    vm_host_id, vm.obj_id(), vm, hostid, vm.az_id, vm.type))
                 return False
             elif hostid is None:
-                self.logger.error("None found when deallocate: {0} for {1} {2} {3}".format(
-                    vm_host_id, host, vm.az_id, vm.type))
+                self.logger.error("{} found in hostid when deallocate: {} for {} {} {}".format(
+                    hostid, vm_host_id, host, vm.az_id, vm.type))
                 return False
             if hostid == vm_host_id:
                 if host.deallocate(vm, timestamp):
@@ -263,13 +268,13 @@ class AvailabilityZone(Infrastructure):
             total_sla_violations += self.get_host_SLA_violations(host)
         return total_sla_violations
 
-    def get_list_overb_amount(self):
-        overb_list = []
+    def get_list_overcom_amount(self):
+        overcom_list = []
         for host in self.host_list:
-            overb = host.get_host_SLA_violations_total()
-            if overb > 0:
-                overb_list.append({host.get_id():overb})
-        return overb_list
+            overcom = host.get_host_SLA_violations_total()
+            if overcom > 0:
+                overcom_list.append({host.get_id():overcom})
+        return overcom_list
 
     def host_resource_usage(self):
         pass
@@ -281,7 +286,7 @@ class AvailabilityZone(Infrastructure):
         for pnode in self.resources:
             if pnode.get_id() == id:
                 return pnode
-        return -1
+        return False
 
     def get_host_list(self):
         return self.host_list
@@ -289,13 +294,6 @@ class AvailabilityZone(Infrastructure):
     def get_physical_resources_ordered(self):
         self.host_list.sort(key=lambda e: e.cpu)
         return list(self.host_list)
-
-    """
-    Method: guarantees at least % resources
-            for the next reallocation iteration
-    """
-    def provide_elasticity(self, pe):
-        return True
 
     def get_used_resources(self):
         used_resources = 0
@@ -307,15 +305,28 @@ class AvailabilityZone(Infrastructure):
             total_resources += pnode.get_total_cpu()
         return total_resources
 
-    def get_vms_load(self):
-        ret = []
-        return ret
+    def get_vms_dict(self):
+        all_vms_dict = dict()
+        for host in self.host_list:
+            all_vms_dict.update(host.virtual_machine_dict)
+        return all_vms_dict
 
     def get_id(self):
         return self.az_id
 
-    def get_az_energy_consumption2(self):
-        return sum([host.get_energy_consumption() for host in self.host_list if host.has_virtual_resources()])
+    def get_az_energy_consumption2(self, append_metrics=False):
+        _sum = 0
+        host_cons_dict = dict()
+        for host in self.host_list:
+            if host.is_on:
+                host_cons = host.get_energy_consumption()
+                _sum += host_cons
+                host_cons_dict[host.get_id()] = host_cons
+        if append_metrics:
+            self.sla.metrics(self.az_id, 'set', 'az_load_l', _sum)
+            self.sla.metrics(self.az_id, 'set', 'hosts_load_l', host_cons_dict)
+        return _sum
+        #return sum([host.get_energy_consumption() for host in self.host_list if host.has_virtual_resources()])
 
     def get_az_watt_hour(self):
         total_az_hour = 0

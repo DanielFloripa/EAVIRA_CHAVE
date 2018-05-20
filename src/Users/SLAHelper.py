@@ -14,8 +14,9 @@ import logging
 from collections import OrderedDict
 
 # Just some global vars
-k_values = ['energy_mon_total', 'max_host_on_i', 'total_energy_f', 'overbooking_i', 'sla_violations_i', 'elapsed_time_i']
-k_lists = ['energy_l', 'energy_avg_l', 'energy_hour_l', 'energy_mon_hour', 'req_size', 'total_alloc_l', 'dc_load_l']
+k_values = ['energy_mon_total', 'max_host_on_i', 'total_energy_f', 'overcommitting_i', 'sla_violations_i',
+            'elapsed_time_i', 'consolidations_i']
+k_lists = ['energy_l', 'energy_acum_l', 'az_load_l', 'hosts_load_l']
 key_list = k_values + k_lists
 command_list = ['set', 'add', 'sum', 'get', 'avg', 'rst', 'init']
 
@@ -27,8 +28,13 @@ F_SEP = '-'
 HOST_ON = True
 HOST_OFF = False
 
+TIGHT = 'TIGHT'
+MEDIUM = 'MEDIUM'
+WIDE = 'WIDE'
 
 class SLAHelper(object):
+
+    fragmentation_classess_dict = {TIGHT: 1.0, MEDIUM: 1.5, WIDE: 2.0}
 
     @staticmethod
     def is_required_ha(av_vm, av_az):
@@ -58,24 +64,26 @@ class SLAHelper(object):
 
     def __init__(self):
         # vars
-        self.__pm = ""  # str()
-        self.__ff = ""  # str()
-        self.__algorithm = ""  # str()
-        self.__has_overbooking = False  # bool
-        self.__enable_emon = False  # bool
-        self.__window_time = 0  # int
-        self.__window_size = 0  # int
-        self.__number_of_azs = 0  # int
+        self.__has_overcommitting = False      # bool
+        self.__consolidation = False      # bool
+        self.__enable_emon = False          # bool
+        self.__window_time = 0      # int
+        self.__window_size = 0      # int
+        self.__number_of_azs = 0    # int
+        self.__pm = ""                  # str()
+        self.__ff = ""                  # str()
+        self.__algorithm = ""           # str()
         # vars from environment
-        self.__max_az_per_region = ""  # str()
-        self.__date = ""  # str()
+        self.__max_az_per_region = ""   # str()
+        self.__date = ""                # str()
         self.__core_2_ram_default = ""  # str()
-        self.__data_output = ""  # str()
-        self.__log_output = ""  # str()
+        self.__data_output = ""         # str()
+        self.__log_output = ""          # str()
         self.__trigger_to_migrate = ""  # str()
-        self.__frag_percentual = ""  # str()
-        self.__output_type = ""
-        self.__az_selection = ""
+        self.__frag_class = ""          # str()
+        self.__output_type = ""         # str()
+        self.__az_selection = ""        # str()
+        self.__trace_class = ""         # str()
         # lists
         self.__ha_input = []
         self.__az_nodes = []
@@ -91,8 +99,17 @@ class SLAHelper(object):
         self.__logger = logging
         self.__is_locked = False
 
+    def debug_sla(self):
+        self.__logger.debug("{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n"
+                            "{}\n{}\n{}\n{}\n{}\n{}\n{}\n".format(self.__pm, self.__ff, self.__algorithm,
+        self.__has_overcommitting, self.__consolidation, self.__enable_emon,  self.__window_time, self.__window_size, self.__number_of_azs,
+        self.__max_az_per_region, self.__date, self.__core_2_ram_default, self.__data_output, self.__log_output,
+        self.__trigger_to_migrate, self.__frag_class, self.__output_type, self.__az_selection, self.__trace_class,
+        self.__ha_input, self.__az_nodes, self.__az_cores, self.__az_conf, self.__nit, self.__list_of_source_files,
+        self.__az_id_list, self.__az_dict, self.__metrics_dict, self.__logger, self.__is_locked))
+
     def __repr__(self):
-        return repr([self.__nit, self.__trigger_to_migrate, self.__frag_percentual, self.__has_overbooking,
+        return repr([self.__nit, self.__trigger_to_migrate, self.__frag_class, self.__has_overcommitting,
                      self.__pm, self.__ff, self.__date, self.__window_size, self.__window_time,
                      self.__algorithm, self.__max_az_per_region])
 
@@ -132,12 +149,12 @@ class SLAHelper(object):
         #
         elif command is 'get':
             if key in key_list:
-                #self.__logger.debug(str_ok)
+                # self.__logger.debug(str_ok)
                 return self.__metrics_dict[az_id][key]
             else:
                 self.__logger.error(str_error)
                 return False
-        #
+        
         elif command is 'add':
             if key in key_list[0:m]:
                 self.__metrics_dict[az_id][key] = self.__metrics_dict[az_id][key] + value
@@ -150,8 +167,8 @@ class SLAHelper(object):
             else:
                 self.__logger.error(str_error)
                 return False
-            #self.__logger.debug(str_ok)
-            return self.__metrics_dict[az_id][key]
+            # self.__logger.debug(str_ok)
+            return True  # self.__metrics_dict[az_id][key]
         #
         elif command is 'sum':
             if key in key_list[0:m]:
@@ -303,10 +320,16 @@ class SLAHelper(object):
         self.__algorithm = algorithm
         return True
 
-    def has_overbooking(self, has_overbooking):
+    def has_overcommitting(self, has_overcommitting):
         if self.is_sla_lock():
             return False
-        self.__has_overbooking = has_overbooking
+        self.__has_overcommitting = has_overcommitting
+        return True
+
+    def has_consolidation(self, consolidation):
+        if self.is_sla_lock():
+            return False
+        self.__consolidation = consolidation
         return True
 
     def enable_emon(self, enable_emon):
@@ -371,10 +394,10 @@ class SLAHelper(object):
         self.__trigger_to_migrate = trigger_to_migrate
         return True
 
-    def frag_percentual(self, frag_percentual):
+    def frag_class(self, frag_class):
         if self.is_sla_lock():
             return False
-        self.__frag_percentual = frag_percentual
+        self.__frag_class = frag_class
         return True
 
     def ha_input(self, ha_input):
@@ -437,7 +460,17 @@ class SLAHelper(object):
         self.__az_selection = az_selection
         return True
 
+    def trace_class(self, trace_class):
+        if self.is_sla_lock():
+            return False
+        self.__trace_class = trace_class
+        return True
+
     ''' GETTERS '''
+
+    def g_trace_class(self):
+        return self.__trace_class
+
     def g_az_selection(self):
         return self.__az_selection
 
@@ -453,8 +486,11 @@ class SLAHelper(object):
     def g_algorithm(self):
         return self.__algorithm
 
-    def g_has_overbooking(self):
-        return self.__has_overbooking
+    def g_has_overcommitting(self):
+        return self.__has_overcommitting
+
+    def g_has_consolidation(self):
+        return self.__consolidation
 
     def g_enable_emon(self):
         return self.__enable_emon
@@ -486,8 +522,8 @@ class SLAHelper(object):
     def g_trigger_to_migrate(self):
         return self.__trigger_to_migrate
 
-    def g_frag_percentual(self):
-        return self.__frag_percentual
+    def g_frag_class(self):
+        return self.__frag_class
 
     def g_ha_input(self):
         return self.__ha_input

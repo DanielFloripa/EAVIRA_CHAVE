@@ -7,7 +7,7 @@ CHAVE-Sim: The simulator for research based in clouds architecture
 
 import sys
 
-from Architecture.Virtual import VirtualMachine
+from Architecture.Resources.Virtual import *
 from Users.SLAHelper import *
 
 

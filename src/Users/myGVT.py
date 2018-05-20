@@ -123,7 +123,7 @@ def test_consistency(source_file):
         print("Some problem on consistency", len(for_check), source_file)
         os.rename(source_file, source_file+"_ERROR")
         out = open(source_file, "w")
-        for d_id, d_list in consistent_dictionary.viewitems():
+        for d_id, d_list in consistent_dictionary.items():
             if for_check.count(d_id.split('_')[0]) == 0:
                 line = ''
                 for i in range(len(d_list)):

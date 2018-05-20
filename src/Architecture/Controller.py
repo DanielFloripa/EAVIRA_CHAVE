@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import os
+import operator
 # From packages:
 from Users.SLAHelper import *
 
@@ -119,7 +120,7 @@ class GlobalController(Controller):
 
     def __discover_az_list(self):
         az_list = []
-        for lc_id, lc_obj in self.localcontroller_d.viewitems():
+        for lc_id, lc_obj in self.localcontroller_d.items():
             for az in lc_obj.az_list:
                 az.lc_id = lc_obj.lc_id
                 az_list.append(az)
@@ -127,7 +128,7 @@ class GlobalController(Controller):
 
     def __set_lc_id_from_az_id(self):
         az_2_lc = dict()
-        for lci, lco in self.localcontroller_d.viewitems():
+        for lci, lco in self.localcontroller_d.items():
             for az in lco.az_list:
                 az_2_lc[az.az_id] = lci
         return az_2_lc
@@ -135,9 +136,9 @@ class GlobalController(Controller):
     def get_lc_id_from_az_id(self, az_id):
         return self.az_2_lc[az_id]
 
-    def create_new_host(self, az_id):
+    def create_new_host(self, az_id, host_state=True):
         az = self.get_az(az_id)
-        if az.add_new_host_to_list():
+        if az.add_new_host_to_list(host_state):
             return True
         return False
 
@@ -149,6 +150,9 @@ class GlobalController(Controller):
 
     def get_localcontroller_d(self):
         return self.localcontroller_d
+
+    def get_localcontroller_from_lcid(self, lc_id):
+        return self.localcontroller_d[lc_id]
 
     def get_az(self, azid):
         for az in self.az_list:
@@ -186,7 +190,7 @@ class GlobalController(Controller):
     def execute_mbfd(self, az, vi):
         return self.az.mbfd(vi)
 
-    def get_list_overb_amount_from_cloud(self):
+    def get_list_overcom_amount_from_cloud(self):
         return 0.3
         pass
 

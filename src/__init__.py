@@ -13,6 +13,7 @@ __email__ = "daniel@colmeia.udesc.br"
 __status__ = "Test"
 
 #import matplotlib.pyplot as plt
+import argparse
 from datetime import datetime
 import os
 import csv
@@ -69,16 +70,25 @@ def output_stream(sla):
 
     if "TEXT" in types:
         print("Not yet implemented")
+        with open(sla.g_log_output() + ".mem", "w") as fp:
+            for az, metric in sla.metrics_dict().items():
+                fp.write(az)
+                for m, v in metric.items():
+                    fp.write(m)
+                    if type(v) is not list:
+                        fp.write(v)
+                    else:
+                        for e in v:
+                            fp.write(e)
 
     if "MEM" in types:
-        fp = open(sla.g_log_output() + ".mem", "w")
-        all_objects = muppy.get_objects()
-        sum1 = summary.summarize(all_objects)
-        # summary.print_(sum1)
-        for line in summary.format_(sum1):
-            fp.write("{0}\n".format(line))
-        #fp.write("\nElapśed time: {0}\n".format(elapsed))
-        fp.close()
+        with open(sla.g_log_output() + ".mem", "w") as fp:
+            all_objects = muppy.get_objects()
+            sum1 = summary.summarize(all_objects)
+            # summary.print_(sum1)
+            for line in summary.format_(sum1):
+                fp.write("{0}\n".format(line))
+        #fp.close()
     logger.info("Saved in {0}".format(sla.g_log_output()))
 
 '''
@@ -109,18 +119,16 @@ def main():
     :return: None
     """
 
-    '''Setting objects demand, az, lc, region, gc '''
     demand = Demand(sla)
     demand.create_vms_from_sources()
-    '''Get specific values using dict: 'all_xx_dict['DSn']' '''
 
     az_list, demand_list = [], []
     for i, azid in enumerate(demand.az_id):
         vm_d, op_d, ha_d = demand.get_demand_from_az(azid)
-        logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
         az = AvailabilityZone(sla, azid, vm_d, op_d, ha_d)
-        if az.create_infrastructure(first_time=True, host_state=HOST_OFF):
+        if az.create_infra(first_time=True, host_state=HOST_OFF):
             az_list.append(az)
+            logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
         else:
             logger.error("Problem on create infra for AZ#{0}: {1}".format(i, azid))
 
@@ -128,7 +136,7 @@ def main():
     lcontroller_d["lc0"] = LocalController(sla, "lc0", az_list[0:3])
     lcontroller_d["lc1"] = LocalController(sla, "lc1", az_list[3:6])
 
-    '''Regiao é dispensável aqui, mas útil para suportar arquiteturas mais complexas'''
+    """Region is useless here, but is useful for a more complex architectures"""
     region_d['rg0'] = Region(sla, "rg0", lcontroller_d['lc0'])
     region_d['rg1'] = Region(sla, "rg1", lcontroller_d['lc1'])
 
@@ -155,8 +163,12 @@ def main():
     elapsed = time.time() - start
     # ################### End the algorithms ###############
 
+    total_energy = 0
+    for az_id in sla.g_az_id_list():
+        total_energy += sla.metrics(az_id, 'get', 'total_energy_f')
+    sla.metrics('global', 'set', 'total_energy_f', total_energy)
     sla.metrics('global', 'set', 'sla_violations_i', api.get_total_SLA_violations_from_cloud())
-    sla.metrics('global', 'set', 'overbooking_i', api.get_list_overb_amount_from_cloud())
+    sla.metrics('global', 'set', 'overcommitting_i', api.get_list_overcom_amount_from_cloud())
     sla.metrics('global', 'set', 'elapsed_time_i', elapsed)
 
     output_stream(sla)
@@ -189,13 +201,16 @@ if __name__ == '__main__':
                         help='Window time: N')
     parser.add_argument('-ws', dest='ws', action='store', nargs=1, type=int, required=True,
                         help='Window size: N')
-    parser.add_argument('-ob', dest='overb', action='store', nargs=1, type=str, required=True,
-                        help='Has Overbooking?')  # overprovisioning
+    parser.add_argument('-ovc', dest='overcom', action='store', nargs=1, type=str, required=True,
+                        help='Has Overcommitting?')  # overprovisioning
+    parser.add_argument('-cons', dest='consolidate', action='store', nargs=1, type=str, required=True,
+                        help='Has consolidate?')
     args = parser.parse_args()
 
-    ''' This 'sla' instance will reserve all specifications and parameters'''
+    """This 'sla' instance will memoize all specifications and parameters from args and .conf file"""
     sla = SLAHelper()
 
+    """Values from python args"""
     sla.list_of_source_files(args.input)
     s = len(args.input)
     if s == len(args.ha_input) == len(args.az_conf) == len(args.nit):
@@ -203,40 +218,40 @@ if __name__ == '__main__':
     sla.ha_input(args.ha_input)
     sla.az_conf(sla.set_conf(args.az_conf, 'az_conf'))
     sla.nit(sla.set_conf(args.nit, 'nit'))
-
-    # Values from python args
     sla.pm(args.pm[0])
     sla.ff(args.ff[0])
-    sla.has_overbooking(eval(args.overb[0]))
+    sla.has_overcommitting(eval(args.overcom[0]))
+    sla.has_consolidation(eval(args.consolidate[0]))
     sla.algorithm(args.alg[0])
     sla.window_time(args.wt[0])
     sla.window_size(args.ws[0])
-    # Linux Environment vars
+    """From Linux environment variables"""
     sla.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
     sla.date(str(datetime.now().strftime(os.environ.get("CS_DP"))))
     sla.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
     sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
     sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
-    user = str(os.environ["USER"])
-    if user == "debian":
-        os.symlink(sla.g_log_output(), "../logs/" + sla.g_date() + ".log")
+    #user = str(os.environ["USER"])
+    # Todo: desfazer essa gambi no final
+    #if user == "debian":
+        #os.symlink(sla.g_log_output(), "../logs" + sla.g_log_output() + "_link.log")
     sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]))
+    sla.trace_class(str(os.environ["CS_TRACE_CLASS"]))
     sla.enable_emon(eval(os.environ["CS_ENABLE_EMON"]))
     sla.az_selection(str(os.environ["CS_AZ_SELECTION"]))
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
-    sla.frag_percentual(float(os.environ.get('CS_FRAG_PERCENT')))
-    # Para os logs de mensagens:
+    sla.frag_class(str(os.environ.get('CS_FRAGMENTATION_CLASS')))
+    """Configurations for logger objects:"""
     logger = logging.getLogger(__name__)
     hdlr = logging.FileHandler(sla.g_log_output())
     hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER")))
     logger.addHandler(hdlr)
-    # se primeiro parametro der erro, use o segundo:
-    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL', logging.DEBUG)))
+    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL')))  # , logging.DEBUG)))
     sla.logger(logger)
     sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
     sla.init_metrics(is_print=False)
 
-    # From now, we can't change this SLA parameters
+    """From now, we can't change this SLA parameters"""
     sla.set_sla_lock(True)
-
+    sla.debug_sla()
     main()
