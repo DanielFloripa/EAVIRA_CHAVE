@@ -1,0 +1,560 @@
+impact 	 0
+len_replicas_exec 	 0
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-153C3F8D
+len_replication_remaining 	 3
+state 	 before_0
+time 	 0
+host_replica 	 None
+energy 	 0
+
+impact 	 0
+len_replicas_exec 	 5
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-2BFF3F02
+len_replication_remaining 	 1
+state 	 before_5
+time 	 165
+host_replica 	 None
+energy 	 199.51
+
+impact 	 0
+len_replicas_exec 	 4
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-E0A63BDD
+len_replication_remaining 	 1
+state 	 before_6
+time 	 3153
+host_replica 	 None
+energy 	 198.46
+
+impact 	 0
+len_replicas_exec 	 5
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-F0834357
+len_replication_remaining 	 1
+state 	 before_7
+time 	 3319
+host_replica 	 None
+energy 	 199.51
+
+impact 	 0
+len_replicas_exec 	 6
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-486140F1
+len_replication_remaining 	 1
+state 	 before_8
+time 	 3320
+host_replica 	 None
+energy 	 201.27
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-3F7B4345
+len_replication_remaining 	 0
+state 	 after_0
+time 	 9742
+host_replica 	 HOST0
+energy 	 304.18
+
+impact 	 0
+len_replicas_exec 	 4
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-9DAE44F5
+len_replication_remaining 	 1
+state 	 before_11
+time 	 16412
+host_replica 	 None
+energy 	 199.51
+
+impact 	 0
+len_replicas_exec 	 5
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-A0DB45E2
+len_replication_remaining 	 1
+state 	 before_13
+time 	 19345
+host_replica 	 None
+energy 	 199.51
+
+impact 	 9.53
+len_replicas_exec 	 6
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-2F7D43CA
+len_replication_remaining 	 0
+state 	 after_1
+time 	 20546
+host_replica 	 HOST0
+energy 	 166.61
+
+impact 	 9.53
+len_replicas_exec 	 6
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-43F8431D
+len_replication_remaining 	 0
+state 	 after_2
+time 	 24147
+host_replica 	 HOST0
+energy 	 166.61
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-32CE4317
+len_replication_remaining 	 0
+state 	 after_3
+time 	 29575
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 157.08
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-6870480A
+len_replication_remaining 	 0
+state 	 after_4
+time 	 30435
+host_replica 	 HOST0
+energy 	 157.08
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-7373462A
+len_replication_remaining 	 0
+state 	 after_5
+time 	 31021
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-191B4349
+len_replication_remaining 	 0
+state 	 after_6
+time 	 36745
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-206D46E6
+len_replication_remaining 	 0
+state 	 after_7
+time 	 38861
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-79DD41CB
+len_replication_remaining 	 0
+state 	 after_8
+time 	 45749
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-A9503D21
+len_replication_remaining 	 0
+state 	 after_9
+time 	 49349
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-A7EE3B68
+len_replication_remaining 	 0
+state 	 after_10
+time 	 51456
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 157.08
+len_replicas_exec 	 5
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-E0A34048
+len_replication_remaining 	 0
+state 	 after_11
+time 	 52031
+host_replica 	 HOST0
+energy 	 157.08
+
+impact 	 0
+len_replicas_exec 	 5
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-FC15444E
+len_replication_remaining 	 1
+state 	 before_16
+time 	 52605
+host_replica 	 None
+energy 	 199.51
+
+impact 	 9.53
+len_replicas_exec 	 7
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-FC6B4812
+len_replication_remaining 	 0
+state 	 after_12
+time 	 54750
+host_replica 	 HOST0
+energy 	 166.61
+
+impact 	 9.53
+len_replicas_exec 	 9
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-3E953F55
+len_replication_remaining 	 0
+state 	 after_13
+time 	 56547
+host_replica 	 HOST0
+energy 	 166.61
+
+impact 	 147.1
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-B55E40CA
+len_replication_remaining 	 0
+state 	 after_14
+time 	 61942
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-4BF13EE7
+len_replication_remaining 	 0
+state 	 after_15
+time 	 67345
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-08C441C1
+len_replication_remaining 	 0
+state 	 after_16
+time 	 69476
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-39CD43F8
+len_replication_remaining 	 0
+state 	 after_17
+time 	 73086
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-8B3C40D8
+len_replication_remaining 	 0
+state 	 after_18
+time 	 74550
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 13
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-AF594489
+len_replication_remaining 	 0
+state 	 after_19
+time 	 78146
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 147.1
+len_replicas_exec 	 13
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-90634804
+len_replication_remaining 	 0
+state 	 after_20
+time 	 80252
+host_replica 	 HOST0
+energy 	 147.1
+
+impact 	 157.08
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-2D4E4167
+len_replication_remaining 	 1
+state 	 after_21
+time 	 81176
+host_replica 	 HOST0
+energy 	 157.08
+
+impact 	 15.44
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-2FC941E1
+len_replication_remaining 	 0
+state 	 after_22
+time 	 81176
+host_replica 	 HOST0
+energy 	 172.52
+
+impact 	 157.08
+len_replicas_exec 	 13
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-E15F3F68
+len_replication_remaining 	 0
+state 	 after_23
+time 	 81187
+host_replica 	 HOST1
+energy 	 329.6
+
+impact 	 147.1
+len_replicas_exec 	 13
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-BBAA3F40
+len_replication_remaining 	 0
+state 	 after_24
+time 	 82085
+host_replica 	 HOST1
+energy 	 319.62
+
+impact 	 157.08
+len_replicas_exec 	 13
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-F23243CD
+len_replication_remaining 	 0
+state 	 after_25
+time 	 82910
+host_replica 	 HOST1
+energy 	 329.6
+
+impact 	 147.1
+len_replicas_exec 	 7
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-52E1405F
+len_replication_remaining 	 0
+state 	 after_26
+time 	 85344
+host_replica 	 HOST1
+energy 	 319.62
+
+impact 	 157.08
+len_replicas_exec 	 10
+az_replica 	 AZ4
+pool_id 	 lc1_AZ6_i-9E684461
+len_replication_remaining 	 0
+state 	 after_27
+time 	 86028
+host_replica 	 HOST1
+energy 	 329.6
+
+impact 	 9.53
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-2D1440D8
+len_replication_remaining 	 0
+state 	 after_28
+time 	 88954
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 9.53
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-E9EA4215
+len_replication_remaining 	 0
+state 	 after_29
+time 	 94350
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 15.44
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-DB944521
+len_replication_remaining 	 0
+state 	 after_30
+time 	 95229
+host_replica 	 HOST1
+energy 	 345.04
+
+impact 	 9.53
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-DE6740D5
+len_replication_remaining 	 0
+state 	 after_31
+time 	 96147
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 9.53
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-6A48429A
+len_replication_remaining 	 0
+state 	 after_32
+time 	 117746
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 9.53
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-8299417C
+len_replication_remaining 	 0
+state 	 after_33
+time 	 126747
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 15.44
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-7F1F40C3
+len_replication_remaining 	 0
+state 	 after_34
+time 	 131231
+host_replica 	 HOST1
+energy 	 345.04
+
+impact 	 147.1
+len_replicas_exec 	 11
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-B3D4470E
+len_replication_remaining 	 0
+state 	 after_35
+time 	 139351
+host_replica 	 HOST2
+energy 	 492.14
+
+impact 	 0
+len_replicas_exec 	 10
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-B49F43F9
+len_replication_remaining 	 1
+state 	 before_37
+time 	 143923
+host_replica 	 None
+energy 	 557.86
+
+impact 	 157.08
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-42B440C8
+len_replication_remaining 	 0
+state 	 after_36
+time 	 145637
+host_replica 	 HOST2
+energy 	 502.12
+
+impact 	 9.53
+len_replicas_exec 	 10
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-A16841B4
+len_replication_remaining 	 0
+state 	 after_37
+time 	 155550
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 9.53
+len_replicas_exec 	 12
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-4D0044A6
+len_replication_remaining 	 0
+state 	 after_38
+time 	 159147
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 9.53
+len_replicas_exec 	 13
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-19DD3EFF
+len_replication_remaining 	 0
+state 	 after_39
+time 	 166344
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 9.53
+len_replicas_exec 	 13
+az_replica 	 AZ4
+pool_id 	 lc1_AZ5_i-2E554342
+len_replication_remaining 	 0
+state 	 after_40
+time 	 177144
+host_replica 	 HOST1
+energy 	 339.13
+
+impact 	 0
+len_replicas_exec 	 11
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-7E094191
+len_replication_remaining 	 1
+state 	 before_70
+time 	 225404
+host_replica 	 None
+energy 	 381.52
+
+impact 	 0
+len_replicas_exec 	 9
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-79C34164
+len_replication_remaining 	 1
+state 	 before_76
+time 	 257480
+host_replica 	 None
+energy 	 373.79
+
+impact 	 0
+len_replicas_exec 	 10
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-73D841FE
+len_replication_remaining 	 1
+state 	 before_77
+time 	 257710
+host_replica 	 None
+energy 	 377.52
+
+impact 	 0
+len_replicas_exec 	 10
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-BBD54303
+len_replication_remaining 	 1
+state 	 before_78
+time 	 259991
+host_replica 	 None
+energy 	 377.52
+
+impact 	 0
+len_replicas_exec 	 9
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-15E043DA
+len_replication_remaining 	 1
+state 	 before_80
+time 	 268560
+host_replica 	 None
+energy 	 373.79
+
+impact 	 0
+len_replicas_exec 	 9
+az_replica 	 AZ5
+pool_id 	 lc1_AZ4_i-946041ED
+len_replication_remaining 	 1
+state 	 before_84
+time 	 281396
+host_replica 	 None
+energy 	 373.79
+

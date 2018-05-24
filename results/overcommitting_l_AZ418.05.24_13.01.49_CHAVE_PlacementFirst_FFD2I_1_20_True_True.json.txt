@@ -1,0 +1,468 @@
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_0
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-261C3FE2
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_1
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-8C814313
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_2
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-C11E42E0
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_3
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-D1594203
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_4
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-53FF4310
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_5
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-956A3CDB
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_6
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST3
+vm_id 	 i-FE144161
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_7
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST3
+vm_id 	 i-486140F1
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_8
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-8C814313
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-E0A63BDD
+state 	 do_ovc_9
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-E0A63BDD
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_10
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-D1594203
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_11
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-E6EE3FCB
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_12
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-956A3CDB
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_13
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-B3B2408C
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-486140F1
+state 	 do_ovc_14
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST3
+vm_id 	 i-486140F1
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_15
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST3
+vm_id 	 i-CDCA4589
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-E0A63BDD
+state 	 do_ovc_16
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-E0A63BDD
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_17
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-C11E42E0
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_18
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-74F842C4
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_19
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-53FF4310
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-F0834357
+state 	 do_ovc_20
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-F0834357
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_21
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-FE144161
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-E0A63BDD
+state 	 do_ovc_22
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-E0A63BDD
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_23
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-C11E42E0
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_24
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-956A3CDB
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_25
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-B3B2408C
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-486140F1
+state 	 do_ovc_26
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-486140F1
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_27
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST2
+vm_id 	 i-CDCA4589
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_28
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-74F842C4
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_29
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-53FF4310
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-F0834357
+state 	 do_ovc_30
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-F0834357
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_31
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-FE144161
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_32
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-956A3CDB
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_33
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-B3B2408C
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 lc1_AZ4_i-486140F1
+state 	 do_ovc_34
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-486140F1
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_35
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST1
+vm_id 	 i-CDCA4589
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_36
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-B3B2408C
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_37
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-FE144161
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_38
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-B3B2408C
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_39
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-CDCA4589
+vm_cpu 	 4
+
+tax 	 1.25
+pool_id 	 lc1_AZ5_i-B3D4470E
+state 	 do_ovc_40
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-B3D4470E
+vm_cpu 	 2
+
+tax 	 1.25
+pool_id 	 lc1_AZ5_i-42B440C8
+state 	 do_ovc_41
+default_cpu 	 8
+host_cpu 	 2
+host_id 	 HOST0
+vm_id 	 i-42B440C8
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_42
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-73D841FE
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_43
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-4AE4434D
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_44
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-15E043DA
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_45
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-F97942D4
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_46
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-1B3D42D6
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_47
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-9AA83C4E
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_48
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-9AA83C4E
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_49
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-C3AD4151
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_50
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-6D2C4252
+vm_cpu 	 4
+
+tax 	 1.5
+pool_id 	 None
+state 	 do_ovc_51
+default_cpu 	 8
+host_cpu 	 0
+host_id 	 HOST0
+vm_id 	 i-CA783C6F
+vm_cpu 	 4
+

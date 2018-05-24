@@ -1,0 +1,70 @@
+impact 	 0
+len_replicas_exec 	 0
+az_replica 	 AZ2
+pool_id 	 lc0_AZ3_i-DE9842F4
+len_replication_remaining 	 2
+state 	 before_0
+time 	 1
+host_replica 	 None
+energy 	 0
+
+impact 	 0
+len_replicas_exec 	 1
+az_replica 	 AZ1
+pool_id 	 lc0_AZ3_i-FC33416A
+len_replication_remaining 	 1
+state 	 before_0
+time 	 1
+host_replica 	 None
+energy 	 147.1
+
+impact 	 0
+len_replicas_exec 	 2
+az_replica 	 AZ1
+pool_id 	 lc0_AZ3_i-59673D29
+len_replication_remaining 	 1
+state 	 before_1
+time 	 6577
+host_replica 	 None
+energy 	 153.2
+
+impact 	 0
+len_replicas_exec 	 0
+az_replica 	 AZ1
+pool_id 	 lc0_AZ3_i-107E4039
+len_replication_remaining 	 1
+state 	 before_2
+time 	 26356
+host_replica 	 None
+energy 	 0
+
+impact 	 0
+len_replicas_exec 	 0
+az_replica 	 AZ1
+pool_id 	 lc0_AZ3_i-E4B641BB
+len_replication_remaining 	 1
+state 	 before_3
+time 	 33018
+host_replica 	 None
+energy 	 0
+
+impact 	 139.91
+len_replicas_exec 	 2
+az_replica 	 AZ3
+pool_id 	 lc0_AZ2_i-44760829
+len_replication_remaining 	 1
+state 	 after_0
+time 	 132412
+host_replica 	 HOST0
+energy 	 139.91
+
+impact 	 139.91
+len_replicas_exec 	 2
+az_replica 	 AZ3
+pool_id 	 lc0_AZ2_i-5B8F09B7
+len_replication_remaining 	 0
+state 	 after_1
+time 	 152113
+host_replica 	 HOST0
+energy 	 139.91
+
