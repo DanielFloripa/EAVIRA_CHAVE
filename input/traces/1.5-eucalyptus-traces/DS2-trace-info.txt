@@ -1,0 +1,65 @@
+
+ts_start:
+	max: 2196481
+	min: 128933
+	mean: 491024.7916666667
+	median: 463846.0
+	stdev: 440634.49537875305
+	mode: 132412
+	variance: 194158758517.68835
+
+ts_stop:
+	max: 2236236
+	min: 129992
+	mean: 499362.44444444444
+	median: 481523.0
+	stdev: 445563.7029660448
+	mode: 661818
+	variance: 198527013400.81375
+
+lifespam:
+	max: 93637
+	min: 238
+	mean: 8337.652777777777
+	median: 5806.0
+	stdev: 14231.205832294007
+	mode: 5806
+	variance: 202527219.44111893
+
+cpu_size:
+	max: 12
+	min: 1
+	mean: 1.6111111111111112
+	median: 1.0
+	stdev: 2.537357811491469
+	mode: 1
+	variance: 6.438184663536777
+
+host_usage:
+	max: HOST6
+	min: HOST3
+	mean: None
+	median: None
+	stdev: None
+	mode: HOST6
+	variance: None
+
+Frequency:
+
+	0.999:
+		59, 	(81.944%)
+
+	0.9999995:
+		8, 	(11.111%)
+
+	0.99999999975:
+		5, 	(6.944%)
+
+	False:
+		59, 	(81.944%)
+
+	True:
+		13, 	(18.056%)
+
+	Len:
+		72, 	(100.000%)

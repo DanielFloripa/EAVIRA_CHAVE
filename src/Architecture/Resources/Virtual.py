@@ -6,14 +6,15 @@ import math
 
 
 class VirtualMachine(object):
-    def __init__(self, vm_id, vcpu, vram, av, type, host_id, az_id, timestamp, lifetime, logger):
+    def __init__(self, vm_id, vcpu, vram, av, type, host_id, az_id, timestamp, lifetime, lock, logger):
         self.logger = logger
         self.vm_id = vm_id
         self.host_id = host_id
         self.az_id = az_id
         self.lc_id = None
-        self.state = None
+        self.status = None
         self.pool_id = None
+        self.is_locked = lock
         self.vcpu = vcpu
         self.usage = 1.0
         self.vram = vram
@@ -34,16 +35,8 @@ class VirtualMachine(object):
 
     def getattr(self):
         return [self.vm_id, self.vcpu, self.vram, self.availab, self.type, self.host_id,
-                self.az_id, self.timestamp, self.lifetime, self.logger]
+                self.az_id, self.timestamp, self.lifetime, self.is_locked, self.logger]
 
-    ##################################################
-    # Input: max_it -> maximum number of iterations
-    #		max_mem -> maximum amount of memory to copy
-    #		p -> minimum amount of dirty pages. If it's
-    #			low, stop and copy the rest
-    #		bw -> available bandwidth
-    # Output: time in seconds
-    ##################################################
     def get_migration_time(self, bw):
         if bw == 0 or self.availab == -1:
             return float('inf')
@@ -80,18 +73,6 @@ class VirtualMachine(object):
         self.vcpu -= vcpu
         self.vram -= vram
 
-    """
-    Method: check if new requested upgrade (+ or -) is supported
-            by the host
-    """
-    # todo: move to Resources class
-    def can_reconfigure(self, vcpu, vram):
-        pnode = self.get_host_object()
-        if self.get_vcpu() + vcpu <= pnode.cpu + self.get_vcpu() and \
-                                self.get_vram() + vram <= pnode.ram + self.get_vram():
-            return True
-        return False
-
     def set_host_id(self, hostid):
         self.host_id = hostid
         self.logger.debug("Host id {} defined for {} t:{}, az:{}".format(self.host_id, self.vm_id, self.type, self.az_id))
@@ -100,7 +81,7 @@ class VirtualMachine(object):
         return self.host_id
 
     def get_config(self):
-        return '%d %d %d' % ((self.vm_id, self.vcpu, self.vram))
+        return '{} {} {}'.format(self.vm_id, self.vcpu, self.vram)
 
     def get_vram(self):
         return self.vram

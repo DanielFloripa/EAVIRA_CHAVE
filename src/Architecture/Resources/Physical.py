@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import sys
 import traceback
 import re
 import math
@@ -19,22 +20,18 @@ class PhysicalMachine(object):
         self.algorithm = algorithm
         self.virtual_machine_list = []
         self.virtual_machine_dict = dict()
-        self.linked_to = []
-        self.sla_violations_list = []
-        self.acc = 0
-        self.father = 0
-        self.is_on = None
+        self.power_state = None
         self.default_cpu = cpu #  Esse não muda
         self.default_ram = ram
         self.ram2cpu = float(self.default_ram) / float(self.default_cpu)
         self.has_overcommitting = False
-        self.overcom_max = float(2.0)
+        self.overcom_max = float(sla.g_vcpu_per_core())
         self.overcom_count = 0
         self.actual_overcom = 0
         # With vms
         self.max_energy = 209.0  # 202.43 from input->energy
         self.min_energy = 118.11
-        # Witout vms
+        # Without vms
         self.max_dom0 = 209.0  # 202.43 from input->energy
         self.min_dom0 = 118.11
         self.energy_table = self.__fetch_energy_info()
@@ -55,37 +52,37 @@ class PhysicalMachine(object):
 
     def __repr__(self):
         return repr((self.host_id, self.cpu, self.ram, "vml:", self.virtual_machine_list, self.algorithm, self.az_id,
-                     self.sla_violations_list, self.has_overcommitting, self.overcom_count, self.actual_overcom))
+                     self.has_overcommitting, self.overcom_count, self.actual_overcom))
 
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
 
     def allocate(self, vm):
         if self.can_allocate(vm):
-            if not self.is_on:
+            if not self.power_state:
                 self.force_set_host_on()
             self.cpu -= vm.vcpu
             self.ram -= vm.vram
             vm.host_id = self.host_id
             self.virtual_machine_list.append(vm)
             self.virtual_machine_dict[vm.vm_id] = vm
-            # Todo: ver tempo da VM se está ok!
-            time = vm.timestamp
-            this_energy = self.get_cpu_energy_usage()
             if self.sla.g_enable_emon():
+                time = vm.timestamp
+                this_energy = self.get_cpu_energy_usage()
                 self.emon.alloc(vm.vm_id, time, this_energy, log=True)
             return True
-        self.sla_violations_list.append({vm.vm_id: "allocate"})
+        self.sla.metrics.add(self.az_id, 'allocate_i', 1)
         return False
 
-    def deallocate(self, vm, timestamp=None):
+    def deallocate(self, vm, timestamp=None, who_calls=''):
         try:
             self.virtual_machine_list.remove(vm)
             del self.virtual_machine_dict[vm.vm_id]
         except Exception as e:
-            self.logger.error(type(e))  # ValueError:
-            self.sla_violations_list.append({vm.get_id(): "deallocate"})
-            self.logger.error("Error on remove resources for: {0} on {1}".format(vm.get_id(), self.get_id()))
+            self.logger.error(e)  # ValueError:
+            self.sla.metrics.add(self.az_id, 'deallocate_i', 1)
+            self.logger.error("Error on remove resources for: {} {} =? {} called by {} {}".format(
+                vm.get_id(), vm.host_id, self.get_id(), sys._getframe(1).f_code.co_name, who_calls))
             self.logger.error(traceback.format_exc())
             return False
         if self.algorithm == "CHAVE":
@@ -93,106 +90,127 @@ class PhysicalMachine(object):
         self.cpu += vm.get_vcpu()
         self.ram += vm.get_vram()
         if self.has_overcommitting:
-            self.logger.info("Undo overcom:"+self.get_id()+" cpu:"+str(self.cpu)+"...")
             if self.try_undo_overcommitting(vm):
-                self.logger.info("DONE! "+self.get_id()+" has no overcom.")
+                self.logger.info("Done! Overcom:{} cpu: {}".format(self.get_id(), self.cpu))
             else:
-                self.logger.info("Not yet:"+str(self.default_cpu+self.cpu)+" still > "+str(self.default_cpu))
+                self.logger.info("Not yet: {} still > {} ".format(self.default_cpu+self.cpu, self.default_cpu))
         if self.sla.g_enable_emon():
             this_energy = self.get_cpu_energy_usage()
             self.emon.dealloc(vm.vm_id, timestamp, this_energy, log=True)
         return True
 
-    def get_host_SLA_violations_total(self):
-        return len(self.sla_violations_list)
-
-    def get_host_SLA_violations_list(self):
-        return self.sla_violations_list
-
-    def get_one_SLA_violation(self, id):
-        for k,v in self.sla_violations_list:
-            if k == id:
-                return v
+    def can_allocate(self, vm):
+        if self.cpu >= vm.get_vcpu() and self.ram >= vm.get_vram():
+            return True
+        else:
+            self.logger.debug("{}\tCan't allocate v:{} on h:{} -> h.cpu:{} < v.cpu:{} and h.ram:{} < v.ram:{}".format(
+                self.az_id, vm.vm_id, self.host_id, self.cpu, vm.get_vcpu(), self.ram, vm.get_vram()))
+        return False
 
     def can_overcommitting(self, vm):
         if self.sla.g_has_overcommitting() is True:
-            overcomCPU = (float(self.get_used_cpu()) + float(vm.get_vcpu())) / float(self.default_cpu)
-            overcomRAM = (float(self.get_used_ram()) + float(vm.get_vram())) / float(self.default_ram)
-            if overcomCPU <= self.overcom_max and overcomRAM <= self.overcom_max:
-                self.logger.info("WE can overcom on:" + str(self.host_id) + ", cpu:" + str(overcomCPU) + " ram:" + str(overcomRAM))
+            used = self.get_used_cpu()
+            overcom_cpu = (float(used) + float(vm.get_vcpu())) / float(self.default_cpu)
+            # overcom_ram = (float(self.get_used_ram()) + float(vm.get_vram())) / float(self.default_ram)
+            if overcom_cpu <= self.overcom_max:  # and overcom_ram <= self.overcom_max:
+                self.logger.info("Yes, we can overcommit on: {}, will be: ov_cpu: {}".format(self.host_id, overcom_cpu))
                 return True
-        return False
+            self.logger.debug("{} Pass: overcomCPU ((Ucpu:{} + Vcpu:{}) / Dcpu:{} = {} > overcom_max {}".format(
+                self.host_id, used, vm.get_vcpu(), self.default_cpu, overcom_cpu, self.overcom_max, self.overcom_max))
+        elif self.can_allocate(vm):
+            return True
+        else:
+            return False
 
     # todo: review this code
     def do_overcommitting(self, vm):
-        overcom = (float(self.default_cpu) - float(self.cpu) + float(vm.get_vcpu())) / float(self.default_cpu)
-        self.logger.info("Do Overcom on:"+str(self.get_id())+", for: "+vm.get_id()+" with tax:"+str(overcom))
+        used = self.get_used_cpu()
+        overcom = (float(used) + float(vm.get_vcpu())) / float(self.default_cpu)
+        self.logger.info("Done! on: {}, for: {}, tax: (Ucpu:{}+Vcpu:{})/Dcpu:{} = {}".format(
+            self.get_id(), vm.get_id(), used, vm.get_vcpu(), self.default_cpu, overcom))
+        step = self.sla.metrics.get(self.az_id,  'overcommit_i')
+        self.sla.metrics.add(self.az_id, 'overcommit_i', 1)
+        metric_ovc = {'state': 'do_ovc'+K_SEP+str(step),
+                      'host_id': self.host_id,
+                      'default_cpu': self.default_cpu,
+                      'host_cpu': self.cpu,
+                      'used_cpu': used,
+                      'vm_id': vm.vm_id,
+                      'vm_cpu': vm.vcpu,
+                      'pool_id': vm.pool_id,
+                      'tax': overcom}
+        self.sla.metrics.set(self.az_id, 'overcommit_l', metric_ovc)
         self.has_overcommitting = True
+        # Add just the amount required for this VM, so the allocate() will not claim
         self.cpu += vm.get_vcpu()
         self.ram += vm.get_vram()
         self.overcom_count += 1
         self.actual_overcom = overcom
 
     def try_undo_overcommitting(self, vm):
-        overcom = (float(self.get_used_cpu()) - float(vm.get_vcpu())) / float(self.default_cpu)
+        used = self.get_used_cpu()
+        ret = False
+        overcom = (float(used) - float(vm.get_vcpu())) / float(self.default_cpu)
+        self.actual_overcom = overcom
+        self.overcom_count -= 1
         if overcom <= 1.0:
             self.has_overcommitting = False
-            self.actual_overcom = 0
+            ret = True
+
+        step = self.sla.metrics.get(self.az_id, 'overcommit_i')
+        self.sla.metrics.add(self.az_id, 'overcommit_i', 1)
+        metric_ovc = {'state': 'undo_ovc'+K_SEP+str(step),
+                      'host_id': self.host_id,
+                      'default_cpu': self.default_cpu,
+                      'host_cpu': self.cpu,
+                      'used_cpu': used,
+                      'vm_id': vm.vm_id,
+                      'vm_cpu': vm.vcpu,
+                      'pool_id': vm.pool_id,
+                      'tax': overcom}
+        self.sla.metrics.set(self.az_id, 'overcommit_l', metric_ovc)
+        return ret
+
+    def has_available_resources(self):
+        if self.sla.g_has_overcommitting() and self.actual_overcom < self.overcom_max:
+            return True
+        elif not self.sla.g_has_overcommitting() and self.cpu > 0:
             return True
         else:
-            self.actual_overcom = overcom
-            self.overcom_count -= 1
+            pass
         return False
 
     def force_set_host_on(self):
         if not self.has_virtual_resources():
-            self.is_on = HOST_ON
+
+            if self.power_state == HOST_OFF:
+                self.logger.info("Change state in {}: {} turned ON".format(self.az_id, self.host_id))
+            self.power_state = HOST_ON
             self.activate_hypervisor_dom0(log=True)
-            self.logger.info("Change state in {}: {} turned ON".format(self.az_id, self.host_id))
+
             return True
-        elif self.has_virtual_resources() and not self.is_on:
+        elif self.has_virtual_resources() and not self.power_state:
             self.logger.error("Logic problem?, state OFF with resources??? Setting this ON...")
-            self.is_on = HOST_ON
+            self.power_state = HOST_ON
             return False
-        self.logger.critical("OOOPS: %s Resources: %s is on? %s " %
-                             (self.host_id, self.has_virtual_resources(), self.is_on))
+        self.logger.critical("OOOPS: {} Resources: {} is on? {} ".format(
+                             self.host_id, self.has_virtual_resources(), self.power_state))
         return False
 
     def set_host_off(self):
-        if not self.has_virtual_resources() and self.is_on is HOST_ON:
-            self.is_on = HOST_OFF
-            self.logger.info("Change state in {0}: {1} turned OFF".format(self.az_id, self.host_id))
+        if not self.has_virtual_resources() and self.power_state is HOST_ON:
+            self.power_state = HOST_OFF
+            self.logger.info("Change state in {}: {} turned OFF".format(self.az_id, self.host_id))
             return True
-        if self.has_virtual_resources() and self.is_on is HOST_ON:
+        if self.has_virtual_resources() and self.power_state is HOST_ON:
             return False
-        self.logger.critical("OOOPS: %s Resources: %s is on? %s " %
-                                 (self.host_id, self.has_virtual_resources(), self.is_on))
+        self.logger.critical("OOOPS: {} Resources: {} is on? {} ".format(
+                             self.host_id, self.has_virtual_resources(), self.power_state))
         return False
 
     def remove_resources(self, vcpu, vram):
         self.cpu -= vcpu
         self.ram -= vram
-
-    def can_allocate(self, vm):
-        if self.cpu >= vm.get_vcpu() and self.ram >= vm.get_vram():
-            return True
-        self.logger.error("Can't allocate on {}:{}={}<{}::{}<{}".format(self.host_id, vm.vm_id, self.cpu, vm.get_vcpu(), self.ram, vm.get_vram()))
-        return False
-
-    def get_vm_amount_on_host(self):
-        return len(self.virtual_machine_list)
-
-    def get_usage(self):
-        used_cpu = sum([v.get_vcpu_usage() for v in self.virtual_machine_list])
-        used_ram = sum([v.get_vram() for v in self.virtual_machine_list])
-
-        return r'PM %d (%d VMs) - CPU: %.2lf%% | RAM: %.2lf%% ' % (
-            self.host_id, len(self.virtual_machine_list), used_cpu / float(used_cpu + self.cpu) * 100, \
-            used_ram / float(used_ram + self.ram) * 100)
-
-    def set_debug_level(self, dbg_level):
-        assert (dbg_level in [0,1,2]), "Debug Level must be" + str([0,1,2])
-        self.dbg = dbg_level
 
     def get_used_cpu(self):
         return sum([vm.get_vcpu() for vm in self.virtual_machine_list])
@@ -211,7 +229,7 @@ class PhysicalMachine(object):
 
     def has_restricted_resources(self):
         for vm in self.get_virtual_resources():
-            if vm.get_sla_time() == -1:
+            if vm.is_locked:
                 return True
         return False
 
@@ -244,14 +262,14 @@ class PhysicalMachine(object):
             self.cpu = self.cpu - self.management_cpu
             self.ram = self.ram - self.management_ram
             if log:
-                self.logger.debug("dom0 activated for {0} cpu:{1} ram:{2} mngMT:{3}".format(
+                self.logger.debug("dom0 activated for {} cpu:{} ram:{} mngMT:{}".format(
                               self.host_id, self.cpu, self.ram, self.management_cpu))
             self.is_hypervisor_activated = True
             return True
         return False
 
     def get_emon_hour(self):
-        if self.is_on and self.sla.g_enable_emon():
+        if self.power_state and self.sla.g_enable_emon():
             return self.emon.get_watt_hour()
         else:
             return 0
@@ -271,10 +289,10 @@ class PhysicalMachine(object):
             return self.emon.get_total_consumption()
 
     def get_energy_consumption(self):
-        if (not self.has_virtual_resources()) and (self.is_on is HOST_ON):
-            self.logger.info("Host on but empty. Return min energy")
+        if (not self.has_virtual_resources()) and (self.power_state is HOST_ON):
+            self.logger.debug("Host on but empty. Return min energy")
             return self.get_min_energy()
-        elif not self.is_on:
+        elif not self.power_state:
             self.logger.info("Host off. Return {}".format(0))
             return 0.0
         else:
@@ -284,7 +302,7 @@ class PhysicalMachine(object):
 
             if ret > self.get_max_energy():
                 if ret > self.get_max_energy() + 1:
-                    self.logger.info("Energy breaking for {}->({}), vm_cons:{}, mngm_c:{}, p:{}={}-{}/def".format(
+                    self.logger.warning("Energy breaking for {}->({}), vm_cons:{}, mngm_c:{}, p:{}={}-{}/def".format(
                                       self.get_id(), ret, vm_cons, self.management_cons_dict['avg'],
                                       p, self.default_cpu, self.cpu))
                 return self.get_max_energy()
@@ -322,20 +340,21 @@ class PhysicalMachine(object):
             usage = int(self.default_cpu - self.cpu)
             if usage == 0:  # state is off
                 return 0
-        self.logger.debug("USAGE in {0}: {1}".format(self.host_id, usage))
+        self.logger.debug("USAGE in {}: {}".format(self.host_id, usage))
         return self.energy_table[usage]
 
     def get_total_vcpu_energy_usage(self):
         # due to overcommitting we can have more vcpus than previously discussed.
         # In this case, I'm assuming the power consumption isn't impacted and returning the max value
         usage = sum([vm.get_vcpu_usage() for vm in self.get_virtual_resources()])
+        if usage > next(reversed(self.energy_table)):
+            usage = next(reversed(self.energy_table))
         return self.energy_table[usage]
 
     @staticmethod
     def __fetch_energy_info():
         host_energy = open('../input/energy/processador.dad', 'r')
-        host_table = dict()
-        temp_list = []
+        host_table = OrderedDict()
         for line in host_energy:
             info = re.findall(r'[-+]?\d*\.\d+|\d+', line)
             ncpu = int(info[0])
@@ -352,11 +371,11 @@ class PhysicalMachine(object):
             model, are shared costs. The other costs are individual.
     """
     '''def get_wasted_energy(self):
-        if not self.has_virtual_resources() and not self.is_on:
+        if not self.has_virtual_resources() and not self.power_state:
             self.logger.info("ENERGY: Wasted is 0.00 from %s" % (self.host_id))
             return 0.0  # servidor esta desligado
 
-        if not self.has_virtual_resources() and self.is_on is True:
+        if not self.has_virtual_resources() and self.power_state is True:
             self.logger.info("ENERGY: Wasted is minimum from %s" % (self.host_id))
             return self.get_min_energy()
 

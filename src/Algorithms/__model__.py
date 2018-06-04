@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import threading
+import time
 from Users.SLAHelper import *
 
 
@@ -30,7 +31,7 @@ class Pattern(object):
         self.global_time = -1
 
     def __repr__(self):
-        return repr([self.__get])
+        return repr([self])
 
     def gvt(self, max):
         self.logger.info("Init GVT in {0} to {1}".format

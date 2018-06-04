@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
 CHAVE-Sim: The simulator for research based in clouds architecture
     CHAVE: Consolidation with High Availability on virtualyzed environments
 """
 
 import sys
-
 from Architecture.Resources.Virtual import *
 from Users.SLAHelper import *
 
@@ -42,40 +42,53 @@ class Demand(object):
                self.all_ha_dicts[az_id]
 
     def create_vms_from_sources(self):
-        # self._define_az_id(list_of_source_files)
         for i, source_file in enumerate(self.list_of_source_files):
-            id = self.az_id[i]
-            self.all_vms_dict[id], \
-            self.all_operations_dicts[id], \
-            self.all_ha_dicts[id] = self._get_vms_from_source(source_file)
+            azid = self.az_id[i]
+            self.all_vms_dict[azid], \
+            self.all_operations_dicts[azid], \
+            self.all_ha_dicts[azid] = self._get_vms_from_source(source_file)
 
     def __get_availab_from_source(self, source_file):
+        locked_case = self.sla.g_lock_case()
+        is_enabled_repl = self.sla.g_enable_replication()
 
-        av_source_file = source_file.split(".txt")[0] + "-ha.txt"
-        av_demand_dict = dict()
-        with open(av_source_file, "r") as ha_source:
-            av_demand_dict['this_az'] = float(ha_source.readline())  # apenas uma vez
-            #self.logger.info("HA for {0} is {1}".format(source_file, av_demand_dict['this_az']))
-            for demand in ha_source:
+        if locked_case == 'True':
+            lock = True
+        elif locked_case == 'False':
+            lock = False
+
+        av_source_file = source_file.split(".txt")[0] + "-plus.txt"
+        av_demand_dict, lock_dict = dict(), dict()
+        with open(av_source_file, "r") as source:
+            av_demand_dict['this_az'] = float(source.readline())
+            for demand in source:
                 demand = demand.split()
-                #  ha_ts = demand[0]  # <- not used here!
+                #  ha_ts = demand[0]  # <- not used!
                 vm_id = demand[1]
-                av_tax = float(demand[2])
-                av_demand_dict[vm_id] = av_tax
-            ha_source.close()
-        return av_demand_dict
+
+                if is_enabled_repl:
+                    av_demand_dict[vm_id] = float(demand[2])
+                else:
+                    av_demand_dict[vm_id] = av_demand_dict['this_az']
+
+                if locked_case == 'RANDOM':
+                    lock = eval(demand[3])
+                lock_dict[vm_id] = lock
+            #ha_source.close()
+        return av_demand_dict, lock_dict
 
     def _get_vms_from_source(self, source_file):
-        '''
+        """
         :param source_file: one source file, refer to all demand from one AZ
         :return:    operations_dict --> a ordered dictionary with all operations (create/destroy)
                     vms_list --> a list with all VMs objects to instance
-        '''
-        availab_dict = self.__get_availab_from_source(source_file)
+        """
+        availab_dict, lock_dict = self.__get_availab_from_source(source_file)
         operations_dict = OrderedDict()
         vms_list = []
         for_testing_vm_list = []
         line = 0
+        av_az = availab_dict['this_az']
         with open(source_file, 'r') as source:
             for operation in source:
                 line = line + 1
@@ -84,17 +97,15 @@ class Demand(object):
                 timestamp = int(operation[1])
                 this_vm_id = str(operation[2])
                 op_id = str(this_vm_id + K_SEP + state)
-
                 az_id = self._get_this_az_id(source_file)
                 av_vm = availab_dict[this_vm_id]
-                av_az = availab_dict['this_az']
+                lock = lock_dict[this_vm_id]
                 if self.sla.is_required_ha(av_vm, av_az):
-                    type = CRITICAL
+                    vtype = CRITICAL
                 else:
-                    type = REGULAR
+                    vtype = REGULAR
 
                 if state == "START":
-
                     if self.algorithm == "CHAVE":
                         host = "None"
                     else:
@@ -103,13 +114,12 @@ class Demand(object):
                     vcpu = int(operation[4])
                     vram = self.vmRam_default * vcpu
                     lifetime = 0
-                    vm = VirtualMachine(this_vm_id, vcpu, vram,
-                                        av_vm, type, host, az_id,
-                                        timestamp, lifetime, self.logger)
+                    vm = VirtualMachine(this_vm_id, vcpu, vram, av_vm, vtype, host, az_id,
+                                        timestamp, lifetime, lock, self.logger)
                     vms_list.append(vm)
                     for_testing_vm_list.append(vm)
                     operations_dict[op_id] = vm
-                    if type is CRITICAL:
+                    if vtype is CRITICAL:
                         self.ha_only_dict[this_vm_id] = vm
 
                 elif state == "STOP":
@@ -120,16 +130,15 @@ class Demand(object):
                         lifetime = timestamp - int(vm_to_stop.timestamp)
                     except Exception as e:
                         self.logger.exception(type(e))
-                        self.logger.error("Problem on %s 'lifetime': %s %s %s \n %s" %
-                                          (last_op_id, lifetime, timestamp,
-                                           vm_to_stop.timestamp, sys.exc_info()[0]))
+                        self.logger.error("Problem on {} 'lifetime': {} {} {} \n {}".format(
+                            last_op_id, lifetime, timestamp,
+                            vm_to_stop.timestamp, sys.exc_info()[0]))
                     host = vm_to_stop.get_host_id()
                     vcpu = vm_to_stop.get_vcpu()
                     vram = vm_to_stop.get_vram()
 
-                    vm = VirtualMachine(this_vm_id, vcpu, vram, 
-                                        av_vm, type, host, az_id,
-                                        timestamp, lifetime, self.logger)
+                    vm = VirtualMachine(this_vm_id, vcpu, vram, av_vm, vtype, host, az_id,
+                                        timestamp, lifetime, lock, self.logger)
 
                     operations_dict[op_id] = vm
                     if self.max_timestamp < timestamp:
@@ -139,11 +148,9 @@ class Demand(object):
                         for_testing_vm_list.pop(vmindex)
                     except Exception as e:
                         self.logger.exception(type(e))
-                        self.logger.error("On pop VM from %s \n %s" %
-                                          (op_id, sys.exc_info()[0]))
+                        self.logger.error("On pop VM from {} \n {}".format(op_id, sys.exc_info()[0]))
             if for_testing_vm_list:  # Se tiver algo, entao sobrou alguma vm
-                self.logger.error("At the end, we already have VMs: %s"
-                                  % for_testing_vm_list)
+                self.logger.error("At the end, we already have VMs: {}".format(for_testing_vm_list))
         return vms_list, operations_dict, availab_dict
 
     # TODO: criar para GVT
@@ -154,7 +161,7 @@ class Demand(object):
         for id in self.az_id:
             if source_file.rfind(id) > 0:
                 return id
-        self.logger.error("Not found azId from source_file {0}".format(source_file))
+        self.logger.error("Not found azId from source_file {}".format(source_file))
         exit(0)
 
     def define_host_for_vm(self):

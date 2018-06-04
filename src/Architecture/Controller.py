@@ -159,21 +159,21 @@ class GlobalController(Controller):
             if az.az_id == azid:
                 #print 'Found azid', azid
                 return az
-        self.logger.error("Not found azid: %s" % (azid))
+        self.logger.error("Not found azid: {}".format(azid))
         return False
 
     def get_vms_dict_from_az(self, azid):
         az = self.get_az(azid)
         if az:
             return az.vms_dict
-        self.logger.error("Not found az: %s" % (azid))
+        self.logger.error("Not found az: {}".format(azid))
         return False
 
     def get_vm_object_from_az(self, vmid, azid):
         for vm in self.get_vms_dict_from_az(azid):
             if vm.id == vmid:
                 return vm
-        self.logger.error("Not found vm %s in az: %s" % (vmid, azid))
+        self.logger.error("Not found vm {} in az: {}".format(vmid, azid))
         return False
 
     def get_az_from_lc(self, az_id):
@@ -255,7 +255,7 @@ class LocalController(Controller):
 
     def pop_critical_vms_from_replicas_dict(self):
         rem = self.ordered_replicas_dict.popitem()
-        self.logger.debug("Removed {0} from replicas Dict".format(rem))
+        self.logger.debug("Removed {} from replicas Dict".format(rem))
         return rem
 
     def get_oredered_replicas_dict(self):
@@ -272,21 +272,21 @@ class LocalController(Controller):
             if az.az_id == azid:
                 #print 'Found azid', azid
                 return az
-        self.logger.error("Not found azid: %s" % (azid))
+        self.logger.error("Not found azid: {}".format(azid))
         return False
 
     def get_vms_dict_from_az(self, azid):
         az = self.get_az(azid)
         if az:
             return az.vms_dict
-        self.logger.error("Not found az: %s" % (azid))
+        self.logger.error("Not found az: {}".format(azid))
         return False
 
     def get_vm_object_from_az(self, vmid, azid):
         for vm in self.get_vms_dict_from_az(azid):
             if vm.vm_id == vmid:
                 return vm
-        self.logger.error("Not found vm %s in az: %s" % (vmid, azid))
+        self.logger.error("Not found vm {} in az: {}".format(vmid, azid))
         return False
         #return (vm[vmid] for vm in self.get_vms_dict_from_az(azid) if vm.has_key(vmid))
 

@@ -1,3 +1,7 @@
+import math
+from src.Architecture.Resources.Virtual import *
+
+
 class MBFD:
     def __init__(self, a):
         self.a = a
@@ -201,24 +205,24 @@ class MBFD:
                     pnode = row[0]
                     vnode = row[1]
                     pnode.deallocate(vnode)
-                if self.dbg: print "MBFD - None: Without solution for node %s" % (vm.get_id())
+                #if self.dbg: print("MBFD - None: Without solution for node %s" % (vm.get_id()))
                 return -1
             if not allocatedHost.allocate(vm):
                 for row in rollback:
                     pnode = row[0]
                     vnode = row[1]
                     pnode.deallocate(vnode)
-                if self.dbg: print "MBFD: Without solution for node %s" % (vm.get_id())
+                if self.dbg: print ("MBFD: Without solution for node %s" % (vm.get_id()))
                 return -1
 
             rollback.append((allocatedHost, vm))
-        if self.dbg: print "MBFD - moving to network allocation"
+        #if self.dbg: print("MBFD - moving to network allocation")
         disconnectDict = {}
         for vm in vmList:
             connect, disconnect = vm.reconnect_adjacencies()
             # no need for track connect here
             if len(connect) == 0 and len(disconnect) == 0:
-                if self.dbg: print "MBFD: Without solution for network!"
+                #if self.dbg: print("MBFD: Without solution for network!")
                 # rollback all links. Connect must be empty, otherwise we have a problem :)
                 for i in disconnectDict:
                     for j in disconnectDict[i]:
@@ -237,7 +241,7 @@ class MBFD:
         self.nalloc += 1
         self.vi_list.append(vi)
 
-        if self.dbg: print "MBFD: OK. Allocation is done with MBFD"
+        #if self.dbg: print ("MBFD: OK. Allocation is done with MBFD")
         return 1
 
 
@@ -285,9 +289,9 @@ class MBFD:
         print('Resources Infrastructure')
         for pm in self.pm_list:
             spc = '----|'
-            print "pm_get_usage:", pm.get_usage()
+            print("pm_get_usage:", pm.get_usage())
             for link in pm.get_links():
-                print spc + str(link.get_destination().id) + ' bw: %.4lf' % (link.weight)
+                print(spc + str(link.get_destination().id) + ' bw: %.4lf' % (link.weight))
 
 
     def physical_cfg_to_file(self):

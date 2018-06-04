@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-CHAVE-Sim: The simulator for research based in clouds architecture
-    CHAVE: Consolidation with High Availability on virtualyzed environments
-"""
 
-__author__ = "Daniel Camargo and Denivy Ruck"
+__description__ = "CHAVE-Sim: The simulator for research based in clouds architecture" \
+          "Consolidation with High Availability on virtualyzed environments"
+__author__ = "Daniel Camargo based on EAVIRA(Denivy Ruck)"
 __license__ = "GPL-v3"
-__version__ = "2.0.1"
+__version__ = "2.0.4"
 __maintainer__ = "Daniel Camargo"
 __email__ = "daniel@colmeia.udesc.br"
 __status__ = "Test"
+doc = [__description__, __author__, __license__, __version__, __maintainer__, __email__, __status__]
 
 #import matplotlib.pyplot as plt
+import pickle
 import argparse
 from datetime import datetime
 import os
@@ -49,47 +49,39 @@ def output_stream(sla):
     :param sla:
     :return:
     """
-    types = sla.g_output_type().split(K_SEP)
-    logger.info("Saving results in {0}".format(types))
-    if "CSV" in types:
+    types_list, sep = sla.g_output_type()
+    logger.info("Saving results in {0}".format(types_list))
+    if "CSV" in types_list:
+        # Todo: ver para modificar o parametro 'separator'
         w = csv.writer(open(sla.g_data_output() + ".csv", "w"))
         for key, val in sla.g_metrics_dict().viewitems():
-            logger.info("k:{}, v:{}".format(key, val))
+            # logger.info("k:{}, v:{}".format(key, val))
             w.writerow([key, val])
-
-    if "JSON" in types:
-        json_f = json.dumps(sla.g_metrics_dict(),
-                            indent=True,
-                            sort_keys=False)
-        f = open(sla.g_data_output() + ".json", "w")
-        f.write(json_f)
-        f.close()
-
-    if "SQLITE" in types:
-        print("Not yet implemented")
-
-    if "TEXT" in types:
-        print("Not yet implemented")
-        with open(sla.g_log_output() + ".mem", "w") as fp:
-            for az, metric in sla.metrics_dict().items():
-                fp.write(az)
-                for m, v in metric.items():
-                    fp.write(m)
-                    if type(v) is not list:
-                        fp.write(v)
+    if "JSON" in types_list:
+        with open(sla.g_data_output() + ".json", "w") as fp:
+            json.dump(sla.g_metrics_dict(), fp, indent=sep)
+    if "SQLITE" in types_list:
+        logger.error("Not yet implemented")
+    if "TEXT" in types_list:
+        with open(sla.g_data_output() + ".txt", "w") as fp:
+            for az, metric in sla.g_metrics_dict().items():
+                fp.write(az + ':\n')
+                for km, vm in metric.items():
+                    fp.write('\t' + km + ': ')
+                    if type(vm) is not list:
+                        fp.write(str(vm)+'\n')
                     else:
-                        for e in v:
-                            fp.write(e)
-
-    if "MEM" in types:
-        with open(sla.g_log_output() + ".mem", "w") as fp:
+                        fp.write('List(len('+str(len(vm))+')\n')
+    if "MEM" in types_list:
+        get = sla.g_log_output().rsplit(sep='/', maxsplit=1)
+        mem_out = get[0] + '/mem/' + get[1].rsplit(sep='.txt')[0] + '.mem'
+        os.makedirs(os.path.dirname(mem_out), exist_ok=True)
+        with open(mem_out, "w",) as fp:
             all_objects = muppy.get_objects()
             sum1 = summary.summarize(all_objects)
-            # summary.print_(sum1)
             for line in summary.format_(sum1):
-                fp.write("{0}\n".format(line))
-        #fp.close()
-    logger.info("Saved in {0}".format(sla.g_log_output()))
+                fp.write("{}\n".format(line))
+    logger.info("Saved in {}".format(sla.g_log_output()))
 
 '''
 def plot_all():
@@ -99,8 +91,8 @@ def plot_all():
         y = list(ene_l)  # ditto
         if len(x) > 0 and len(y):
             plt.plot(x, y, '-')
-            plt.show()
-'''
+            plt.show()'''
+
 
 def print_all():
     """
@@ -118,27 +110,32 @@ def main():
     main() decribes all architecture and define the main objects
     :return: None
     """
-
     demand = Demand(sla)
     demand.create_vms_from_sources()
-
     az_list, demand_list = [], []
+    if sla.g_algorithm() == "CHAVE":
+        state = HOST_OFF
+    else:
+        state = HOST_ON
+
     for i, azid in enumerate(demand.az_id):
         vm_d, op_d, ha_d = demand.get_demand_from_az(azid)
         az = AvailabilityZone(sla, azid, vm_d, op_d, ha_d)
-        if az.create_infra(first_time=True, host_state=HOST_OFF):
+        if az.create_infra(first_time=True, host_state=state):
             az_list.append(az)
-            logger.debug("HA Initial {0}: {1}".format(azid, ha_d['this_az']))
+            logger.debug("HA Initial {}: {}".format(azid, ha_d['this_az']))
         else:
-            logger.error("Problem on create infra for AZ#{0}: {1}".format(i, azid))
+            logger.error("Problem on create infra for AZ#{}: {}".format(i, azid))
 
     lcontroller_d, region_d = dict(), dict()
-    lcontroller_d["lc0"] = LocalController(sla, "lc0", az_list[0:3])
-    lcontroller_d["lc1"] = LocalController(sla, "lc1", az_list[3:6])
+    r_max = sla.g_max_az_per_region()
 
-    """Region is useless here, but is useful for a more complex architectures"""
-    region_d['rg0'] = Region(sla, "rg0", lcontroller_d['lc0'])
-    region_d['rg1'] = Region(sla, "rg1", lcontroller_d['lc1'])
+    for r in range(int(len(az_list) / r_max)):  # 6/3=2
+        lc_id = 'lc'+str(r)
+        r_id = 'rg'+str(r)
+        lcontroller_d[lc_id] = LocalController(sla, lc_id, az_list[r*r_max: (r+1)*r_max])
+        """Region is useless here, but is useful for a more complex architectures"""
+        region_d[r_id] = Region(sla, r_id, lcontroller_d[lc_id])
 
     api = GlobalController(sla, demand, lcontroller_d, region_d)
 
@@ -165,15 +162,15 @@ def main():
 
     total_energy = 0
     for az_id in sla.g_az_id_list():
-        total_energy += sla.metrics(az_id, 'get', 'total_energy_f')
-    sla.metrics('global', 'set', 'total_energy_f', total_energy)
-    sla.metrics('global', 'set', 'sla_violations_i', api.get_total_SLA_violations_from_cloud())
-    sla.metrics('global', 'set', 'overcommitting_i', api.get_list_overcom_amount_from_cloud())
-    sla.metrics('global', 'set', 'elapsed_time_i', elapsed)
+        total_energy += sla.metrics.get(az_id, 'total_energy_f')
+    sla.metrics.set('global', 'total_energy_f', total_energy)
+    #sla.metrics.set('global', 'sla_violations_i', api.get_total_SLA_violations_from_cloud())
+    #sla.metrics.set('global', 'overcommit_i', api.get_list_overcom_amount_from_cloud())
+    sla.metrics.set('global', 'elapsed_time_i', elapsed)
 
     output_stream(sla)
+    logger.critical("This simulation take {} seconds".format(elapsed))
     #plot_all()
-
 
 
 if __name__ == '__main__':
@@ -187,8 +184,8 @@ if __name__ == '__main__':
                         help='Number of iterations: N')
     parser.add_argument('-alg', dest='alg', action='store', nargs=1, type=str, required=True,
                         help='algorithm type: CHAVE | EUCA')
-    parser.add_argument('-pm', dest='pm', action='store', nargs=1, type=str, required=True,
-                        help='placement or migration order')
+    parser.add_argument('-ca', dest='ca', action='store', nargs=1, type=str, required=True,
+                        help='Consolidation Algorithm')
     parser.add_argument('-ff', dest='ff', action='store', nargs=1, type=str, required=True,
                         help='first fit algorithm')
     parser.add_argument('-in', dest='input', action='store', nargs='+', required=True,
@@ -199,17 +196,18 @@ if __name__ == '__main__':
                         help='High Availability from AZs')
     parser.add_argument('-wt', dest='wt', action='store', nargs=1, type=int, required=True,
                         help='Window time: N')
-    parser.add_argument('-ws', dest='ws', action='store', nargs=1, type=int, required=True,
-                        help='Window size: N')
+    parser.add_argument('-lock', dest='lock', action='store', nargs=1, type=str, required=True,
+                        help='VM Lock test. Values: <True|False|Random>')
     parser.add_argument('-ovc', dest='overcom', action='store', nargs=1, type=str, required=True,
                         help='Has Overcommitting?')  # overprovisioning
-    parser.add_argument('-cons', dest='consolidate', action='store', nargs=1, type=str, required=True,
+    parser.add_argument('-cons', dest='consol', action='store', nargs=1, type=str, required=True,
                         help='Has consolidate?')
+    parser.add_argument('-repl', dest='repl', action='store', nargs=1, type=str, required=True,
+                        help='Enable replication? Values: <False | True>')
     args = parser.parse_args()
 
     """This 'sla' instance will memoize all specifications and parameters from args and .conf file"""
     sla = SLAHelper()
-
     """Values from python args"""
     sla.list_of_source_files(args.input)
     s = len(args.input)
@@ -218,40 +216,42 @@ if __name__ == '__main__':
     sla.ha_input(args.ha_input)
     sla.az_conf(sla.set_conf(args.az_conf, 'az_conf'))
     sla.nit(sla.set_conf(args.nit, 'nit'))
-    sla.pm(args.pm[0])
     sla.ff(args.ff[0])
     sla.has_overcommitting(eval(args.overcom[0]))
-    sla.has_consolidation(eval(args.consolidate[0]))
+    sla.has_consolidation(eval(args.consol[0]))
+    sla.consolidation_alg(str(args.ca[0]))
     sla.algorithm(args.alg[0])
     sla.window_time(args.wt[0])
-    sla.window_size(args.ws[0])
-    """From Linux environment variables"""
+    sla.lock_case(str(args.lock[0]))
+    sla.enable_replication(eval(args.repl[0]))
+    """Configurations for logger objects:"""
+    # sla.date(str(datetime.now().strftime(os.environ.get("CS_DP"))))
+    sla.date(os.environ.get("CS_START"))
+    logger = logging.getLogger(__name__)
+    sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
+    hdlr = logging.FileHandler(sla.g_log_output())
+    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER")))
+    logger.addHandler(hdlr)
+    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL')))  # , logging.DEBUG)))
+    sla.set_logger(logger)
+    """Values from Linux environment variables"""
     sla.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
-    sla.date(str(datetime.now().strftime(os.environ.get("CS_DP"))))
+    sla.source_folder(str(os.environ.get("CS_SOURCE_FOLDER")))
     sla.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
     sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
-    sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
-    #user = str(os.environ["USER"])
-    # Todo: desfazer essa gambi no final
-    #if user == "debian":
-        #os.symlink(sla.g_log_output(), "../logs" + sla.g_log_output() + "_link.log")
-    sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]))
+    sla.output_type(str(os.environ["CS_OUTPUT_TYPE"]), str(os.environ["CS_OUTPUT_SEPARATOR"]))
     sla.trace_class(str(os.environ["CS_TRACE_CLASS"]))
     sla.enable_emon(eval(os.environ["CS_ENABLE_EMON"]))
     sla.az_selection(str(os.environ["CS_AZ_SELECTION"]))
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
     sla.frag_class(str(os.environ.get('CS_FRAGMENTATION_CLASS')))
-    """Configurations for logger objects:"""
-    logger = logging.getLogger(__name__)
-    hdlr = logging.FileHandler(sla.g_log_output())
-    hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER")))
-    logger.addHandler(hdlr)
-    logger.setLevel(int(os.environ.get('CS_LOG_LEVEL')))  # , logging.DEBUG)))
-    sla.logger(logger)
+    sla.vcpu_per_core(float(os.environ.get('CS_VCPUS_PER_CORE')))
     sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
-    sla.init_metrics(is_print=False)
-
+    sla.doc(doc)
     """From now, we can't change this SLA parameters"""
+    sla.init_metrics()
     sla.set_sla_lock(True)
     sla.debug_sla()
+    output_stream(sla)
+    exit(1)
     main()
