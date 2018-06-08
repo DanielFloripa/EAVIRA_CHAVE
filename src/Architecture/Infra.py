@@ -159,8 +159,11 @@ class AvailabilityZone(Infrastructure):
         host_on_l = []
         host_off_l = []
         for host in self.host_list:
-            if host.power_state is True and host.has_virtual_resources():
+            if host.power_state is True:
                 host_on_l.append(host)
+            #elif host.has_virtual_resources():
+            #    self.logger.error("{}\tHost {} off but has resources? {}".format(
+            #        self.az_id, host.host_id, host.virtual_machine_dict.items()))
             else:
                 host_off_l.append(host)
         if (len(host_on_l) + len(host_off_l)) != len(self.host_list):
@@ -353,7 +356,7 @@ class AvailabilityZone(Infrastructure):
             total_az_hour += host.get_emon_hour()
         return total_az_hour
 
-    def take_snapshot_for(self, key_list, metric_d=None, global_time=None):
+    def take_snapshot_for(self, key_list, metric_d=None, global_time=None, energy=None):
         """
         Take a snapshot collect informations from metric_dand put them on the metrics
         :param key_list: List of keys used in Metrics Class
@@ -362,7 +365,8 @@ class AvailabilityZone(Infrastructure):
         :return: bool
         """
         az_id = self.az_id
-        energy = self.get_az_energy_consumption2(append_metrics=False)
+        if energy is None:
+            energy = self.get_az_energy_consumption2(append_metrics=False)
         ret = False
         if 'energy_acum_l' in key_list:
             ret1 = self.sla.metrics.set(az_id, 'energy_l', energy)
@@ -392,14 +396,15 @@ class AvailabilityZone(Infrastructure):
                 ret = True
 
         if metric_d is not None:
-            try:
-                en_met = metric_d['energy']
-            except KeyError:
-                self.logger.error("Problem on pop energy {}: ".format(metric_d))
-                pass
-            else:
-                if en_met is None:
-                    metric_d['energy'] = energy
+            if 'energy' in metric_d.keys():
+                try:
+                    en_met = metric_d['energy']
+                except KeyError:
+                    self.logger.error("Problem on pop energy {}: ".format(metric_d))
+                    pass
+                else:
+                    if en_met is None:
+                        metric_d['energy'] = energy
             for k, v in metric_d.items():
                 if not isinstance(v, str) and \
                         not isinstance(v, int) and \
@@ -407,7 +412,6 @@ class AvailabilityZone(Infrastructure):
                         v is not None:
                     self.logger.error("Problem on k:{} v:{} tp:{} who call?:{}: ".format(k, v, type(v), inspect.stack()[1][3]))
                     sys.exit(1)
-
             for key in key_list:
                 if self.sla.metrics.set(az_id, key, metric_d):
                     ret = True

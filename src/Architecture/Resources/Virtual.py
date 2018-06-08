@@ -18,12 +18,19 @@ class VirtualMachine(object):
         self.vcpu = vcpu
         self.usage = 1.0
         self.vram = vram
+
+        self.running_time = 0
         self.lifetime = lifetime
+        self._static_lifetime = lifetime
+        self.last_ovcm_time = timestamp
+        self.velocidade = 1
+        self._static_timestamp = timestamp  # do not change
+        self.timestamp = timestamp
+
         self.dirty_pages = random.randint(100, 1000)
         self.type = type
-        self.timestamp = timestamp
         self.availab = float(av)
-        self.linked_to = []
+        self.in_overcomm_host = False
 
     def __repr__(self):
         return repr(('id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram,

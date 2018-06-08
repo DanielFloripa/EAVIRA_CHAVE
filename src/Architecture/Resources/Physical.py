@@ -21,13 +21,14 @@ class PhysicalMachine(object):
         self.virtual_machine_list = []
         self.virtual_machine_dict = dict()
         self.power_state = None
-        self.default_cpu = cpu #  Esse não muda
+        self.default_cpu = cpu  # Esse não muda
         self.default_ram = ram
         self.ram2cpu = float(self.default_ram) / float(self.default_cpu)
         self.has_overcommitting = False
         self.overcom_max = float(sla.g_vcpu_per_core())
         self.overcom_count = 0
         self.actual_overcom = 0
+        self.timestamp_original_d = dict()
         # With vms
         self.max_energy = 209.0  # 202.43 from input->energy
         self.min_energy = 118.11
@@ -107,6 +108,34 @@ class PhysicalMachine(object):
                 self.az_id, vm.vm_id, self.host_id, self.cpu, vm.get_vcpu(), self.ram, vm.get_vram()))
         return False
 
+    def refresh_all_vms_for_overcom(self, menos_esta, tax, global_time):
+        if tax > 1.0:
+            time = 0
+            velocidade = 1.0 / tax  # sempre maior que 50km/h
+            for vmid, vmobj in self.virtual_machine_dict.items():
+                old_ts = vmobj.lifetime
+                vmobj.running_time += (global_time - vmobj.last_ovcm_time) / vmobj.velocidade
+                #if self.overcom_count == 0:
+                #    self.timestamp_original_d[vmid] = old_ts
+                #if vmid == menos_esta:
+                #    pass
+                vmobj.last_ovcm_time = global_time
+                vmobj.velocidade = velocidade
+                vmobj.lifetime += vmobj.running_time  # int(old_ts * tax)
+                vmobj.in_overcomm_host = True
+                time += abs(old_ts-vmobj.lifetime)
+                self.logger.info("{}\tChanging ts:{} from {} to {}, increment {}t".format(
+                    self.az_id, old_ts, vmid, vmobj.lifetime, time))
+            return True
+        self.logger.warning("Tax must be grather than 1.0. Is {} for {}".format(tax, menos_esta))
+        return False
+
+    def check_overcom(self):
+        # Todo: in future test and remove redundancy: has and actual
+        if self.sla.g_has_overcommitting() is True and (self.actual_overcom > 1 or self.has_overcommitting):
+            return self.actual_overcom
+        return 0
+
     def can_overcommitting(self, vm):
         if self.sla.g_has_overcommitting() is True:
             used = self.get_used_cpu()
@@ -117,8 +146,8 @@ class PhysicalMachine(object):
                 return True
             self.logger.debug("{} Pass: overcomCPU ((Ucpu:{} + Vcpu:{}) / Dcpu:{} = {} > overcom_max {}".format(
                 self.host_id, used, vm.get_vcpu(), self.default_cpu, overcom_cpu, self.overcom_max, self.overcom_max))
-        elif self.can_allocate(vm):
-            return True
+        # elif self.can_allocate(vm):
+        #    return True
         else:
             return False
 
@@ -126,49 +155,63 @@ class PhysicalMachine(object):
     def do_overcommitting(self, vm):
         used = self.get_used_cpu()
         overcom = (float(used) + float(vm.get_vcpu())) / float(self.default_cpu)
-        self.logger.info("Done! on: {}, for: {}, tax: (Ucpu:{}+Vcpu:{})/Dcpu:{} = {}".format(
-            self.get_id(), vm.get_id(), used, vm.get_vcpu(), self.default_cpu, overcom))
+
         step = self.sla.metrics.get(self.az_id,  'overcommit_i')
         self.sla.metrics.add(self.az_id, 'overcommit_i', 1)
         metric_ovc = {'state': 'do_ovc'+K_SEP+str(step),
                       'host_id': self.host_id,
-                      'default_cpu': self.default_cpu,
-                      'host_cpu': self.cpu,
-                      'used_cpu': used,
-                      'vm_id': vm.vm_id,
-                      'vm_cpu': vm.vcpu,
-                      'pool_id': vm.pool_id,
                       'tax': overcom}
         self.sla.metrics.set(self.az_id, 'overcommit_l', metric_ovc)
+
         self.has_overcommitting = True
         # Add just the amount required for this VM, so the allocate() will not claim
         self.cpu += vm.get_vcpu()
         self.ram += vm.get_vram()
         self.overcom_count += 1
         self.actual_overcom = overcom
+        self.refresh_all_vms_for_overcom(vm.vm_id, overcom)
+        vm.in_overcomm_host = True
+        self.logger.info("Done! on: {}, for: {}, tax: (Ucpu:{}+Vcpu:{})/Dcpu:{} = {}".format(
+            self.get_id(), vm.get_id(), used, vm.get_vcpu(), self.default_cpu, overcom))
+
+    def refresh_all_vms_for_undo_overcom(self, old_tax, new_tax, global_time, reset=False):
+        time = 0
+        tax = 1 - (new_tax / old_tax)
+        velocidade = 1.0 / new_tax
+
+        for vmid, vmobj in self.virtual_machine_dict.items():
+            old_ts = vmobj.lifetime
+            vmobj.running_time += (global_time - vmobj.last_ovcm_time) / vmobj.velocidade
+            if reset is False:
+                vmobj.lifetime = int(old_ts * tax)
+            else:
+                vmobj.lifetime += vmobj.running_time
+
+            time += abs(old_ts-vmobj.lifetime)
+            vmobj.in_overcomm_host = False
+            self.logger.info("{}\tUndo Overcom, changing ts:{} from {} to {}, saving {}t".format(
+                self.az_id, old_ts, vmid, vmobj.lifetime, time))
+        return time
 
     def try_undo_overcommitting(self, vm):
         used = self.get_used_cpu()
         ret = False
         overcom = (float(used) - float(vm.get_vcpu())) / float(self.default_cpu)
         self.actual_overcom = overcom
-        self.overcom_count -= 1
+        # self.overcom_count -= 1
         if overcom <= 1.0:
             self.has_overcommitting = False
+            time = self.refresh_all_vms_for_undo_overcom(overcom, reset=True)
             ret = True
-
+        else:
+            time = self.refresh_all_vms_for_undo_overcom(overcom)
         step = self.sla.metrics.get(self.az_id, 'overcommit_i')
-        self.sla.metrics.add(self.az_id, 'overcommit_i', 1)
+        self.sla.metrics.incr_1(self.az_id, 'overcommit_i')
         metric_ovc = {'state': 'undo_ovc'+K_SEP+str(step),
                       'host_id': self.host_id,
-                      'default_cpu': self.default_cpu,
-                      'host_cpu': self.cpu,
-                      'used_cpu': used,
-                      'vm_id': vm.vm_id,
-                      'vm_cpu': vm.vcpu,
-                      'pool_id': vm.pool_id,
                       'tax': overcom}
         self.sla.metrics.set(self.az_id, 'overcommit_l', metric_ovc)
+        self.logger.info("Undo overcommit for {} time:{}t".format(self.host_id, time))
         return ret
 
     def has_available_resources(self):
@@ -351,9 +394,8 @@ class PhysicalMachine(object):
             usage = next(reversed(self.energy_table))
         return self.energy_table[usage]
 
-    @staticmethod
-    def __fetch_energy_info():
-        host_energy = open('../input/energy/processador.dad', 'r')
+    def __fetch_energy_info(self):
+        host_energy = open(self.sla.g_energy_model_src(), 'r')
         host_table = OrderedDict()
         for line in host_energy:
             info = re.findall(r'[-+]?\d*\.\d+|\d+', line)
