@@ -1,0 +1,8 @@
+Para gerar os PDFs, utilizou-se R.
+Para instalar R:
+  > sudo apt install r-cran-gplots r-base
+
+Para gerar os gráficos do sbesc2.R, execute:
+  > bash makeRPlots.sh
+
+Os gráficos 01xxx.pdf a 06xxx.pdf serão gerados.

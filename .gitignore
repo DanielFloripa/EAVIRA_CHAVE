@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.idea/*
+*.pyc
+*__pycache__*
+*output/*
+*Plots/*
+*venv36/*

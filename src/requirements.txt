@@ -1,0 +1,12 @@
+matplotlib
+peewee
+numpy
+pympler
+argparse
+psutil
+#itertools
+operator
+logging
+# csv
+# json
+# collections
