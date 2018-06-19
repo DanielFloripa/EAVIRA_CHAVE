@@ -3,6 +3,7 @@
 
 import random
 import math
+from Users.SLAHelper import *
 
 
 class VirtualMachine(object):
@@ -95,6 +96,22 @@ class VirtualMachine(object):
 
     def get_vcpu(self):
         return self.vcpu
+
+    def g_type(self)->str:
+        if self.type == REGULAR:
+            return "reG"
+        elif self.type == REPLICA:
+            return "reP"
+        elif self.type == CRITICAL:
+            return "C"
+        else:
+            return "None"
+
+    def g_is_locked(self)->str:
+        # return self.is_locked.__str__()[0]
+        if self.is_locked:
+            return "T"
+        return "F"
 
     def get_vcpu_usage(self):
         # arredonde pra cima

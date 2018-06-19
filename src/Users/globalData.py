@@ -7,7 +7,7 @@ CHAVE-Sim: The simulator for research based in clouds architecture
 
 # Just some global vars
 k_values = ['max_host_on_i',
-            'sla_violations_i',
+            'sla_violations_i',  # Just for overcom
             'elapsed_time_i'
             ]
 columns_v = ('gvt', 'val_0', 'info')
@@ -42,7 +42,7 @@ def query_insert(len_tuple):
     it = ''
     for i in range(len_tuple - 1):
         it += str1
-    ret = query_insert_default + it + '?);'
+    ret = "{}{}?);".format(query_insert_default, it)
     return ret
 
 
@@ -55,8 +55,9 @@ def query_create(tup):
     len_tuple = len(tup)
     it = ''
     for i in range(len_tuple - 2):
-        it += '{} REAL DEFAULT 0.0, '.format(tup[i+1])
-    ret = query_create_default + it + '{} TEXT DEFAULT "", ai INTEGER PRIMARY KEY AUTOINCREMENT);'.format(format(tup[i+2]))
+        it += '{} REAL DEFAULT 0, '.format(tup[i+1])
+    ret = "{}{}{} TEXT DEFAULT '', ai INTEGER PRIMARY KEY AUTOINCREMENT);".format(query_create_default, it, format(tup[i+2]))
+    #ret = query_create_default + it + '{} TEXT DEFAULT "", ai INTEGER PRIMARY KEY AUTOINCREMENT);'.format(format(tup[i+2]))
     return ret
 
 

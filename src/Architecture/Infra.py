@@ -333,6 +333,11 @@ class AvailabilityZone(Infrastructure):
         return self.az_id
 
     def get_az_energy_consumption2(self):
+        """
+        Get the energy consumption for this AZ
+        The sum of each host consumption
+        :return: float
+        """
         _sum = 0
         host_cons_dict = dict()
         for host in self.host_list:
@@ -371,7 +376,7 @@ class AvailabilityZone(Infrastructure):
         """
         ret = False
         if energy is None:
-            energy = self.get_az_energy_consumption2(append_metrics=False)
+            energy = self.get_az_energy_consumption2()
         # Note: old 'energy_acum_l'
         if 'energy_l' in key_list:
             if not self.sla.metrics.update(self.az_id, 'energy_l', 'val_0', energy, global_time):
@@ -406,31 +411,33 @@ class AvailabilityZone(Infrastructure):
                         ret = True
         return ret
 
-    def print_host_table(self):
-        ret = 'HOSTS DRAW:\n\n'
-        for hi, ho in self.host_list_d.items():
-            if ho.power_state == HOST_ON:
-                ret += hi+' (' + str(ho.cpu) + ' cpu)\t_________________________\n'
-                for vi, vo in ho.virtual_machine_dict.items():
-                    ret += '\t|' + vi + '\t| (' + str(vo.vcpu) + ', ' + str(vo.type) + ', ' + str(vo.is_locked) + ')\t|\n'
-                ret += '\t^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'
-        return ret
+    def print_hosts_distribution(self, level=None) -> str:
+        """
+        More verbose host table
+        :return: str
+        """
 
-    def print_host_table_metric(self):
-        ret = ''
-        for hi, ho in self.host_list_d.items():
-            if ho.power_state == HOST_ON:
-                ret += hi+' (' + str(ho.cpu) + ' cpu); '
-                for vi, vo in ho.virtual_machine_dict.items():
-                    ret += vi + '; (' + str(vo.vcpu) + ', ' + str(vo.type) + ', ' + str(vo.is_locked) + ')\n'
-        return ret
+        if level == 'More':
+            str0 = 'HOSTS DRAW:\n\n'
+            str1 = "{} ({} cpu)\t_________________________\n"
+            str2 = "\t|{}\t| ({}, {}, {})\t|\n"
+            str3 = "\t^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"
+        elif level == 'Middle':
+            str0 = ""
+            str1 = "{} ({} cpu); "
+            str2 = "; ({}, {}, {})"
+            str3 = '\n'
+        else:  # Less or None
+            str0 = "\t"
+            str1 = "|{} ({})->("
+            str2 = "[{}, {}, {}, {}]; "
+            str3 = ")| \t"
 
-    def print_host_table_for_db(self):
-        ret = ''
+        ret = str0
         for hi, ho in self.host_list_d.items():
             if ho.power_state == HOST_ON:
-                ret += '|{}:({})->('.format(hi, ho.cpu)
+                ret += str1.format(hi, ho.cpu)
                 for vi, vo in ho.virtual_machine_dict.items():
-                    ret += "[{}, {}, {}, {}]; ".format(vi, vo.vcpu, vo.type, vo.is_locked)
-                ret += ") \t |"
+                    ret += str2.format(vi, vo.vcpu, vo.g_type(), vo.g_is_locked())
+                ret += str3
         return ret

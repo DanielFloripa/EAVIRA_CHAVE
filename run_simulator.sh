@@ -2,14 +2,15 @@
 
 source chave.conf
 
-PARALLEL=parallel
-command -v ${PARALLEL} >/dev/null 2>&1 || {
-    export PARALLEL=~/bin/parallel
-}
+
+if "$1" == "install"; then
+	install_chave
+fi
 
 echo -e "${_GREEN}\tRunning globally since: ${CS_START} ${_NC}"
+echo -e "${_WARN}${CS_LOGO} ${_NC}"
 
-CLEAR=false
+CLEAR=true
 
 if ${CLEAR} == true; then
     rm -rf ${CS_LOG_PATH}/*
@@ -20,17 +21,16 @@ mkdir -p ${CS_LOG_PATH} 2> /dev/null
 mkdir -p ${CS_DATA_PATH} 2> /dev/null
 
 AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 32 32 ) # ('node core')
-       #####################|
-      ###AZ____node_core____|                  {CHAVE}
-    #   ####################|
-  # _   #DS1    13   24     |\_______
-#  / \  #DS2    7    12     | > LC0  \__
-# {   } #DS3    7    8      |/          \__/l__/l___/l_/l__M___
- # \_/  #===================K            >_GC___  ____  ___ __/
-   #    #DS4    12   8      |\        __/  \/   \/    \/   V
-     #  #DS5    31   32     | >_LC1__/
-      ###DS6    32   32     |/
-       #####################|
+    #_____________________
+   #/ |_AZ_|_Node_|_Cores_\             {CHAVE}
+  #/  |DS1 |  13  | 24    |\____
+ #/   |DS2 |  7   | 12    | >LC0\__
+#/ /\ |DS3 |  7   | 8     |/       \__/l__/L___/l_/l__M___
+#\ \/ |====|======|=======K         >_GC___  ____  ___ __/
+ #\   |DS4 |  12  | 8     |\     __/  \/   \/    \/   V
+  #\  |DS5 |  31  | 32    | >LC1/
+   #\_|DS6_|__32__|_32____|/
+    
 TEST_LIST=( 'CHAVE' 'EUCA' )  # 'MM' MBFD )
 FF_LIST=( 'FFD2I') # 'FF3D')
 CONSOLID_ALGO=( 'LOCK' 'MAX' ) #  'MIN' ) # 'ha' )
@@ -142,7 +142,7 @@ if [ "${USER}" == "ubuntu" ]; then
     scp -i /home/${USER}/Dropbox/chave2.pem ${CS_LOG_PATH} 10.0.0.16:/var/www/html/
 fi
 
-#exit 1
+
 
 PLOT=false
 SYNC=false
@@ -172,6 +172,7 @@ if [ ${SYNC} == true ]; then
     OUTPUT="${CS_PROJ_ROOT}"/output/
     aws s3 sync ${OUTPUT} s3://${S3_BUCK} --acl public-read --exclude "*.Rhistory*",".Rproj" # --grants full=uri=http://acs.amazonaws.com/groups/global/AllUsers
 fi
+
 
 #aws s3 mv ${OUTPUT} s3://${S3_BUCK}
 

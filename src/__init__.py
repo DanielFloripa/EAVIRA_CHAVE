@@ -85,9 +85,11 @@ def parse_arguments_to_sla():
         sla.lock_case(str(args.lock[0]))
         sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
         sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
-    except TypeError:
+        sla.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
+    except TypeError:  # Note: Maybe on EUCA tests?
         sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT_MIN"])))
         sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT_MIN"])))
+        sla.default_file_output(args.alg[0])
         pass
     """Configurations for logger objects:"""
     # sla.date(str(datetime.now().strftime(os.environ.get("CS_DP"))))
@@ -98,7 +100,6 @@ def parse_arguments_to_sla():
     logger.setLevel(int(os.environ.get('CS_LOG_LEVEL')))  # , logging.DEBUG)))
     sla.set_logger(logger)
     """Values from Linux environment variables"""
-    sla.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
     sla.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
     sla.source_folder(str(os.environ.get("CS_SOURCE_FOLDER")))
     sla.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))

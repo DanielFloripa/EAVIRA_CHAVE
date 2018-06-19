@@ -86,8 +86,6 @@ class Eucalyptus(object):
                 values = (self.global_time, azl2, str(azl1),)
                 self.sla.metrics.set(az.az_id, 'az_load_l', values)
 
-
-            self.global_time += self.window_time
             if self.global_time % 10000 == 0:
                 memory = self.sla.check_simulator_memory()
                 elapsed = time.time() - start
@@ -95,6 +93,7 @@ class Eucalyptus(object):
                     self.global_time, time.strftime("%H:%M:%S"), elapsed, memory))
                 self.sla.metrics.set('global', 'lap_time_l', (self.global_time, elapsed, "Status:{}".format(memory)))
                 start = time.time()
+            self.global_time += self.window_time
 
     def placement(self, az):
         az_id = az.az_id
@@ -114,7 +113,7 @@ class Eucalyptus(object):
                         this_metric = {'gvt': self.global_time,
                                        'val_0': 0,
                                        'info': "{}, host:{}. {}".format(
-                                           vm.vm_id, vm.host_id, az.print_host_table_for_db())}
+                                           vm.vm_id, vm.host_id, az.print_hosts_distribution(level='Min'))}
                         self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
                         self.logger.error("{}\tReject {} {} at gt:{}".format(az_id, vm.vm_id, vm.host_id, self.global_time))
                         break

@@ -86,8 +86,8 @@ class Chave(object):
                 values = (self.global_time, azl2, str(azl1),)
                 self.sla.metrics.set(az.az_id, 'az_load_l', values)
 
-            for lc_id, lc_obj in self.api.get_localcontroller_d().items():
-                self.region_replication(lc_obj)
+            for _, local_controller_o in self.api.get_localcontroller_d().items():
+                self.region_replication(local_controller_o)
 
             if self.global_time % milestones == 0:
                 memory = self.sla.check_simulator_memory()
@@ -153,7 +153,7 @@ class Chave(object):
                         this_metric = {'gvt': self.global_time,
                                        'val_0': is_replica,
                                        'info': "pool:{}, {}, info_bh:{}. {}".format(
-                                           vm.pool_id, vm.type, info_bh, az.print_host_table_for_db())}
+                                           vm.pool_id, vm.type, info_bh, az.print_hosts_distribution(level='Min'))}
                         self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
                         self.logger.warning("{}\t Problem to find best host for {} t:{} h:{} az:{} at {}, d: {}".format(
                             az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id, self.global_time, this_metric.items()))
@@ -205,7 +205,7 @@ class Chave(object):
 
     def do_consolidation(self, az):
         cons_alg = self.sla.g_consolidation_alg()
-        self.logger.info("{}\tStart consolidation: {}. {}".format(az.az_id, cons_alg, az.print_host_table_metric()))
+        self.logger.info("{}\tStart consolidation: {}. {}".format(az.az_id, cons_alg, az.print_hosts_distribution(level='Middle')))
         if cons_alg == 'MAX':
             self.do_consolidation_max(az)
         elif cons_alg == 'LOCK':
@@ -217,7 +217,7 @@ class Chave(object):
         else:
             self.logger.error("Problem on config file! Unknown option: {}".format(cons_alg))
             exit(1)
-        self.logger.info("End: {} {}".format(az.az_id, az.print_host_table_metric()))
+        self.logger.info("End: {} {}".format(az.az_id, az.print_hosts_distribution(level='Middle')))
 
     def do_consolidation_max(self, az):
         ret = True
@@ -231,7 +231,7 @@ class Chave(object):
         # SNAP
         _, hosts_on, _ = az.get_hosts_density(just_on=True)
         energy = az.get_az_energy_consumption2()
-        conf_0 = az.print_host_table_for_db()
+        conf_0 = az.print_hosts_distribution()
         self.logger.info("{}\n with {} hosts, let's turn {} host OFF, because AZ has {:.3f}% frag".format(
             az.az_id, len(az.host_list), objective, frag))
 
@@ -255,7 +255,7 @@ class Chave(object):
             az.host_list_d = old_host_listd
         _, hosts_on2, _ = az.get_hosts_density(just_on=True)
         energy2 = az.get_az_energy_consumption2()
-        conf_f = az.print_host_table_for_db()
+        conf_f = az.print_hosts_distribution()
         info = "on0: {}, onF:{}, obj:{}. {} __ {}".format(hosts_on, hosts_on2, objective, conf_0, conf_f)
         val_0 = hosts_on - hosts_on2
         this_metric = {'gvt': self.global_time,
@@ -333,7 +333,7 @@ class Chave(object):
         # old_host_listd = dict(az.host_list_d)
         # old_host_list = list(az.host_list)
         energy0 = az.get_az_energy_consumption2()
-        conf_0 = az.print_host_table_for_db()
+        conf_0 = az.print_hosts_distribution()
 
         self.logger.info("Consolidate {} with {} hosts, try turn {} host OFF, because AZ has. h2m {} allvms {} VMs".format(
             az.az_id, len(az.host_list), objective, len(host_group_2_migrate), len(all_vms_updated)))
@@ -341,7 +341,7 @@ class Chave(object):
         migrations, fail = self.send_to_azmigrate(all_vms_updated, host_group_2_migrate, az, order_hosts=True)
 
         _, hosts_on2, _ = az.get_hosts_density(just_on=True)
-        conf_f = az.print_host_table_for_db()
+        conf_f = az.print_hosts_distribution()
         info = "on0: {}, onF:{}, obj:{} __ {} {}".format(hosts_on, hosts_on2, objective, conf_0, conf_f)
         val_0 = hosts_on - hosts_on2
         this_metric = {'gvt': self.global_time,
@@ -387,7 +387,7 @@ class Chave(object):
             vm_to_migrate = vm_to_migrate2
 
         energy0 = az.get_az_energy_consumption2()
-        conf_0 = az.print_host_table_for_db()
+        conf_0 = az.print_hosts_distribution()
 
         self.logger.debug("{}\t\tAll Hosts Dict: {} \n\nAll VMs dict: {}".format(
             az.az_id, len(all_hosts_od), len(all_vms_od)))
@@ -395,7 +395,7 @@ class Chave(object):
 
         migrations, _ = self.send_to_azmigrate(vm_to_migrate, fixedHost, az)
 
-        conf_f = az.print_host_table_for_db()
+        conf_f = az.print_hosts_distribution()
         _, hosts_on2, _ = az.get_hosts_density(just_on=True)
         info = "on0: {}, onF:{}, obj:{} __ {} {}".format(hosts_on, hosts_on2, objective, conf_0, conf_f)
         val_0 = hosts_on - hosts_on2
@@ -754,7 +754,6 @@ class Chave(object):
         pool_id = vm.lc_id + K_SEP + vm.az_id + K_SEP + vm.vm_id
         if pool_id not in self.replication_pool_d[lc_id]:
             attr = vm.getattr()
-            # print(attr)
             vm_replica = VirtualMachine(*attr)
             vm_replica.type = REPLICA
             vm.type = CRITICAL
