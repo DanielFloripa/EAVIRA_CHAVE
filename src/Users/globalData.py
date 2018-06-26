@@ -6,26 +6,26 @@ CHAVE-Sim: The simulator for research based in clouds architecture
 """
 
 # Just some global vars
-k_values = ['max_host_on_i',
-            'sla_violations_i',  # Just for overcom
-            'elapsed_time_i'
+k_values = ['max_host_on_i'#,
+            #'sla_violations_i',  # Just for overcom
+            #'elapsed_time_i'
             ]
 columns_v = ('gvt', 'val_0', 'info')
 columns_v_dict = {columns_v[0]: 0, columns_v[1]: 0, columns_v[2]: ''}
 len_v = len(k_values)
 
-k_lists = ['energy_l',
+k_lists = ['energy_l',  # OK!
            'az_load_l',
+           #'az_load_match',
            'lap_time_l',  # OK!
-           'overc_l',
+           #'overc_l',
            'reject_l'
            ]
 columns_l = ('gvt', 'val_0', 'info')
 columns_l_dict = {columns_l[0]: 0, columns_l[1]: 0, columns_l[2]: ''}
 len_l = len(k_lists)
 
-k_dicts = ['migra_d',
-           'consol_d',  # OK!
+k_dicts = ['consol_d',  # OK!
            'replic_d',  # OK!
            ]
 columns_d = ('gvt', 'energy_0', 'energy_f', 'val_0', 'val_f', 'info')
@@ -57,7 +57,6 @@ def query_create(tup):
     for i in range(len_tuple - 2):
         it += '{} REAL DEFAULT 0, '.format(tup[i+1])
     ret = "{}{}{} TEXT DEFAULT '', ai INTEGER PRIMARY KEY AUTOINCREMENT);".format(query_create_default, it, format(tup[i+2]))
-    #ret = query_create_default + it + '{} TEXT DEFAULT "", ai INTEGER PRIMARY KEY AUTOINCREMENT);'.format(format(tup[i+2]))
     return ret
 
 
@@ -68,7 +67,8 @@ query_pragma = [
     "PRAGMA main.synchronous=OFF;",
     "PRAGMA main.journal_mode=OFF;",
     "PRAGMA main.locking_mode=EXCLUSIVE;",
-    "PRAGMA main.temp_store=MEMORY;"]
+    "PRAGMA main.temp_store=MEMORY;"
+]
 
 query_init = query_pragma + \
              [query_create(columns_v).format(key) for key in k_values] + \
@@ -77,7 +77,6 @@ query_init = query_pragma + \
 
 
 query_insert_default = "INSERT INTO {} {} VALUES ("
-query_insert_old = "INSERT INTO {} ({}) VALUES (?, ?, ?);"
 query_insert_one = "INSERT INTO {} ({}) VALUES (?);"
 query_update = "UPDATE {} SET {} = ? WHERE gvt = ?;"
 query_select = "SELECT {} FROM {};"
@@ -89,14 +88,3 @@ query_show_schema = "SELECT sql FROM sqlite_master WHERE type='table';"
 # Special functions
 query_special_base = {'SUM': 'sum({})', 'AVG': 'avg({})', 'MIN': 'min({})', 'MAX': 'max({})', 'COUNT': 'count(*)'}
 query_special = "SELECT {} FROM {};"
-
-"""
-with sqlite3.connect("metrics2.db") as conn:
-    conn.text_factory = str
-    cur = conn.cursor()
-    c = cur.execute("SELECT * from az_id WHERE name=?;", ["AZ2"])
-    results = cur.fetchall()
-    print(results[0][0])  
-"""
-
-

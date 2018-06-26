@@ -223,13 +223,12 @@ class PhysicalMachine(object):
                 self.logger.info("Change state in {}: {} turned ON".format(self.az_id, self.host_id))
             self.power_state = HOST_ON
             self.activate_hypervisor_dom0(log=True)
-
             return True
         elif self.has_virtual_resources() and not self.power_state:
             self.logger.error("Logic problem?, state OFF with resources??? Setting this ON...")
             self.power_state = HOST_ON
             return False
-        self.logger.critical("OOOPS: {} Resources: {} is on? {} ".format(
+        self.logger.error("OOOPS: {} Resources: {} is on? {} ".format(
                              self.host_id, self.has_virtual_resources(), self.power_state))
         return False
 
@@ -240,7 +239,7 @@ class PhysicalMachine(object):
             return True
         if self.has_virtual_resources() and self.power_state is HOST_ON:
             return False
-        self.logger.critical("OOOPS: {} Resources: {} is on? {} ".format(
+        self.logger.error("OOOPS: {} Resources: {} is on? {} ".format(
                              self.host_id, self.has_virtual_resources(), self.power_state))
         return False
 

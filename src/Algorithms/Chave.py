@@ -13,10 +13,6 @@ from Users.SLAHelper import *
 
 class Chave(object):
 
-    @staticmethod
-    def key_from_item(func):
-        return lambda item: func(*item)
-
     def __init__(self, api):
         """
         CHAVE class
@@ -26,15 +22,16 @@ class Chave(object):
         self.sla = api.sla
         self.logger = api.sla.g_logger()
         self.nit = api.sla.g_nit()
+        self.az_list = list(api.get_az_list())
         self.trigger_to_migrate = api.sla.g_trigger_to_migrate()
         self.frag_percent = api.sla.g_frag_class()
         self.window_time = api.sla.g_window_time()
+        self.last_ts_d = api.demand.last_timestamps_d_ordered()
         self.last_number_of_migrations = 0
         self.localcontroller_list = []
         self.all_vms_dict = dict()
         self.all_op_dict = dict()
         self.all_ha_dict = dict()
-        self.az_list = []
         self.global_time = 0
         self.max_host_on = dict()
         self.replicas_execution_d = dict()
@@ -54,7 +51,6 @@ class Chave(object):
     ### Initial and basics
     #############################################
     def __init_dicts(self):
-        self.az_list = self.api.get_az_list()
         for az in self.az_list:
             az_id = az.az_id
             self.max_host_on[az_id] = 0
@@ -74,16 +70,16 @@ class Chave(object):
         :return: Void
         """
         start = time.time()
-        milestones = self.api.demand.max_timestamp / 10
+        milestones = int(self.api.demand.max_timestamp / self.sla.g_milestones())
         while self.global_time <= self.api.demand.max_timestamp:
-            for az in self.api.get_az_list():
+            for az in self.az_list:
                 self.initial_placement(az)
 
                 values = (self.global_time, az.get_az_energy_consumption2(), "",)
                 self.sla.metrics.set(az.az_id, 'energy_l', values)
 
-                azl1, azl2 = az.get_az_load()
-                values = (self.global_time, azl2, str(azl1),)
+                azl2 = az.get_az_load()
+                values = (self.global_time, azl2, str(),)
                 self.sla.metrics.set(az.az_id, 'az_load_l', values)
 
             for _, local_controller_o in self.api.get_localcontroller_d().items():
@@ -96,8 +92,25 @@ class Chave(object):
                     self.global_time, time.strftime("%H:%M:%S"), elapsed, memory))
                 self.sla.metrics.set('global', 'lap_time_l', (self.global_time, elapsed, "Status:{}".format(memory)))
                 start = time.time()
+                # print(self.sla.feedback_operator(self.global_time))
+            self.remove_finished_azs()
             # Doc: At the end, increment the clock:
             self.global_time += self.window_time
+
+    def remove_finished_azs(self):
+        """
+        Note: This will remove the AZ that had its last operation
+        :return: None
+        """
+        if self.global_time >= self.last_ts_d[0][1]:
+            azid = self.last_ts_d[0][0]
+            az_list = list(self.az_list)
+            for az in az_list:
+                if az.az_id == azid:
+                    del self.last_ts_d[0]
+                    self.az_list.remove(az)
+                    self.logger.warning("{}\t has nothing else to a! Deleted at {}, remain {}".format(
+                        azid, self.global_time, len(self.az_list)))
 
     def have_new_max_host_on(self, az):
         host_on, _, _ = az.each_cycle_get_hosts_on()
@@ -152,8 +165,8 @@ class Chave(object):
                         # Note: Must match columns_d:
                         this_metric = {'gvt': self.global_time,
                                        'val_0': is_replica,
-                                       'info': "pool:{}, {}, info_bh:{}. {}".format(
-                                           vm.pool_id, vm.type, info_bh, az.print_hosts_distribution(level='Min'))}
+                                       'info': "pool:{}, {}, info_bh:{}, {}".format(
+                                           vm.pool_id, vm.type, len(info_bh), az.print_hosts_distribution())}
                         self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
                         self.logger.warning("{}\t Problem to find best host for {} t:{} h:{} az:{} at {}, d: {}".format(
                             az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id, self.global_time, this_metric.items()))
@@ -170,6 +183,7 @@ class Chave(object):
 
                     if exec_vm is not None:
                         if az.deallocate_on_host(exec_vm, ts=vm.timestamp):
+                            #self.az_load_mach(az)
                             del self.op_dict_temp_d[az_id][op_id]
                         else:
                             self.logger.error("{}\t Problem for deallocate {}".format(az_id, exec_vm.vm_id))
@@ -236,7 +250,7 @@ class Chave(object):
             az.az_id, len(az.host_list), objective, frag))
 
         # Doc: Ordered from major to minor:
-        ordered_vms = sorted(all_vms.items(), key=self.key_from_item(lambda k, v: (v.vcpu, k)), reverse=True)
+        ordered_vms = sorted(all_vms.items(), key=self.sla.key_from_item(lambda k, v: (v.vcpu, k)), reverse=True)
         az.create_infra(first_time=True, host_state=HOST_OFF)
 
         # Doc: Objetivo é ter a consolidação máxima, então aplicamos FFD puro:
@@ -484,8 +498,8 @@ class Chave(object):
         fail = 0
         """Dicionario de VMs em ordem decrescente"""
         if order_hosts:
-            host_destiny = OrderedDict(sorted(host_destiny.items(), key=self.key_from_item(lambda k, v: (v.cpu, k))))
-        for i, v in sorted(vm_d.items(), key=self.key_from_item(lambda k, v: (v.vcpu, k)), reverse=True):
+            host_destiny = OrderedDict(sorted(host_destiny.items(), key=self.sla.key_from_item(lambda k, v: (v.cpu, k))))
+        for i, v in sorted(vm_d.items(), key=self.sla.key_from_item(lambda k, v: (v.vcpu, k)), reverse=True):
             origin = v.host_id
             for j, h in host_destiny.items():
                 self.logger.info("{}\tTrying match h:{} v:{}({})".format(az.az_id, j, i, v.host_id))
@@ -570,7 +584,7 @@ class Chave(object):
     def place(self, vm: VirtualMachine, bhost: PhysicalMachine, az: AvailabilityZone, vm_type=None) -> bool:
         vm.lc_id = az.lc_id
 
-        # if it'd the first time, put VM in replica_pool and continue:
+        # if it is the first time, put VM in replica_pool and continue:
         if self.is_required_replica(vm, az) and vm_type is None:
             self.replicate_vm(vm, az)
         vm.set_host_id(bhost.host_id)
@@ -578,11 +592,22 @@ class Chave(object):
         self.logger.debug("Allocating vmid:{} in h:{} t:{} az:{}".format(
             vm.vm_id, vm.host_id, vm.type, vm.az_id))
         if az.allocate_on_host(vm, defined_host=bhost):
+            #self.az_load_mach(az)
             return True
         else:
             self.logger.error("{}\t Problem on allocate {} t:{} h:{} az:{}".format(
                 az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id))
         return False
+
+    # Note: deprecated
+    def az_load_mach(self, az):
+        azl2 = az.get_az_load()
+        obj = self.sla.g_avg_load_objective(az_id=az.az_id)
+        var = 0.01
+        if (obj - var) >= azl2 >= (obj + var):
+            values = (self.global_time, azl2, az.print_hosts_distribution(level='MIN'),)
+            self.sla.metrics.set(az.az_id, 'az_load_match', values)
+
 
     #############################################
     ### Replication
@@ -628,7 +653,7 @@ class Chave(object):
                                            'val_0': val_0,
                                            'val_f': len(self.replicas_execution_d[lc_id]),
                                            'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
-                                               hosts_on, hosts_on2, pool_id, info_bh)}
+                                               hosts_on, hosts_on2, pool_id, len(info_bh))}
                             self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
                             self.logger.info("this_metric: {}".format(this_metric))
                         else:
@@ -639,7 +664,7 @@ class Chave(object):
                     pass  # self.logger.error("pool {} != {} lc_obj.lc_id".format(pool_id, lc_id))
         # self.logger.info("Exit for {} {}".format(self.global_time, lc_id))
 
-    def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> AvailabilityZone:
+    def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> Union(AvailabilityZone, None):
         """
         Choose the best az for instanciate a given replica
         :param vm:

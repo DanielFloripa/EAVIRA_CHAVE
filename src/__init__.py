@@ -24,7 +24,7 @@ __description__ = "CHAVE-Sim: Consolidation with High Availability on Virtualyze
                   "Must be is used only for research based in clouds architecture"
 __author__ = "Daniel Camargo based on EAVIRA (Denivy Ruck)"
 __license__ = "GPL-v3"
-__version__ = "2.0.4"
+__version__ = "3.0.0"
 __maintainer__ = "Daniel Camargo"
 __organization__ = "LabP2D - UDESC"
 __email__ = "daniel@colmeia.udesc.br"
@@ -76,23 +76,31 @@ def parse_arguments_to_sla():
     sla.algorithm(args.alg[0])
     sla.window_time(args.wt[0])
     sla.date(os.environ.get("CS_START"))
-    try:
-        sla.ff(args.ff[0])
-        sla.has_overcommitting(eval(args.overcom[0]))
-        sla.has_consolidation(eval(args.consol[0]))
-        sla.enable_replication(eval(args.repl[0]))
-        sla.consolidation_alg(str(args.ca[0]))
-        sla.lock_case(str(args.lock[0]))
-        sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
-        sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
-        sla.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
-    except TypeError:  # Note: Maybe on EUCA tests?
-        sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT_MIN"])))
-        sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT_MIN"])))
-        sla.default_file_output(args.alg[0])
-        pass
+    # Note: If add new parameter, this gambiarra must be reviewed
+    if args.alg[0] == "EUCA" and not (args.consol[0] == "False" and args.ca[0] == "MAX" and args.lock[0] == "None" and args.overcom[0] == "False" and args.repl[0] == "False"):
+        exit(1)
+    if (args.consol[0] == "False" and args.ca[0] == "LOCK") or \
+            (args.consol[0] == "False" and args.ca[0] == "MAX" and args.lock[0] == "True") or \
+            (args.consol[0] == "False" and args.ca[0] == "MAX" and args.lock[0] == "False") or \
+            (args.consol[0] == "False" and args.ca[0] == "MAX" and args.lock[0] == "RANDOM") or \
+            (args.consol[0] == "True" and args.ca[0] == "MAX" and args.lock[0] == "False") or \
+            (args.consol[0] == "True" and args.ca[0] == "MAX" and args.lock[0] == "True") or \
+            (args.consol[0] == "True" and args.ca[0] == "MAX" and args.lock[0] == "RANDOM") or \
+            (args.consol[0] == "True" and args.ca[0] == "LOCK" and args.lock[0] == "None"):
+            exit(1)
+    if args.consol[0] == "False":
+        args.ca[0] = "CF"
+
+    sla.consolidation_alg(str(args.ca[0]))
+    sla.has_consolidation(eval(args.consol[0]))
+    sla.ff(args.ff[0])
+    sla.has_overcommitting(eval(args.overcom[0]))
+    sla.enable_replication(eval(args.repl[0]))
+    sla.lock_case(str(args.lock[0]))
+    sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
+    sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
+    sla.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
     """Configurations for logger objects:"""
-    # sla.date(str(datetime.now().strftime(os.environ.get("CS_DP"))))
     logger = logging.getLogger(__name__)
     hdlr = logging.FileHandler(sla.g_log_output())
     hdlr.setFormatter(logging.Formatter(os.environ.get("CS_LOG_FORMATTER")))
@@ -100,6 +108,8 @@ def parse_arguments_to_sla():
     logger.setLevel(int(os.environ.get('CS_LOG_LEVEL')))  # , logging.DEBUG)))
     sla.set_logger(logger)
     """Values from Linux environment variables"""
+    # Note: deprecated
+    # sla.avg_load_objective(str(os.environ["CS_AVG_LOAD_OBJECTIVE"]))
     sla.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
     sla.source_folder(str(os.environ.get("CS_SOURCE_FOLDER")))
     sla.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
@@ -110,9 +120,10 @@ def parse_arguments_to_sla():
     sla.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
     sla.frag_class(str(os.environ.get('CS_FRAGMENTATION_CLASS')))
     sla.vcpu_per_core(float(os.environ.get('CS_VCPUS_PER_CORE')))
-    sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))  # "file" or "auto"
-    sla.energy_model_src(str(os.environ.get("CS_ENERGY_MODEL")))  # "file" or "auto"
-    sla.doc(doc)
+    sla.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))
+    sla.energy_model_src(str(os.environ.get("CS_ENERGY_MODEL")))
+    sla.milestones(int(os.environ.get("CS_MILESTONES")))
+    # sla.doc(doc)
     """From now, we can't change this SLA parameters"""
     sla.init_metrics()
     sla.set_sla_lock(True)

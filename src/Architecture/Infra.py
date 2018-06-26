@@ -109,7 +109,7 @@ class AvailabilityZone(Infrastructure):
         host_list = []
         host_list_d = dict()
         for node in range(self.azNodes):
-            host_id = 'HOST' + str(node)
+            host_id = NODE + str(node)
             h = PhysicalMachine(host_id,
                                 self.azCores,
                                 self.azRam,
@@ -130,7 +130,7 @@ class AvailabilityZone(Infrastructure):
         return host_list
 
     def add_new_host_to_list(self, host_state=True):
-        host_id = 'HOST' + str(self.azNodes)
+        host_id = NODE + str(self.azNodes)
         h = PhysicalMachine(host_id,
                             self.azCores,
                             self.azRam,
@@ -230,7 +230,7 @@ class AvailabilityZone(Infrastructure):
                             self.az_id, vm.get_id(), defined_host.get_id()))
                         return False
                 else:
-                    self.logger.warning("{}\t Can't All1:{} on defined: {}".format(
+                    self.logger.info("Warning: {}\t Can't All1:{} on defined: {}".format(
                         self.az_id, vm.get_id(), defined_host.get_id()))
                     return False
         else:
@@ -307,7 +307,7 @@ class AvailabilityZone(Infrastructure):
                 else:
                     self.deallocate_on_host(vm, defined_host=host)
         else:
-            self.logger.warning("Are you trying migrate {} to same O:{}->D:{}?".format(vm.vm_id, vm.host_id, host.host_id))
+            self.logger.info("Warning: Are you trying migrate {} to same O:{}->D:{}?".format(vm.vm_id, vm.host_id, host.host_id))
         return False
 
     def get_host_list(self):
@@ -359,12 +359,23 @@ class AvailabilityZone(Infrastructure):
             for vm in host.virtual_machine_list:
                 vcpu += vm.vcpu
         try:
-            ret1 = self.max_cpu_available / float(vcpu)
-            ret2 = float(vcpu) / self.max_cpu_available
+            ret = float(vcpu) / self.max_cpu_available
         except ZeroDivisionError:
-            ret1, ret2 = 0, 0
-        return ret1, ret2
+            ret = 0
+        return ret
 
+    def node_utilization(self):
+        vcpu = 0
+        for host in self.host_list:
+            for vm in host.virtual_machine_list:
+                vcpu += vm.vcpu
+        try:
+            ret = float(vcpu) / self.max_cpu_available
+        except ZeroDivisionError:
+            ret = 0
+        return ret
+
+    # Note: deprecated
     def take_snapshot_for(self, key_list, global_time, metric_d=None, energy=None):
         """
         Take a snapshot collect informations from metric_dand put them on the metrics
@@ -416,7 +427,6 @@ class AvailabilityZone(Infrastructure):
         More verbose host table
         :return: str
         """
-
         if level == 'More':
             str0 = 'HOSTS DRAW:\n\n'
             str1 = "{} ({} cpu)\t_________________________\n"
@@ -429,8 +439,8 @@ class AvailabilityZone(Infrastructure):
             str3 = '\n'
         else:  # Less or None
             str0 = "\t"
-            str1 = "|{} ({})->("
-            str2 = "[{}, {}, {}, {}]; "
+            str1 = "|{} {}:("
+            str2 = "[{} {} {} {}]; "
             str3 = ")| \t"
 
         ret = str0

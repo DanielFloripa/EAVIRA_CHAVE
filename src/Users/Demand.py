@@ -26,6 +26,7 @@ class Demand(object):
         self.all_operations_dicts = dict()  # Dicionario de dicionarios
         self.all_ha_dicts = dict()  # Dicionario de dicionarios
         self.max_timestamp = 0
+        self.last_ts_d = dict()
         self.ha_only_dict = dict()
 
     def __repr__(self):
@@ -35,6 +36,9 @@ class Demand(object):
 
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
+
+    def last_timestamps_d_ordered(self):
+        return sorted(self.last_ts_d.items(), key=self.sla.key_from_item(lambda k, v: (v, k)))
 
     def get_demand_from_az(self, az_id):
         return self.all_vms_dict[az_id], \
@@ -146,9 +150,12 @@ class Demand(object):
                     except Exception as e:
                         self.logger.exception(type(e))
                         self.logger.error("On pop VM from {} \n {}".format(op_id, sys.exc_info()[0]))
-            if for_testing_vm_list:  # Se tiver algo, entao sobrou alguma vm
-                self.logger.error("At the end, we already have VMs: {}".format(for_testing_vm_list))
-                """ Get the last timestamp from loop """
+            # Note: Se tiver algo, entao sobrou alguma vm
+            if for_testing_vm_list:
+                self.logger.error("At the end of demand, we already have VMs: {}".format(for_testing_vm_list))
+                exit(1)
+                # Note: Get the last timestamp from loop and record the biggest
+            self.last_ts_d[az_id] = timestamp
             if self.max_timestamp < timestamp:
                 self.max_timestamp = timestamp
                 # self.logger.debug("New Max Timestamp: {} found in {}".format(self.max_timestamp, az_id))

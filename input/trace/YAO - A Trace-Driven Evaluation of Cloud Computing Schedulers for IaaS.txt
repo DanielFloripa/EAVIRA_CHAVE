@@ -1,0 +1,2 @@
+Usu FF e BF com e sem migração, comparando-os entre si e com o trace original.
+Destaca-se o BF pelo menor numero de migrações e por apresentar melhor taxa de  utilização

@@ -140,22 +140,34 @@ class MetricSQLite(object):
             return False
         return True
 
-    def special(self, az_id, key, func):
-        if key in all_metrics_l[0: len_v]:
-                self.logger.error("This is only for lists, like: {}. Or use 'get' command".format(k_lists+k_dicts))
-                return False
-        elif key in all_metrics_l[len_v: len_m]:
-            # if func in query_special_base.keys():
-            try:
-                self.cursor[az_id].execute(query_special.format(query_special_base[func], key))
-            except Exception as e:
-                self.logger.error("ERROR: {}".format(e))
-                return False
+    def special(self, az_id, table, column, func):
+        if az_id == 'all':
+            ret = dict()
+            for az in self.__az_id_list:
+                v = self.special(az, table, column, func)
+                if v is not None and not isinstance(v, bool):
+                    ret[az] = v[0][0]
+                else:
+                    ret[az] = None
+            return ret
+        # if table in all_metrics_l[0: len_v]:
+        #        self.logger.error("This is only for lists, like: {}. Or use 'get' command".format(k_lists+k_dicts))
+        #        return False
+        if table in all_metrics_l:
+            if func in query_special_base.keys():
+                try:
+                    self.cursor[az_id].execute(query_special.format(query_special_base[func].format(column), table))
+                except Exception as e:
+                    self.logger.error("ERROR: {}".format(e))
+                    return False
+                else:
+                    return self.cursor[az_id].fetchall()
+                    # for linha in self.cursor[az_id].fetchall():
+                    #     yield linha
             else:
-                for linha in self.cursor[az_id].fetchall():
-                    yield linha
+                self.logger.error("ERROR: Function: {} not in {}".format(func, query_special_base.keys()))
         else:
-            self.logger.error(resp('special', key, func))
+            self.logger.error(resp('special', table+column, func))
             return False
         return
 
@@ -174,15 +186,20 @@ class MetricSQLite(object):
             try:
                 os.mkdir(self.db_path)
             except Exception as e:
-                self.logger.warning("Can't make dir : {}".format(e))
+                #self.logger.debug("Can't make dir : {}".format(e))
                 pass
             self.logger.debug('Init database: {}'.format(db_file))
             self.connection[az_id] = sqlite3.connect(self.db_path + '/' + db_file)
-            #print(self.db_path + '/' + db_file, self.db_file_default)
+            # print(self.db_path + '/' + db_file, self.db_file_default)
             for q in query_init:
                 # Todo: colocar pra fora connection e commit para testar
                 self.cursor[az_id] = self.connection[az_id].cursor()
-                self.cursor[az_id].execute(q)
+                try:
+                    self.cursor[az_id].execute(q)
+                except sqlite3.OperationalError:
+                    print("Error on query {} for {}".format(q, self.sla.g_data_output()))
+                    self.logger.fatal("Error on query {} for {}".format(q, self.sla.g_data_output()))
+                    exit(1)
             self.connection[az_id].commit()
 
         with open('tables.txt', 'w') as outfile:

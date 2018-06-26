@@ -17,6 +17,7 @@ class Eucalyptus(object):
         self.frag_percent = api.sla.g_frag_class()
         self.ff_mode = api.sla.g_ff()
         self.window_time = api.sla.g_window_time()
+        self.last_ts_d = sorted(api.demand.last_ts_d.items(), key=self.sla.key_from_item(lambda k, v: (v, k)))
         self.last_number_of_migrations = 0
         self.demand = None
         self.localcontroller_list = []
@@ -39,6 +40,7 @@ class Eucalyptus(object):
         self.max_host_on_d = dict()
         self.vms_in_execution_d = dict()
         self.op_dict_temp_d = dict()  # az.op_dict
+        self.az_load_change_d = dict()
         self.is_init_d = self.__init_dicts()
 
     def __repr__(self):
@@ -52,6 +54,7 @@ class Eucalyptus(object):
     def __init_dicts(self):
         self.az_list = self.api.get_az_list()
         for az in self.az_list:
+            self.az_load_change_d[az.az_id] = 0.0
             self.req_size_d[az.az_id] = 0
             self.energy_global_d[az.az_id] = 0.0
             self.max_host_on_d[az.az_id] = 0
@@ -75,6 +78,7 @@ class Eucalyptus(object):
         #    az.create_infra(first_time=True, host_state=HOST_ON)
 
         start = time.time()
+        milestones = int(self.api.demand.max_timestamp / self.sla.g_milestones())
         while self.global_time <= self.api.demand.max_timestamp:
             for az in self.api.get_az_list():
                 self.placement(az)
@@ -82,18 +86,48 @@ class Eucalyptus(object):
                 values = (self.global_time, az.get_az_energy_consumption2(), "",)
                 self.sla.metrics.set(az.az_id, 'energy_l', values)
 
-                azl1, azl2 = az.get_az_load()
-                values = (self.global_time, azl2, str(azl1),)
+                azload = az.get_az_load()
+                if self.az_load_change_d[az.az_id] != azload:
+                    self.az_load_change_d[az.az_id] = azload
+                    values = (self.global_time, azload, str(az.print_hosts_distribution(level='MIN')),)
+                else:
+                    values = (self.global_time, azload, "0",)
                 self.sla.metrics.set(az.az_id, 'az_load_l', values)
 
-            if self.global_time % 10000 == 0:
+            if self.global_time % milestones == 0:
                 memory = self.sla.check_simulator_memory()
                 elapsed = time.time() - start
                 self.logger.critical("gt: {} , time:{} , it toke: {:.3f}s, {}".format(
                     self.global_time, time.strftime("%H:%M:%S"), elapsed, memory))
                 self.sla.metrics.set('global', 'lap_time_l', (self.global_time, elapsed, "Status:{}".format(memory)))
                 start = time.time()
+            self.remove_finished_azs()
+            # Doc: At the end, increment the clock:
             self.global_time += self.window_time
+
+        # Note: Wen exit, please save the avg file:
+        #avg = self.sla.metrics.special('all', 'az_load_l', 'val_0', 'AVG')
+        # cwd = os.getcwd()  # Get the current working directory (cwd)
+        # files = os.listdir(cwd)  # Get all the files in that directory
+        # print("Files in '%s': %s" % (cwd, files))
+        #with open(self.sla.g_avg_load_objective_file(), 'w') as outfile:
+        #    for k, v in avg.items():
+        #        outfile.write("{}, {}\n".format(k, v))
+
+    def remove_finished_azs(self):
+        """
+        Note: This will remove the AZ that had its last operation
+        :return: None
+        """
+        if self.global_time >= self.last_ts_d[0][1]:
+            azid = self.last_ts_d[0][0]
+            new_az_list = list(self.az_list)
+            for az in new_az_list:
+                if az.az_id == azid:
+                    del self.last_ts_d[0]
+                    self.az_list.remove(az)
+                    self.logger.critical("{}\t has nothing else! Deleted at {}, remain {}".format(
+                        azid, self.global_time, len(self.az_list)))
 
     def placement(self, az):
         az_id = az.az_id

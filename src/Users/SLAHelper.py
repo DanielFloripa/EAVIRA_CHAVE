@@ -23,6 +23,7 @@ REGULAR = 'regular'
 S_MIGRATING = 'migrating'
 S_ALLOCATED = 'allocated'
 S_DEALLOCATED = 'deallocated'
+NODE = "NODE"
 # Hosts
 HOST_ON = True
 HOST_OFF = False
@@ -36,8 +37,15 @@ WIDE = 'WIDE'
 
 
 class SLAHelper(object):
-
+    """
+    Class SLAHelper contains all parameters used along the simulation
+    Also contains some Helpers methods
+    """
     fragmentation_class_dict = {TIGHT: 1.0, MEDIUM: 1.5, WIDE: 2.0}
+
+    @staticmethod
+    def key_from_item(func):
+        return lambda item: func(*item)
 
     @staticmethod
     def print_dic(raw_dict):
@@ -76,7 +84,6 @@ class SLAHelper(object):
                 s += tab + str(l) + '\n'
                 rec = 0
         return s
-    #print(p_list(p))
 
     @staticmethod
     def is_required_ha(av_vm, av_az):
@@ -86,11 +93,20 @@ class SLAHelper(object):
 
     @staticmethod
     def monte_carlo():
+        """
+        Monte Carlo de Erro-Não-Limitado
+        https://en.wikipedia.org/wiki/Monte_Carlo_method
+        uniformly distributed: np.random.rand() Create an array of the given shape and populate it with
+            random samples from a uniform distribution over ``[0, 1)``.
+        number of points = nops
+        :return:
+        """
         radius = 1
-        x = np.random.rand(1)
-        y = np.random.rand(1)
-        # Funcao que retorna 21% de probabilidade
-        if x ** 2 + y ** 2 >= radius:
+        dimmensions = 2
+        r = np.random.rand(dimmensions)
+        # Funcao que retorna +-21% de probabilidade
+        # Equivale a 1/4 da área externa de um circulo dentro de um quadrado de lado = diametro
+        if (r[0] ** 2) + (r[1] ** 2) >= radius:
             return True
         return False
 
@@ -110,10 +126,11 @@ class SLAHelper(object):
         self.__has_overcommitting = False  # bool
         self.__consolidation = False  # bool
         self.__enable_emon = False  # bool
-        self.__enable_replication = False
-        self.__window_time = 0  # int
-        self.__lock_case = 0  # int
-        self.__number_of_azs = 0  # int
+        self.__enable_replication = False  # bool
+        self.__window_time = 1  # int
+        self.__number_of_azs = 6  # int
+        self.__number_of_milestones = 10  # int
+        self.__lock_case = ""  # str
         self.__consolidation_alg = ""  # str()
         self.__ff = ""  # str()
         self.__algorithm = ""  # str()
@@ -133,6 +150,8 @@ class SLAHelper(object):
         self.__az_selection = ""  # str()
         self.__trace_class = ""  # str()
         self.__energy_model_src = ""
+        # Note: deprecated
+        self.__avg_load_objective_file = ""
         # lists
         self.__ha_input = []
         self.__az_nodes = []
@@ -144,6 +163,7 @@ class SLAHelper(object):
         self.auto_az_id_parse = []
         # dicts
         self.__az_dict = dict()
+        self.__avg_load_objective = dict()  # dict az: floats
         # objects
         self.logger = logging
         self.metrics = object  # Metrics(self.__az_id_list, self)
@@ -242,6 +262,13 @@ class SLAHelper(object):
         if type(raw_data) is str:
             out = int(raw_data)
         return out
+
+    def feedback_operator(self, time):
+        if time == 0:
+            return '\n'
+        return "Milestone: {} \tfor {}_{}_{}_{}_{}".format(time, self.g_consolidation_alg(), self.g_lock_case(), self.g_has_overcommitting(), self.g_has_consolidation(), self.g_enable_replication())
+
+    # SETTERS:
 
     def consolidation_alg(self, consolidation_alg):
         if self.is_sla_lock():
@@ -451,7 +478,43 @@ class SLAHelper(object):
         self.__energy_model_src = energy_model
         return True
 
+    # Note: deprecated
+    def avg_load_objective(self, avg_load_objective_file):
+        if self.is_sla_lock():
+            return False
+        self.__avg_load_objective_file = avg_load_objective_file
+        if self.g_algorithm() == "EUCA":
+            return True
+        else:
+            with open(avg_load_objective_file, 'r') as file:
+                for line in file:
+                    item = line.split(sep=',')
+                    self.logger.debug('LOAD: az:{}, avg:{}'.format(item[0], item[1]))
+                    try:
+                        self.__avg_load_objective[item[0]] = float(item[1])
+                    except Exception as e:
+                        self.logger.error("Error on read {}, is {} ({})".format(avg_load_objective_file, self.__avg_load_objective, e))
+            return True
+
+    def milestones(self, number_of_milestones):
+        if self.is_sla_lock():
+            return False
+        self.__number_of_milestones = number_of_milestones
+        return True
+
     ''' GETTERS '''
+
+    def g_milestones(self):
+        return self.__number_of_milestones
+
+    # Note: deprecated
+    def g_avg_load_objective(self, az_id=None):
+        if az_id is not None:
+            return self.__avg_load_objective[az_id]
+        return self.__avg_load_objective
+
+    def g_avg_load_objective_file(self):
+        return self.__avg_load_objective_file
 
     def g_energy_model_src(self):
         return self.__energy_model_src
