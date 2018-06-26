@@ -1,0 +1,61 @@
+PackratFormat: 1.4
+PackratVersion: 0.4.9.3
+RVersion: 3.4.3
+Repos: CRAN=https://cran.rstudio.com/
+
+Package: RColorBrewer
+Source: CRAN
+Version: 1.1-2
+Hash: c0d56cd15034f395874c870141870c25
+
+Package: XML
+Source: CRAN
+Version: 3.98-1.11
+Hash: 93ca736e34d01f5952dc770fbfa5fa62
+
+Package: data.table
+Source: CRAN
+Version: 1.11.4
+Hash: d8736a5fe41e5ebef191c43f5e22652f
+
+Package: jqr
+Source: CRAN
+Version: 1.0.0
+Hash: ae7237a3a2461f330c0dbe57e62cad48
+Requires: lazyeval, magrittr
+
+Package: jsonlite
+Source: CRAN
+Version: 1.5
+Hash: 9c51936d8dd00b2f1d4fe9d10499694c
+
+Package: lazyeval
+Source: CRAN
+Version: 0.2.1
+Hash: 88926ad9c43581fd0822a37c8ed09f05
+
+Package: magrittr
+Source: CRAN
+Version: 1.5
+Hash: bdc4d48c3135e8f3b399536ddf160df4
+
+Package: packrat
+Source: CRAN
+Version: 0.4.9-3
+Hash: 03fb817297975f1da0d1b774b47620b3
+
+Package: rjson
+Source: CRAN
+Version: 0.2.19
+Hash: 01fa40bbc846344eb77e4294d7c1eb50
+
+Package: rlist
+Source: CRAN
+Version: 0.4.6.1
+Hash: 549b1d78af0592d937069501b9b0ba0b
+Requires: XML, data.table, jsonlite, yaml
+
+Package: yaml
+Source: CRAN
+Version: 2.1.19
+Hash: 6e3d988c25e34c31f668e0ae41dc3259
