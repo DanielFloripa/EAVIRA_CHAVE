@@ -2,10 +2,12 @@
 .Rhistory
 .RData
 .Ruserdata
+.Rprofile
+*packrat/*
 .idea/*
 *.pyc
 *__pycache__*
 *output/*
-*Plots/*
+#*Plots/*
 *venv36/*
 *misc/tests/*
