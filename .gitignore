@@ -8,6 +8,4 @@
 *.pyc
 *__pycache__*
 *output/*
-#*Plots/*
-*venv36/*
 *misc/tests/*
