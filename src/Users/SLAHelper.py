@@ -182,11 +182,9 @@ class SLAHelper(object):
                              "LoggerObj:\t {}\nSLA locked?:\t {}\n".format(  # self.p_list(self.__doc),
             self.__date, self.__ff, self.__algorithm, self.__consolidation_alg, self.__consolidation,
             self.__has_overcommitting, self.__enable_emon, self.__enable_replication, self.__az_conf, self.__lock_case,
-            self.__window_time,
-            self.__number_of_azs, self.__max_az_per_region,  self.__core_2_ram_default,
-            self.__trigger_to_migrate, self.__output_type,
-            self.__frag_class, self.__az_selection, self.__trace_class, self.__az_nodes,
-            self.__az_cores, self.__nit, self.__az_id_list, self.__source,
+            self.__window_time, self.__number_of_azs, self.__max_az_per_region,  self.__core_2_ram_default,
+            self.__trigger_to_migrate, self.__output_type, self.__frag_class, self.__az_selection, self.__trace_class,
+            self.__az_nodes, self.__az_cores, self.__nit, self.__az_id_list, self.__source,
             self.__data_output, self.__log_output, self.__list_of_source_files, self.__ha_input,
             self.print_dic(self.__az_dict), self.metrics.__doc__, self.logger, self.__sla_is_locked))
 
@@ -201,22 +199,6 @@ class SLAHelper(object):
 
     def obj_id(self):  # Return the unique hexadecimal footprint from each object
         return str(self).split(' ')[3].split('>')[0]
-
-    def is_sla_lock(self):
-        if self.__sla_is_locked:
-            res = "The SLA Object is locked, please, re-run the simulator with desired parameters"
-            self.logger.error(res)
-            return True
-        return False
-
-    def set_sla_lock(self, state):
-        if type(state) is bool:
-            self.__sla_is_locked = state
-            self.logger.info("SLA sate is locked? R: {}".format(state))
-            return True
-        else:
-            self.logger.info("State must be a bool type: True | False")
-            return False
 
     def define_az_id(self, mode):
         if self.is_sla_lock():
@@ -267,6 +249,22 @@ class SLAHelper(object):
         if time == 0:
             return '\n'
         return "Milestone: {} \tfor {}_{}_{}_{}_{}".format(time, self.g_consolidation_alg(), self.g_lock_case(), self.g_has_overcommitting(), self.g_has_consolidation(), self.g_enable_replication())
+
+    def is_sla_lock(self):
+        if self.__sla_is_locked:
+            res = "The SLA Object is locked, please, re-run the simulator with desired parameters"
+            self.logger.error(res)
+            return True
+        return False
+
+    def set_sla_lock(self, state):
+        if type(state) is bool:
+            self.__sla_is_locked = state
+            self.logger.info("SLA sate is locked? R: {}".format(state))
+            return True
+        else:
+            self.logger.info("State must be a bool type: True | False")
+            return False
 
     # SETTERS:
 
@@ -626,12 +624,9 @@ class SLAHelper(object):
         return "RAM: {}, Disc: {}".format(ram, disk)
 
 
-
+"""
 class Metrics(object):
-    """
-    Class Metrics
-    Concentrates all metrics used in CHAVE simulator
-    """
+    #Concentrates all metrics used in CHAVE simulator
     def __init__(self, az_id, sla):
         self.logger = sla.logger
         self.sla = sla
@@ -791,3 +786,4 @@ class Metrics(object):
         # self.set('global', 'sla_violations_i', api.get_total_SLA_violations_from_cloud())
         # self.set('global', 'overcommit_i', api.get_list_overcom_amount_from_cloud())
         self.set('global', 'elapsed_time_i', elapsed)
+"""

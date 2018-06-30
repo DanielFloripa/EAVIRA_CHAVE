@@ -168,14 +168,15 @@ def output_stream():
                     else:
                         fp.write('List(len(' + str(len(vm)) + ')\n')
     if "MEM" in types_list:
-        get = sla.g_log_output().rsplit(sep='/', maxsplit=1)
-        mem_out = get[0] + '/mem/' + get[1].rsplit(sep='.txt')[0] + '.mem'
-        os.makedirs(os.path.dirname(mem_out), exist_ok=True)
-        with open(mem_out, "w", ) as fp:
-            all_objects = muppy.get_objects()
-            sum1 = summary.summarize(all_objects)
-            for line in summary.format_(sum1):
-                fp.write("{}\n".format(line))
+        pass
+    #    get = sla.g_log_output().rsplit(sep='/', maxsplit=1)
+    #    mem_out = get[0] + '/mem/' + get[1].rsplit(sep='.txt')[0] + '.mem'
+    #    os.makedirs(os.path.dirname(mem_out), exist_ok=True)
+    #    with open(mem_out, "w", ) as fp:
+    #        all_objects = muppy.get_objects()
+    #        sum1 = summary.summarize(all_objects)
+    #        for line in summary.format_(sum1):
+    #            fp.write("{}\n".format(line))
     sla.logger.info("Saved in {}".format(sla.g_log_output()))
 
 

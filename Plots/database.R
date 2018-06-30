@@ -4,15 +4,16 @@ library(DBI)
 ############################## MAIN PARAMETERS AND DIRS #################################
 # Get the parameter:
 # date = commandArgs(trailingOnly=TRUE)
-date = "18.06.21-12.33.48/"
-pwd <- "/home/daniel/output/"
 #date = "18.06.21-11.08.24" #"18.06.21-12.33.48"
+date = "18.06.21-12.33.48/"
+#pwd <- "/home/daniel/output/"
+pwd <- "/media/debian/"
 #pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
-"EUCA_CF_L:None_O:False_C:False_R:False"
-rdef <- paste0(toString(pwd), toString(date[1])) #, toString("/results/"))
-rootEUCA <- paste0(toString(rdef), toString("EUCA_CF_L:None_O:False_C:False_R:False/"))
-##############################CHOOSE THE DIRECTORY#####################
-root=rootEUCA
+test <- "EUCA_CF_L:None_O:False_C:False_R:False"
+#meta <- "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:False"
+rdef <- paste0(toString(pwd), toString(date[1])) #, toString("results/"))
+root <- paste0(toString(rdef), toString(test))
+############################## CHOOSE THE DIRECTORY #####################
 print(root)
 out <- tryCatch({
     setwd(root)
@@ -52,7 +53,20 @@ con6 <- dbConnect(RSQLite::SQLite(), f[6])
 az_con_list <- c(con1, con2, con3, con4, con5, con6)
 #con7 <- dbConnect(RSQLite::SQLite(), f[7])
 metrics <- dbListTables(con1); metrics
-############################ FUNCTIONS ###############################
+############################ CDF ###############################
+sample.data = c(Delay=rnorm(10000))
+cdf <- ggplot (data=sample.data, aes(x=Delay, group =Type, color = Type)) + stat_ecdf()
+cdf
+
+x <- rnorm(10000)
+plot(ecdf(x))
+
+
+
+
+
+
+############################ BASIC FUNCTIONS ###############################
 result <- function(query){
     res1 <-dbGetQuery(con1, query)
     res2 <-dbGetQuery(con2, query)
@@ -74,7 +88,7 @@ result_sd <- function(query){
     resp <-c(sd(res1[[1]]), sd(res2[[1]]), sd(res3[[1]]), sd(res4[[1]]), sd(res5[[1]]), sd(res6[[1]]))
     return(resp)
 }
-############### ALL QUERIES ###############
+############### BASIC QUERIES ###############
 q_avg_load <- 'SELECT avg(val_0) FROM az_load_l'
 q_avg_load_max <- 'SELECT max(val_0) FROM az_load_l'
 q_avg_load_min <- 'SELECT min(val_0) FROM az_load_l'
@@ -131,16 +145,15 @@ fun_scatter_each_az <- function(con_az, i){
     pdf_name1 <- paste0(toString(plot_name1), toString(".pdf"))
     ggplot(dat, aes(dat$load))+
         geom_histogram(bins=BREAKS)
-    #plot_m = plot1+theme_get()+annotate("text", x = min(load), y = BREAKS, label = plot_name, col="orange" , size=5)
     ggsave(pdf_name1)
-    # SCATTER
-    plot_name <- paste0(toString("03-Scatter_AZ"), toString(i))
-    pdf_name <- paste0(toString(plot_name), toString(".pdf"))
+    # SCATTER:
+    #plot_name <- paste0(toString("03-Scatter_AZ"), toString(i))
+    #pdf_name <- paste0(toString(plot_name), toString(".pdf"))
     #plot(gvt, load ,  pch=1 , bg="white" , cex=1 , col=rgb(0.1,0.3,0.5,0.5), ylab="AZ_Load" , xlab="Time" )
-    ggplot(dat, aes(x=gvt, y=load)) +
-        geom_point(shape=1) +    # Use hollow circles
-        geom_smooth(method=lm)#+ggtitle(plot_name)+xlab("Time") + ylab("Load")
-    ggsave(pdf_name)
+    #ggplot(dat, aes(x=gvt, y=load)) +
+    #    geom_point(shape=1) +    # Use hollow circles
+    #    geom_smooth(method=lm)#+ggtitle(plot_name)+xlab("Time") + ylab("Load")
+    #ggsave(pdf_name)
 }
 i<-1
 for (az_con in az_con_list){

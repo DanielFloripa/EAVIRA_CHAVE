@@ -27,6 +27,7 @@ len_l = len(k_lists)
 
 k_dicts = ['consol_d',  # OK!
            'replic_d',  # OK!
+           'time_steps_d'
            ]
 columns_d = ('gvt', 'energy_0', 'energy_f', 'val_0', 'val_f', 'info')
 columns_d_dict = {columns_d[0]: 0, columns_d[1]: 0, columns_d[2]: 0, columns_d[3]: 0, columns_d[4]: 0, columns_d[5]: ''}

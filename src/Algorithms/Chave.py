@@ -664,7 +664,7 @@ class Chave(object):
                     pass  # self.logger.error("pool {} != {} lc_obj.lc_id".format(pool_id, lc_id))
         # self.logger.info("Exit for {} {}".format(self.global_time, lc_id))
 
-    def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> Union(AvailabilityZone, None):
+    def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> AvailabilityZone:
         """
         Choose the best az for instanciate a given replica
         :param vm:

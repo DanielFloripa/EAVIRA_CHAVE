@@ -1,12 +1,12 @@
-matplotlib
 peewee
 numpy
 pympler
 argparse
 psutil
+matplotlib
+logging
 # itertools
 # operator
-logging
 # csv
 # json
 # collections

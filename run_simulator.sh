@@ -32,7 +32,7 @@ AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 32 32 ) # ('node core')
    #\_|_6_|_32_|_32__|/
 
 # Note: Allways EUCA first, because we neef the average_load
-TEST_LIST=( 'EUCA' ) # 'CHAVE' )  # 'MM' MBFD )
+TEST_LIST=( 'EUCA' ) #'CHAVE' )  # 'MM' MBFD )
 FF_LIST=( 'FFD2I') # 'FF3D')
 CONSOLID_ALGO=( 'LOCK' 'MAX' ) #  'MIN' ) # 'ha' )
 WITH_CONSOLID=( 'True' 'False' )
@@ -135,10 +135,10 @@ echo -e "${_WARN}\n\t ${SIM_RESULT}  ${_NC}"
 echo -e ${SIM_RESULT} >> "${CS_OUTPUT_PATH}/simulation_resume.txt"
 popd > /dev/null
 
-if [ "${USER}" == "ubuntu" ]; then
-    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_DATA_PATH} 10.0.0.16:/var/www/html/
-    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_LOG_PATH} 10.0.0.16:/var/www/html/
-fi
+#if [ "${USER}" == "ubuntu" ]; then
+#    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_DATA_PATH} 10.0.0.16:/var/www/html/
+#    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_LOG_PATH} 10.0.0.16:/var/www/html/
+#fi
 
 PLOT=false
 SYNC=false
@@ -166,7 +166,7 @@ if [ ${SYNC} == true ]; then
     }
     S3_BUCK="chave-output"
     OUTPUT="${CS_PROJ_ROOT}"/output/
-    aws s3 sync ${OUTPUT} s3://${S3_BUCK} --acl public-read --exclude "*.Rhistory*",".Rproj" # --grants full=uri=http://acs.amazonaws.com/groups/global/AllUsers
+    aws s3 sync ${OUTPUT} s3://${S3_BUCK} --acl public-read --exclude ".Rhistory",".Rproj" # --grants full=uri=http://acs.amazonaws.com/groups/global/AllUsers
 fi
 
 

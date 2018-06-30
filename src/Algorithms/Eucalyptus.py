@@ -80,9 +80,13 @@ class Eucalyptus(object):
         start = time.time()
         milestones = int(self.api.demand.max_timestamp / self.sla.g_milestones())
         while self.global_time <= self.api.demand.max_timestamp:
+            start_for = time.time()
             for az in self.api.get_az_list():
+                start_place = time.time()
                 self.placement(az)
+                end_place = time.time() - start_place
 
+                start_misc = time.time()
                 values = (self.global_time, az.get_az_energy_consumption2(), "",)
                 self.sla.metrics.set(az.az_id, 'energy_l', values)
 
@@ -93,7 +97,10 @@ class Eucalyptus(object):
                 else:
                     values = (self.global_time, azload, "0",)
                 self.sla.metrics.set(az.az_id, 'az_load_l', values)
+                end_misc = time.time() - start_misc
+            end_for = time.time() - start_for
 
+            start_milestone = time.time()
             if self.global_time % milestones == 0:
                 memory = self.sla.check_simulator_memory()
                 elapsed = time.time() - start
@@ -104,15 +111,11 @@ class Eucalyptus(object):
             self.remove_finished_azs()
             # Doc: At the end, increment the clock:
             self.global_time += self.window_time
+            end_milestone = time.time() - start_milestone
 
-        # Note: Wen exit, please save the avg file:
-        #avg = self.sla.metrics.special('all', 'az_load_l', 'val_0', 'AVG')
-        # cwd = os.getcwd()  # Get the current working directory (cwd)
-        # files = os.listdir(cwd)  # Get all the files in that directory
-        # print("Files in '%s': %s" % (cwd, files))
-        #with open(self.sla.g_avg_load_objective_file(), 'w') as outfile:
-        #    for k, v in avg.items():
-        #        outfile.write("{}, {}\n".format(k, v))
+            #metric_time = (self.global_time, -1.0, "plc:{} msc:{} for:{} mls:{}".format(end_place, end_misc, end_for, end_milestone))
+            metric_time = (self.global_time, end_place, end_misc, end_for, end_milestone, "")
+            self.sla.metrics.set('global', 'time_steps_d', metric_time)
 
     def remove_finished_azs(self):
         """
