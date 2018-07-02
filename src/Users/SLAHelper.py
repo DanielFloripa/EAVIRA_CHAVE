@@ -15,6 +15,7 @@ import logging
 from collections import OrderedDict
 from Users.globalData import *
 from Users.MetricSQLite import *
+from Architecture.Infra import AvailabilityZone
 
 # VMs:
 CRITICAL = 'critical'
@@ -42,6 +43,7 @@ class SLAHelper(object):
     Also contains some Helpers methods
     """
     fragmentation_class_dict = {TIGHT: 1.0, MEDIUM: 1.5, WIDE: 2.0}
+    empty_az = AvailabilityZone(None, "None", dict(), dict(), dict())
 
     @staticmethod
     def key_from_item(func):
