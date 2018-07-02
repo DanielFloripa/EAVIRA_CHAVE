@@ -618,7 +618,6 @@ class Chave(object):
 
         if len(self.replication_pool_d[lc_id].items()) > 0:
             replicas_for_this_lc = dict(self.replication_pool_d[lc_id])
-
             for pool_id, pool_d in replicas_for_this_lc.items():
                 lc_pool = pool_id.split(K_SEP)[0]
                 if lc_pool == lc_obj.lc_id:
@@ -646,11 +645,10 @@ class Chave(object):
                                 self.logger.error("{}\t NONE To find Best Host on {}".format(lc_id, pool_id))
                             energyf = az.get_az_energy_consumption2()
                             _, hosts_on2, _ = az.get_hosts_density(just_on=True)
-                            val_0 = hosts_on - hosts_on2
                             this_metric = {'gvt': self.global_time,
                                            'energy_0': energy0,
                                            'energy_f': energyf,
-                                           'val_0': val_0,
+                                           'val_0': hosts_on2 - hosts_on,
                                            'val_f': len(self.replicas_execution_d[lc_id]),
                                            'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
                                                hosts_on, hosts_on2, pool_id, len(info_bh))}

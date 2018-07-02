@@ -7,14 +7,12 @@ if [ "$1" == "install" ]; then
 	exit
 fi
 
-echo -e "${_GREEN}\tRunning CHAVE-Sim since: ${CS_START} ${_NC}"
-echo -e "${_WARN}${CS_LOGO} ${_NC}"
+echo -e "${CS_LOGO} ${_NC}"
 
-CLEAR_ALL=false
+CLEAR_ALL=true
 
 if ${CLEAR_ALL} == true; then
-    rm -rf ${CS_LOG_PATH}/*
-    rm -rf ${CS_DATA_PATH}/*
+    rm -rf "${CS_PROJ_ROOT}/output/"
 fi
 
 mkdir -p ${CS_LOG_PATH} 2> /dev/null
@@ -22,17 +20,17 @@ mkdir -p ${CS_DATA_PATH} 2> /dev/null
 
 AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 32 32 ) # ('node core')
     #________________
-   #/ |AZ_|Node|Cores\             {CHAVE}
+   #/ |AZ_|Node|Cores\          {CHAVE}
   #/  | 1 | 13 | 24  |\____
- #/   | 2 | 7  | 12  | >LC0\__
+ #/   | 2 | 7  | 12  | >LC0\__ Source: ${CS_SOURCE_FOLDER}
 #/ /\ | 3 | 7  | 8   |/       \__/l__/L___/l_/l__M___
 #\ \/ |===|====|=====K         >_GC___  ____  ___ __/
  #\   | 4 | 12 | 8   |\     __/  \/   \/    \/   V
-  #\  | 5 | 31 | 32  | >LC1/
+  #\  | 5 | 31 | 32  | >LC1/    Log: ${CS_LOG_LEVEL}
    #\_|_6_|_32_|_32__|/
 
-# Note: Allways EUCA first, because we neef the average_load
-TEST_LIST=( 'EUCA' ) #'CHAVE' )  # 'MM' MBFD )
+# Note: Allways EUCA first
+TEST_LIST=( 'EUCA' 'CHAVE' )  # 'MM' MBFD )
 FF_LIST=( 'FFD2I') # 'FF3D')
 CONSOLID_ALGO=( 'LOCK' 'MAX' ) #  'MIN' ) # 'ha' )
 WITH_CONSOLID=( 'True' 'False' )
@@ -48,7 +46,7 @@ WT=('1' '2' '2')  # Window time: ('min' 'step' 'max')
 SRC_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace.txt`)
 SRC_LIST_PLUS=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-plus.txt`)
 if [[ ${#SRC_LIST_PLUS[@]} -lt ${#SRC_LIST[@]} ]]; then
-    echo -e "${_WARN}Genearting some plus info! ${#SRC_LIST_PLUS[@]} < ${#SRC_LIST[@]} ${_NC}"
+    echo -e "${_RED}Genearting some plus info! ${#SRC_LIST_PLUS[@]} < ${#SRC_LIST[@]} ${_NC}"
     bash gvt.sh 'trace_plus' #'create_trace' or 'trace_plus'
     SRC_LIST_PLUS=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-plus.txt`)
 fi
@@ -131,7 +129,7 @@ fi
 let "_END=`date +%s`-${RUN_S}"
 _NOW=`date +${CS_DP}`
 SIM_RESULT="This simulation ended at ${_NOW} and took ${_END} seconds."
-echo -e "${_WARN}\n\t ${SIM_RESULT}  ${_NC}"
+echo -e "${_RED}\n\t ${SIM_RESULT}  ${_NC}"
 echo -e ${SIM_RESULT} >> "${CS_OUTPUT_PATH}/simulation_resume.txt"
 popd > /dev/null
 
