@@ -71,12 +71,9 @@ class Eucalyptus(object):
     def run(self):
         """
         Interface for all algorithms, the name must be agnostic for all them
-        In this version, we use Threads for running infrastructures in parallel
-        :return: Void
+        In this version, we run the infrastructures in in serial mode
+        :return:
         """
-        # for az in self.api.get_az_list():
-        #    az.create_infra(first_time=True, host_state=HOST_ON)
-
         start = time.time()
         milestones = int(self.api.demand.max_timestamp / self.sla.g_milestones())
         while self.global_time <= self.api.demand.max_timestamp:
@@ -109,9 +106,9 @@ class Eucalyptus(object):
                 self.sla.metrics.set('global', 'lap_time_l', (self.global_time, elapsed, "Status:{}".format(memory)))
                 start = time.time()
             self.remove_finished_azs()
-            # Doc: At the end, increment the clock:
+            # At the end, increment the clock:
             self.global_time += self.window_time
-            end_milestone = time.time() - start_milestone
+            end_milestone = time.time() - start_milestone   
 
             #metric_time = (self.global_time, -1.0, "plc:{} msc:{} for:{} mls:{}".format(end_place, end_misc, end_for, end_milestone))
             metric_time = (self.global_time, end_place, end_misc, end_for, end_milestone, "")

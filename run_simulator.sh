@@ -9,7 +9,7 @@ fi
 
 echo -e "${CS_LOGO} ${_NC}"
 
-CLEAR_ALL=true
+CLEAR_ALL=false
 
 if ${CLEAR_ALL} == true; then
     rm -rf "${CS_PROJ_ROOT}/output/"
@@ -132,25 +132,20 @@ SIM_RESULT="This simulation ended at ${_NOW} and took ${_END} seconds."
 echo -e "${_RED}\n\t ${SIM_RESULT}  ${_NC}"
 echo -e ${SIM_RESULT} >> "${CS_OUTPUT_PATH}/simulation_resume.txt"
 popd > /dev/null
-
+i
 #if [ "${USER}" == "ubuntu" ]; then
 #    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_DATA_PATH} 10.0.0.16:/var/www/html/
 #    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_LOG_PATH} 10.0.0.16:/var/www/html/
 #fi
 
-PLOT=false
-SYNC=false
+PLOT=true
+SYNC=true
 # Todo: Automatizar processo
 if [ ${PLOT} == true ]; then
 	pushd .
 	cd ${CS_PROJ_ROOT}/output/Plots/
-	for elem in ${TEST_LIST[@]}; do
-	        if [ "EUCA" == "${elem}" ]; then
-        		./Optimized_All_graphsFunc_EUCA.r ${CS_START}
-        	else
-            	./Optimized_All_graphsFunc.r ${CS_START}
-        	fi
-    	done
+	./database.R  
+	./databaseSpider.R
 	popd
 fi
 if [ ${SYNC} == true ]; then
@@ -164,7 +159,7 @@ if [ ${SYNC} == true ]; then
     }
     S3_BUCK="chave-output"
     OUTPUT="${CS_PROJ_ROOT}"/output/
-    aws s3 sync ${OUTPUT} s3://${S3_BUCK} --acl public-read --exclude ".Rhistory",".Rproj" # --grants full=uri=http://acs.amazonaws.com/groups/global/AllUsers
+    aws s3 sync ${OUTPUT} s3://${S3_BUCK} --acl public-read # --grants full=uri=http://acs.amazonaws.com/groups/global/AllUsers
 fi
 
 

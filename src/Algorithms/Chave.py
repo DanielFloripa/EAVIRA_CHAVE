@@ -35,7 +35,6 @@ class Chave(object):
         self.global_time = 0
         self.max_host_on = dict()
         self.replicas_execution_d = dict()
-        self.replica_aznone_tries_after_remove = dict()
         """d['lc_id']['pool_id'] = obj"""
         self.replication_pool_d = dict()
         """d['lc_id']['lcid_azid_vmid'] = {'critical':[AZc, VMc], 'replicas':[[AZr1,VMr1],[...], [AZrn,VMrn]]}"""
@@ -169,8 +168,7 @@ class Chave(object):
                                        'info': "pool:{}, {}, info_bh:{}, {}".format(
                                            vm.pool_id, vm.type, len(info_bh), az.print_hosts_distribution())}
                         self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
-                        self.logger.warning("{}\t Problem to find best host for {} t:{} h:{} az:{} at {}, d: {}".format(
-                            az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id, self.global_time, this_metric.items()))
+                        self.logger.warning("{}\t Problem to find best host for {} t:{} h:{} az:{} at {}, d: {}".format(az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id, self.global_time, this_metric.items()))
                         break
 
                 elif this_state == "STOP":
@@ -184,7 +182,6 @@ class Chave(object):
 
                     if exec_vm is not None:
                         if az.deallocate_on_host(exec_vm, ts=vm.timestamp):
-                            #self.az_load_mach(az)
                             del self.op_dict_temp_d[az_id][op_id]
                         else:
                             self.logger.error("{}\t Problem for deallocate {}".format(az_id, exec_vm.vm_id))
@@ -568,7 +565,7 @@ class Chave(object):
                 azlist = list(self.api.get_localcontroller_from_lcid(az.lc_id).az_list)
                 # Todo: para remover bloco em 'best_az_for..' basta:
                 # del azlist.remove(az)
-                other_az, _ = self.best_az_for_replica(vm, azlist, is_forced=True, az_forced=az)
+                other_az = self.best_az_for_replica(vm, azlist, is_forced=True, az_forced=az)
                 if other_az is not None:
                     if not recursive:
                         self.best_host(vm, other_az, recursive=True)
@@ -600,6 +597,16 @@ class Chave(object):
                 az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id))
         return False
 
+    # Note: deprecated
+    def az_load_mach(self, az):
+        azl2 = az.get_az_load()
+        obj = self.sla.g_avg_load_objective(az_id=az.az_id)
+        var = 0.01
+        if (obj - var) >= azl2 >= (obj + var):
+            values = (self.global_time, azl2, az.print_hosts_distribution(level='MIN'),)
+            self.sla.metrics.set(az.az_id, 'az_load_match', values)
+
+
     #############################################
     ### Replication
     #############################################
@@ -614,7 +621,7 @@ class Chave(object):
                 if lc_pool == lc_obj.lc_id:
                     vm_r = pool_d[REPLICA][0][1]
                     if vm_r.az_id in this_lc_azs:  # Apenas pra confirmar
-                        az, info_bar = self.best_az_for_replica(vm_r, lc_obj.az_list)
+                        az = self.best_az_for_replica(vm_r, lc_obj.az_list)
                         if az is not None:
                             energy0 = az.get_az_energy_consumption2()
                             _, hosts_on, _ = az.get_hosts_density(just_on=True)
@@ -630,52 +637,48 @@ class Chave(object):
                                         self.logger.error(type(e))
                                         self.logger.error("{}\t Delete REPLICA from pool {} on {}".format(
                                             lc_id, vm_r.vm_id, vm_r.az_id))
+                                    energyf = az.get_az_energy_consumption2()
+                                    _, hosts_on2, _ = az.get_hosts_density(just_on=True)
+                                    this_metric = {'gvt': self.global_time,
+                                                   'energy_0': energy0,
+                                                   'energy_f': energyf,
+                                                   'val_0': hosts_on2 - hosts_on,
+                                                   'val_f': len(self.replicas_execution_d[lc_id]),
+                                                   'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
+                                                       hosts_on, hosts_on2, pool_id, len(info_bh))}
+                                    self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
+                                    self.logger.info("this_metric: {}".format(this_metric))
                                 else:
                                     self.logger.error("{}\t On place REPLICA {}".format(lc_id, pool_id))
                             else:
                                 self.logger.error("{}\t NONE To find Best Host on {}".format(lc_id, pool_id))
-                            energyf = az.get_az_energy_consumption2()
-                            _, hosts_on2, _ = az.get_hosts_density(just_on=True)
+
+                        else:  # Best az for replica is None
+                            del self.replication_pool_d[lc_id][pool_id]
+                            # Note: Must match colu*.mns_d:
                             this_metric = {'gvt': self.global_time,
-                                           'energy_0': energy0,
-                                           'energy_f': energyf,
-                                           'val_0': hosts_on2 - hosts_on,
-                                           'val_f': len(self.replicas_execution_d[lc_id]),
-                                           'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
-                                               hosts_on, hosts_on2, pool_id, len(info_bh))}
-                            self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
-                            self.logger.info("this_metric: {}".format(this_metric))
-                        else:
-                            if self.replica_aznone_tries_after_remove.get(vm_r.id):
-                                self.replica_aznone_tries_after_remove[vm_r.id] += 1
-                                # Note: Remove after third tries
-                                if self.replica_aznone_tries_after_remove[vm_r.id] > 3:
-                                    del self.replication_pool_d[lc_id][pool_id]
-                                    del self.replica_aznone_tries_after_remove[vm_r.id]
-                            else:   # Best az for replica is None
-                                self.replica_aznone_tries_after_remove[vm_r.id] = 0
-                            this_metric = {'gvt': self.global_time,
-                                           'val_0': 1,
-                                           'info': "pool:{}, info:{}, {}".format(
-                                               vm_r.pool_id, info_bar, az.print_hosts_distribution())}
+                                           'val_0': 2,
+                                           'info': "pool:{}, AZ_None".format(
+                                               vm_r.pool_id)}
                             self.sla.metrics.set(vm_r.az_id, 'reject_l', tuple(this_metric.values()))
-                            self.logger.warning("{}\t Problem to find best AZ for {} az:{} at {}, d: {}".format(lc_id, vm_r.vm_id, vm_r.az_id, self.global_time, this_metric.items()))
+                            self.logger.warning(
+                                "{}\t Problem to find best AZ for {} az:{} at {}, metric: {}".format(
+                                    pool_id, vm_r.vm_id, vm_r.az_id, self.global_time, this_metric.items()))
                     else:
                         pass  # vm_replica not in this LC azs
                 else:
                     pass  # self.logger.error("pool {} != {} lc_obj.lc_id".format(pool_id, lc_id))
         # self.logger.info("Exit for {} {}".format(self.global_time, lc_id))
 
-    def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> (AvailabilityZone, str):
+    def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> AvailabilityZone:
         """
         Choose the best az for instanciate a given replica
         :param vm:
         :param az_list:
         :param is_forced:
         :param az_forced:
-        :return: tuple (AvailabilityZone, str)
+        :return: object AvailabilityZone
         """
-        empty = self.sla.empty_az
         temp_az_list = list(az_list)
         actual_az = None
         for az in az_list:
@@ -686,12 +689,12 @@ class Chave(object):
         except ValueError:
             self.logger.error(
                 "{}\t ACTUAL_AZ: ({}) not in list {} ValueError".format(vm.az_id, actual_az.az_id, temp_az_list))
-            return empty, "ERR1"
+            return None
         except Exception as e:
             # self.logger.exception(type(e))
             self.logger.error("{}\t UNKNOWN: ({}) not in list {} {}".format(vm.az_id, actual_az, temp_az_list, e))
             # raise e
-            return empty, "ERR2"
+            return None
 
         # Todo: analizar e remover este bloco depois
         if is_forced and az_forced is not None:
@@ -700,14 +703,14 @@ class Chave(object):
             except ValueError:
                 self.logger.error(
                     "{}\t AZ_FORCED: ({}) not in list {} ValueError".format(vm.az_id, actual_az.az_id, temp_az_list))
-                return empty, "ERR3"
+                return None
             except Exception as e:
                 self.logger.error(
                     "{}\t UNKNOWN AZ_FORCED ({}) not in list {} {}".format(vm.az_id, actual_az, temp_az_list, e))
-                return empty, "ERR4"
+                return None
             else:
                 if len(temp_az_list) == 1:
-                    return temp_az_list[0], "1st"
+                    return temp_az_list[0]
 
         # get the max and min azCores:
         min_cpu = [0, None]
@@ -730,7 +733,7 @@ class Chave(object):
         az_selection = self.sla.g_az_selection()
         this_target_lb = 1.0
         this_target_ha = 0.0
-        best_az = empty  # temp_az_list[0]
+        best_az = None  # temp_az_list[0]
         for az in temp_az_list:
             # Todo: ver wf e bf
             if az_selection == "WF":  # aquela que deixa o maior espaço livre
@@ -752,21 +755,19 @@ class Chave(object):
                     self.logger.debug("{}\tNew BestHost LB: usg:{}%".format(az.az_id, new_usage * 100))
                     this_target_lb = new_usage
                     best_az = az
-                else:
-                    self.logger.warning("{}\tCan't LB for {}, usage:{}%".format(az.az_id, vm.pool_id, new_usage * 100))
             elif az_selection == "RND" or is_forced:
                 best_az = temp_az_list[randint(0, len(temp_az_list) - 1)]
                 break  # '''Do this once one time'''
             else:
                 self.logger.error("We must define the 'az selection' method, but have {}".format(self.sla.g_az_selection()))
-        if best_az.az_id == "None":
+        if best_az is None:
             best_az = temp_az_list[randint(0, len(temp_az_list) - 1)]
             self.logger.warning("AZ selection '{}' fails, we'll place {} (from {}) RND in {} list:{}".format(
                 az_selection, vm.vm_id, vm.az_id, best_az, temp_az_list))
-            return best_az, "bAZ-None"
+            return None
         self.logger.info("{} from ({}), {}  will be replicated for {}".format(
             vm.vm_id, actual_az.az_id, az_selection, best_az.az_id))
-        return best_az, "OK"
+        return best_az
 
     def is_required_replica(self, vm, az):
         if type(vm.type) is str and type(vm.availab) is float and type(az.availability) is float:

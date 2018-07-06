@@ -32,51 +32,216 @@ class MM(object):
     def __repr__(self):
         return repr([self.__get])
 
-    def gvt(self, max):
-        self.logger.info("Init GVT in {0} to {1}".format
-                         (self.global_time, self.api.demand.max_timestamp))
-        while self.global_time < self.api.demand.max_timestamp + 1 and not self.exceptions:
-            self.global_time += self.window_time
-            if self.global_time % 60 == 0:
-                time.sleep(0.1)
-            if self.global_time % 3600 == 0:
-                self.global_hour += 1
-                self.logger.debug("GVT s:%s, h:%s" % (self.global_time, self.global_hour))
-                # Todo: try syncronize all threads
-                time.sleep(1)
-        self.logger.info("End of GVT!")
-
     def run(self):
-        '''
+        """
         Interface for all algorithms, the name must be agnostic for all them
-        In this version, we use Threads for running infrastructures in parallel
-        :return: Void
-        '''
-        semaph = threading.Semaphore(1)
-        self.thread_dict['gvt'] = threading.Thread(
-            name="T_gvt",
-            target=self.gvt,
-            args=[0])
-        # Creating Thread list
-        for az in self.api.get_az_list():
-            self.replicas_execution_d[az.az_id] = dict()
-            self.thread_dict[str(az.az_id)] = threading.Thread(
-                name="T_" + str(az.az_id),
-                target=self.alg1,
-                args=[az, semaph])
+        In this version, we run the infrastructures in in serial mode
+        :return:
+        """
+        start = time.time()
+        milestones = int(self.api.demand.max_timestamp / self.sla.g_milestones())
+        while self.global_time <= self.api.demand.max_timestamp:
+            start_for = time.time()
+            for az in self.api.get_az_list():
+                start_place = time.time()
+                self.placement(az)
+                end_place = time.time() - start_place
 
-        for lc_id, lc_obj in self.api.get_localcontroller_d().items():
-            self.thread_dict[str(lc_id)] = threading.Thread(
-                name="T_" + str(lc_id),
-                target=self.alg2,
-                args=[lc_obj, semaph])
-        # Release Threads
-        for t_id, t_obj in self.thread_dict.items():
-            self.logger.debug("Executing thread for: {0}".format(
-                t_obj.getName()))
-            t_obj.start()
-            t_obj.join(2)
+                start_misc = time.time()
+                values = (self.global_time, az.get_az_energy_consumption2(), "",)
+                self.sla.metrics.set(az.az_id, 'energy_l', values)
 
+                azload = az.get_az_load()
+                if self.az_load_change_d[az.az_id] != azload:
+                    self.az_load_change_d[az.az_id] = azload
+                    values = (self.global_time, azload, str(az.print_hosts_distribution(level='MIN')),)
+                else:
+                    values = (self.global_time, azload, "0",)
+                self.sla.metrics.set(az.az_id, 'az_load_l', values)
+                end_misc = time.time() - start_misc
+            end_for = time.time() - start_for
+
+            start_milestone = time.time()
+            if self.global_time % milestones == 0:
+                memory = self.sla.check_simulator_memory()
+                elapsed = time.time() - start
+                self.logger.critical("gt: {} , time:{} , it toke: {:.3f}s, {}".format(
+                    self.global_time, time.strftime("%H:%M:%S"), elapsed, memory))
+                self.sla.metrics.set('global', 'lap_time_l', (self.global_time, elapsed, "Status:{}".format(memory)))
+                start = time.time()
+            self.remove_finished_azs()
+            # Doc: At the end, increment the clock:
+            self.global_time += self.window_time
+            end_milestone = time.time() - start_milestone
+
+            #metric_time = (self.global_time, -1.0, "plc:{} msc:{} for:{} mls:{}".format(end_place, end_misc, end_for, end_milestone))
+            metric_time = (self.global_time, end_place, end_misc, end_for, end_milestone, "")
+            self.sla.metrics.set('global', 'time_steps_d', metric_time)
+
+    def reallocate_infrastructure_mm(self):
+        THRESH_UP = 19  # 80%
+        THRESH_LOW = 5  # ~20%
+        t = 0
+        bestFitVM = None
+        migrationList = []
+
+        # execute MM from Buyya
+        for h in self.get_physical_resources():
+            vms = sorted(h.get_virtual_resources(), key=lambda v: v.get_vcpu_usage())
+            if len(vms) == 0:
+                break
+            hUtil = h.get_cpu_usage()
+            bestFitUtil = hUtil
+            while hUtil > THRESH_UP:
+                for vm in vms:
+                    if vm.get_vcpu_usage() > hUtil - THRESH_UP:
+                        t = vm.get_vcpu_usage() - hUtil + THRESH_UP
+                        if t < bestFitUtil:
+                            bestFitUtil = t
+                            bestFitVM = vm
+                    else:
+                        if bestFitUtil == hUtil:
+                            bestFitVM = vm
+                        break
+                hUtil = hUtil - bestFitVM.get_vcpu_usage()
+                present = 0
+                for v in migrationList:
+                    if v.get_id() == bestFitVM.get_id():
+                        present = 1
+                        break
+                if present == 0:
+                    migrationList.append(bestFitVM)
+
+            if hUtil < THRESH_LOW:
+                for vm in vms:
+                    present = 0
+                    for v in migrationList:
+                        if v.get_id() == vm.get_id():
+                            present = 1
+                            break
+                    if present == 0:
+                        migrationList.append(vm)
+        print("MM: Now I must migrate:")
+
+        for vm in migrationList:
+            print("VM id %d" % (vm.get_id()))
+
+        # print ("\n\n*** VI before to run the migration ***")
+        # vi_before_migration = vm.get_vi()
+        # vi_before_migration.print_allocation()
+        # print ("\n *************************** \n")
+
+        if len(migrationList) > 0:
+            # lets call MBFD to conclude migration
+            self.mbfd_and_migration(migrationList)
+
+        # print ("\n\n###### VI after to run the migration ####")
+        # vi_after_migration = vm.get_vi()
+        # vi_after_migration.print_allocation()
+        # print ("\n ################################ \n")
+
+    def mbfd(self, vi):
+        max_power = self.get_resources(MACHINE)[0].get_max_energy()
+        vmList = sorted(vi.get_virtual_resources(), key=lambda v: v.get_vcpu_usage())
+        rollback = []
+        # VMs: if something went wrong, just return -1. We shouldn't fix MBFD :)
+        for vm in vmList:
+            vm.set_datacenter(self)
+
+            minPower = max_power
+            allocatedHost = None
+            for h in self.get_resources(vm.get_type()):
+                if h.can_allocate(vm):
+                    power = vm.get_energy_consumption_estimate(h)
+                    if power <= minPower:
+                        allocatedHost = h
+                        minPower = power
+
+            if allocatedHost == None:
+                for row in rollback:
+                    pnode = row[0]
+                    vnode = row[1]
+                    pnode.deallocate(vnode)
+                print
+                "MBFD - None: Without solution for node %s" % (vm.get_id())
+                return -1
+
+            if not allocatedHost.allocate(vm):
+                for row in rollback:
+                    pnode = row[0]
+                    vnode = row[1]
+                    pnode.deallocate(vnode)
+
+                print
+                "MBFD: Without solution for node %s" % (vm.get_id())
+                return -1
+
+        rollback.append((allocatedHost, vm))
+
+
+        print
+        "MBFD - moving to network allocation"
+        disconnectDict = {}
+        for vm in vmList:
+            connect, disconnect = vm.reconnect_adjacencies()
+            # no need for track connect here
+            if len(connect) == 0 and len(disconnect) == 0:
+                print
+                "MBFD: Without solution for network!"
+                # rollback all links. Connect must be empty, otherwise we have a problem :)
+                for i in disconnectDict:
+                    for j in disconnectDict[i]:
+                        i.disconnect(j['vnode2'])
+                        j['vnode2'].disconnect(i)
+
+                # rollback all nodes
+                for row in rollback:
+                    pnode = row[0]
+                    vnode = row[1]
+                    pnode.deallocate(vnode)
+                return -1
+            disconnectDict[vm] = disconnect
+
+        vi.print_allocation()
+        self.nalloc += 1
+        self.vi_list.append(vi)
+
+        print
+        "MBFD: OK. Allocation is done with MBFD"
+        return 1
+
+
+    def mbfd_and_migration(self, migrationList):
+        vmList = sorted(migrationList, key=lambda v: v.get_vcpu_usage())
+        for vm in vmList:
+            minPower = vm.get_physical_host().get_max_energy()
+            allocatedHost = None
+            for h in self.get_resources(vm.get_type()):
+                # avoid migration to same host
+                if vm.get_physical_host() != h and h.can_allocate(vm):
+                    path, available_bw = self.shortest_path(vm.get_physical_host(), h, 1)
+                    if len(path) != 0 and available_bw > 0.0:
+                        time = vm.get_migration_time(available_bw)
+                        # ok, migration is allowed
+                        power = vm.get_energy_consumption_estimate(h)
+                        if power <= minPower:
+                            allocatedHost = h
+                            minPower = power
+            if allocatedHost != None:
+                # migrate vm
+                original = vm.get_physical_host()
+                original.deallocate(vm)
+                allocatedHost.allocate(vm)
+
+                # Try to reconnect all vnode's adjacencies to destination
+                connect, disconnect = vm.reconnect_adjacencies()
+                if len(connect) == 0 and len(disconnect) == 0:
+                    # Return everything as it was
+                    allocatedHost.deallocate(vm)
+                    if not original.allocate(vm): print('vishmig2')
+            self.nmig += 1
+            print("MBFD just conclude the migration of %s from %s to %s" % (
+            vm.get_id(), original.get_id(), allocatedHost.get_id()))
 
     def alg1(self, az, semaph):
         while self.global_time < self.api.demand.max_timestamp:
