@@ -317,7 +317,7 @@ class Chave(object):
                                 h.host_id, vm.vm_id, vm.is_locked))
                             mark_host_locked = True
                             break
-                    # Ignore hosts w/ vms in locked state
+                    # Doc: Ignore hosts w/ vms in locked state
                     if mark_host_locked:
                         hosts_locked[h.host_id] = h
                         temp_vms_d.clear()
@@ -655,7 +655,7 @@ class Chave(object):
 
                         else:  # Best az for replica is None
                             del self.replication_pool_d[lc_id][pool_id]
-                            # Note: Must match colu*.mns_d:
+                            # Note: Must match columns_d:
                             this_metric = {'gvt': self.global_time,
                                            'val_0': 2,
                                            'info': "pool:{}, AZ_None".format(
