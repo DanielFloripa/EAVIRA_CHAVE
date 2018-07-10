@@ -10,6 +10,8 @@ fi
 echo -e "${CS_LOGO} ${_NC}"
 
 CLEAR_ALL=false
+PLOT=false
+SYNC=false
 
 if ${CLEAR_ALL} == true; then
     rm -rf "${CS_PROJ_ROOT}/output/"
@@ -18,7 +20,7 @@ fi
 mkdir -p ${CS_LOG_PATH} 2> /dev/null
 mkdir -p ${CS_DATA_PATH} 2> /dev/null
 
-AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 32 32 ) # ('node core')
+AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 31 32 ) # ('node core')
     #________________
    #/ |AZ_|Node|Cores\          {CHAVE}
   #/  | 1 | 13 | 24  |\____
@@ -27,16 +29,15 @@ AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 32 32 ) # ('node core')
 #\ \/ |===|====|=====K         >_GC___  ____  ___ __/
  #\   | 4 | 12 | 8   |\     __/  \/   \/    \/   V
   #\  | 5 | 31 | 32  | >LC1/    Log: ${CS_LOG_LEVEL}
-   #\_|_6_|_32_|_32__|/
+   #\_|_6_|_31_|_32__|/
 
-# Note: Allways EUCA first
-TEST_LIST=( 'EUCA' 'CHAVE' )  # 'MM' MBFD )
+TEST_LIST=( 'CHAVE' 'EUCA' ) # 'MM' MBFD )
 FF_LIST=( 'FFD2I') # 'FF3D')
 CONSOLID_ALGO=( 'LOCK' 'MAX' ) #  'MIN' ) # 'ha' )
-WITH_CONSOLID=( 'True' 'False' )
+WITH_CONSOLID=( 'False' 'True' )
 WITH_OVERCOMM=( 'False' ) # 'True' )
-ENABLE_REPLIC=( 'True' 'False' )
-LOCK_CASE=( 'RANDOM' 'True' 'False' 'None' )
+ENABLE_REPLIC=( 'True' )
+LOCK_CASE=( 'RANDOM' 'False' 'True' 'None' )
 WT=('1' '2' '2')  # Window time: ('min' 'step' 'max')
 
 # TODO: implemetar um criador de AZs e regioes
@@ -47,7 +48,8 @@ SRC_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace.txt`)
 SRC_LIST_PLUS=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-plus.txt`)
 if [[ ${#SRC_LIST_PLUS[@]} -lt ${#SRC_LIST[@]} ]]; then
     echo -e "${_RED}Genearting some plus info! ${#SRC_LIST_PLUS[@]} < ${#SRC_LIST[@]} ${_NC}"
-    bash gvt.sh 'trace_plus' #'create_trace' or 'trace_plus'
+    # Doc: two parameters: <'create_trace'> or <'trace_plus'>
+    bash gvt.sh 'trace_plus'
     SRC_LIST_PLUS=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-plus.txt`)
 fi
 
@@ -132,18 +134,16 @@ SIM_RESULT="This simulation ended at ${_NOW} and took ${_END} seconds."
 echo -e "${_RED}\n\t ${SIM_RESULT}  ${_NC}"
 echo -e ${SIM_RESULT} >> "${CS_OUTPUT_PATH}/simulation_resume.txt"
 popd > /dev/null
-i
+
 #if [ "${USER}" == "ubuntu" ]; then
 #    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_DATA_PATH} 10.0.0.16:/var/www/html/
 #    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_LOG_PATH} 10.0.0.16:/var/www/html/
 #fi
 
-PLOT=true
-SYNC=true
 # Todo: Automatizar processo
 if [ ${PLOT} == true ]; then
 	pushd .
-	cd ${CS_PROJ_ROOT}/output/Plots/
+	cd ${CS_PROJ_ROOT}/Plots/
 	./database.R  
 	./databaseSpider.R
 	popd
