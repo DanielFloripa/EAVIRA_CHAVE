@@ -201,7 +201,7 @@ class AvailabilityZone(Infrastructure):
             return None, state_on, state_off
 
         actives = float(state_on) / (float(state_on) + float(state_off))
-        self.logger.info("{}\t has {:.3f}% hosts actives. Mean: {} ON from total {}".format(
+        self.logger.info("{}\t has {:.3f}% hosts actives. Means: {} ON from total {}".format(
             self.az_id, actives * 100, state_on, len(self.host_list)))
         return actives, state_on, state_off
 
@@ -375,7 +375,7 @@ class AvailabilityZone(Infrastructure):
             ret = 0
         return ret
 
-    # Note: deprecated
+    # Warning: deprecated
     def take_snapshot_for(self, key_list, global_time, metric_d=None, energy=None):
         """
         Take a snapshot collect informations from metric_dand put them on the metrics
@@ -385,7 +385,8 @@ class AvailabilityZone(Infrastructure):
         :param global_time: The time where the snapshot are taken
         :return: bool
         """
-        ret = False
+        pass
+        '''ret = False
         if energy is None:
             energy = self.get_az_energy_consumption2()
         # Note: old 'energy_acum_l'
@@ -420,7 +421,7 @@ class AvailabilityZone(Infrastructure):
                 if key in all_metrics_l:
                     if self.sla.metrics.set(self.az_id, key, tuple(metric_d.values())):
                         ret = True
-        return ret
+        return ret'''
 
     def print_hosts_distribution(self, level=None) -> str:
         """
@@ -438,10 +439,10 @@ class AvailabilityZone(Infrastructure):
             str2 = "; ({}, {}, {})"
             str3 = '\n'
         else:  # Less or None
-            str0 = "\t"
+            str0 = ""
             str1 = "|{} {}:("
-            str2 = "[{} {} {} {}]; "
-            str3 = ")| \t"
+            str2 = "[{} {} {} {}]"
+            str3 = ")|"
 
         ret = str0
         for hi, ho in self.host_list_d.items():

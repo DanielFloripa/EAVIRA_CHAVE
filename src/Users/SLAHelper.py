@@ -44,6 +44,64 @@ class SLAHelper(object):
     fragmentation_class_dict = {TIGHT: 1.0, MEDIUM: 1.5, WIDE: 2.0}
 
     @staticmethod
+    def get_required_ha(replicas, av_azs):
+        prod = 1.0
+        if type(av_azs) is list:
+            if replicas == 1:
+                return av_azs[0]
+            for i in range(0, replicas):
+                prod = prod * float(1.0 - av_azs[i])
+                # print av_azs[i], i, prod
+            ha = 1.0 - prod
+            return ha
+        elif type(av_azs) is float:
+            if replicas == 1:
+                return av_azs
+            ha = 1.0 - np.power((1.0 - float(av_azs)), replicas)
+            return ha
+        return False
+
+    @staticmethod
+    def truncate(tax):
+        n = str(tax).count("9")
+        quick_trunc = str(tax).split(".")[:n]  # np.round(tax, n)
+        if quick_trunc == 1.0:
+            truncating = quick_trunc
+            while truncating == 1.0:
+                n += 1
+                truncating = str(tax)[:n]  # np.round(tax, n)
+            return truncating
+        return quick_trunc
+
+    @staticmethod
+    def get_ha_tax(downtime):
+        m = 525600.0  # 365 * 24 * 60
+        av = 1.0 - float(downtime) / float(m)
+        return av
+
+    @staticmethod
+    def get_downtime(ha):
+        m = 525600.0
+        downtime = (1.0 - float(ha)) * float(m)
+        return downtime
+
+    # Valido apenas quando todas as AZs possuem a mesma taxa A
+    def get_required_replicas(self, a, ha=None, downtime=None):
+        if ha is None:
+            ha = 0.99999
+        if downtime is not None:
+            ha = self.get_ha_tax(downtime)
+        else:
+            downtime = self.get_downtime(ha)
+
+        logA = np.log10(1.0 - a)
+        logHA = np.log10(1.0 - ha)
+        r = float(float(logHA) / float(logA)) - 1.0
+        replicas = np.ceil(r)
+        #print("For {} mins of Downtime is required {}% and {} replicas (A:{} H:{})".format(downtime, (ha * 100), replicas, a, ha))
+        return int(replicas)
+
+    @staticmethod
     def key_from_item(func):
         return lambda item: func(*item)
 

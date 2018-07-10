@@ -26,6 +26,11 @@ class Chave(object):
         self.trigger_to_migrate = api.sla.g_trigger_to_migrate()
         self.frag_percent = api.sla.g_frag_class()
         self.window_time = api.sla.g_window_time()
+        # Todo: create other opportunities for replication:
+        # 0 Reject
+        # 1 Accept replicas in same AZ -> calculate final availability
+        # 2 Accept replicas in other local_controler
+        self.replication_scale = 0  # Todo: get from SLA parameters
         self.last_ts_d = api.demand.last_timestamps_d_ordered()
         self.last_number_of_migrations = 0
         self.localcontroller_list = []
@@ -69,8 +74,8 @@ class Chave(object):
         In this version, we use Threads for running infrastructures in parallel
         :return: Void
         """
-        start = time.time()
         milestones = int(self.api.demand.max_timestamp / self.sla.g_milestones())
+        start = time.time()
         while self.global_time <= self.api.demand.max_timestamp:
             for az in self.az_list:
                 self.initial_placement(az)
@@ -94,7 +99,7 @@ class Chave(object):
                 start = time.time()
                 # print(self.sla.feedback_operator(self.global_time))
             self.remove_finished_azs()
-            # Doc: At the end, increment the clock:
+            # Doc: At the end, increment the clock with the window_time:
             self.global_time += self.window_time
 
     def remove_finished_azs(self):
@@ -126,13 +131,11 @@ class Chave(object):
     def initial_placement(self, az):
         az_id = az.az_id
         remaning_operations_for_this_az = dict(self.op_dict_temp_d[az_id])
-
+        remain_this_gvt = 0
         for op_id, vm in remaning_operations_for_this_az.items():
             if vm.timestamp <= self.global_time:
+                remain_this_gvt += 1
                 this_state = op_id.split(K_SEP)[1]
-
-                if self.can_consolidate(az):
-                    self.do_consolidation(az)
 
                 if this_state == "START":
                     # Note: Let's PLACE!
@@ -141,15 +144,16 @@ class Chave(object):
                         if self.place(vm, b_host, az):
                             self.have_new_max_host_on(az)
                             self.vms_in_execution_d[az_id][vm.vm_id] = vm
+                            self.sla.metrics.update(az_id, "vm_history", "host_place", b_host.host_id, "vm_id", vm.vm_id)
                             # Todo: Change this to accept overcom
-                            tax = 0  # b_host.check_overcom()
-                            if tax > 1:  # or vm.in_overcomm_host:
-                                vm_id_future = vm.vm_id + K_SEP + "STOP"
-                                vm_ovc = self.op_dict_temp_d[az_id][vm_id_future]
-                                old_ts = vm_ovc.timestamp
-                                vm_ovc.timestamp = int(old_ts * tax)
-                                self.logger.info("{}\tChanging ts:{} from {} to {}".format(
-                                    az_id, old_ts, vm_id_future, vm_ovc.timestamp))
+                            #tax = 0  # b_host.check_overcom()
+                            #if tax > 1:  # or vm.in_overcomm_host:
+                            #    vm_id_future = vm.vm_id + K_SEP + "STOP"
+                            #    vm_ovc = self.op_dict_temp_d[az_id][vm_id_future]
+                            #    old_ts = vm_ovc.timestamp
+                            #    vm_ovc.timestamp = int(old_ts * tax)
+                            #    self.logger.info("{}\tChanging ts:{} from {} to {}".format(
+                            #        az_id, old_ts, vm_id_future, vm_ovc.timestamp))
                             del self.op_dict_temp_d[az_id][vm.vm_id + "_START"]
                             break
                         else:
@@ -158,16 +162,17 @@ class Chave(object):
                         # Após ocorrer a rejeição, remova a start e a stop do dicionário
                         del self.op_dict_temp_d[az_id][vm.vm_id + "_START"]
                         del self.op_dict_temp_d[az_id][vm.vm_id + "_STOP"]
-                        is_replica = 0
+                        is_critical = 0
                         if vm.pool_id in self.replicas_execution_d[az.lc_id].keys():
                             del self.replicas_execution_d[az.lc_id][vm.pool_id]
-                            is_replica = 1
+                            is_critical = 1
                         # Note: Must match columns_d:
                         this_metric = {'gvt': self.global_time,
-                                       'val_0': is_replica,
+                                       'val_0': is_critical,
                                        'info': "pool:{}, {}, info_bh:{}, {}".format(
                                            vm.pool_id, vm.type, len(info_bh), az.print_hosts_distribution())}
                         self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
+                        self.sla.metrics.update(az.az_id, "vm_history", "reject_code", is_critical, "vm_id", vm.vm_id)
                         self.logger.warning("{}\t Problem to find best host for {} t:{} h:{} az:{} at {}, d: {}".format(az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id, self.global_time, this_metric.items()))
                         break
 
@@ -197,6 +202,12 @@ class Chave(object):
                     continue
             else:
                 break
+        # Note: We are consolidating after the all placement/deallocation
+        # Decision making: Because the running time after the optimization (consol)
+        # is grather than the time after each change (placement)
+        # Note: Outside the `remaining_operations` because will do the consolidation just one time for each `window_time`
+        if self.can_consolidate(az):
+            self.do_consolidation(az)
         # OUT!
 
     def can_consolidate(self, az: AvailabilityZone) -> bool:
@@ -285,7 +296,7 @@ class Chave(object):
     def do_consolidation_locked(self, az):
         hosts_on = 0
         all_vms_od, hosts_locked, hosts_2_migrate_after = OrderedDict(), OrderedDict(), OrderedDict()
-        temp_vms_d = dict()
+        # temp_vms_d = dict()
         all_vms_updated = dict()
         destiny_hosts = dict()
 
@@ -293,9 +304,9 @@ class Chave(object):
         frag = az.fragmentation()
         objective = math.floor(frag * len(az.host_list))
         vms_total = az.get_vms_dict()
-
-        ordered_host_list = sorted(az.host_list, key=lambda h: len(h.virtual_machine_list))
-        # Objetivo é ter a maxima consolidação considerando os passos:
+        vms_to_order_d = dict()
+        ordered_host_list = sorted(az.host_list, key=lambda hh: len(hh.virtual_machine_list))
+        # Objetivo é ter a consolidação considerando os passos:
         for h in ordered_host_list:
             mark_host_locked = False
             # Se o host estiver ligado!
@@ -304,11 +315,13 @@ class Chave(object):
                 if h.has_available_resources():
                     self.logger.debug("Resources from {} remain_cpu:{} (ovc:{} <? max_ovc:{})".format(
                         h.host_id, h.cpu, h.actual_overcom, h.overcom_max))
-                    # Primeiro verifique todas as vms deste host
+                    # Verifique todas as vms deste host
+                    vms_to_order_d[h.host_id] = []
                     for vm in h.virtual_machine_list:
-                        # Ignore vms in locked state e de hosts cheios
+                        # Ignore vms in locked state and from full hosts
                         if vm.is_locked is False:
-                            temp_vms_d[vm.vm_id] = vm
+                            #temp_vms_d[vm.vm_id] = vm
+                            vms_to_order_d[h.host_id].append(vm)
                             self.logger.info(
                                 "\tSelecting {} from {} to migrate (pool: {}) cpu{}>0 lkd?{} ovc{}<movc{}".format(
                                     vm.vm_id, vm.host_id, vm.pool_id, h.cpu, vm.is_locked, h.actual_overcom, h.overcom_max))
@@ -320,10 +333,11 @@ class Chave(object):
                     # Doc: Ignore hosts w/ vms in locked state
                     if mark_host_locked:
                         hosts_locked[h.host_id] = h
-                        temp_vms_d.clear()
+                        #temp_vms_d.clear()
+                        del vms_to_order_d[h.host_id]
                         pass
                     else:
-                        all_vms_updated.update(temp_vms_d)
+                        #all_vms_updated.update(temp_vms_d)
                         hosts_2_migrate_after[h.host_id] = h
                         # e se este host ainda pode receber algo
                     destiny_hosts[h.host_id] = h
@@ -333,6 +347,11 @@ class Chave(object):
                     pass
             else:
                 self.logger.debug("Host {} is OFF".format(h.host_id))
+
+        # This approach will redux the number of migrations
+        for host in sorted(vms_to_order_d.values(), key=lambda v: len(v)):
+            for vm in host:
+                all_vms_updated[vm.vm_id] = vm
 
         host_group_2_migrate = OrderedDict()
         host_group_2_migrate.update(hosts_locked)
@@ -491,13 +510,16 @@ class Chave(object):
     def do_consolidation_ha(self, az):
         pass
 
-    def send_to_azmigrate(self, vm_d, host_destiny, az, order_hosts=False):
+    def send_to_azmigrate(self, vm_d, host_destiny, az, order_hosts=False, order_vms=False):
         suc = 0
         fail = 0
         """Dicionario de VMs em ordem decrescente"""
         if order_hosts:
             host_destiny = OrderedDict(sorted(host_destiny.items(), key=self.sla.key_from_item(lambda k, v: (v.cpu, k))))
-        for i, v in sorted(vm_d.items(), key=self.sla.key_from_item(lambda k, v: (v.vcpu, k)), reverse=True):
+        if order_vms:
+            vm_d = sorted(vm_d.items(), key=self.sla.key_from_item(lambda k, v: (v.vcpu, k)), reverse=True)
+
+        for i, v in vm_d.items():
             origin = v.host_id
             for j, h in host_destiny.items():
                 self.logger.info("{}\tTrying match h:{} v:{}({})".format(az.az_id, j, i, v.host_id))
@@ -505,6 +527,7 @@ class Chave(object):
                     self.logger.info("{}\tSuccesful Migrated: {} from {} to {} (cpu-remain:{})".format(
                         az.az_id, v.vm_id, origin, h.host_id, h.cpu))
                     suc += 1
+                    self.sla.metrics.update(az.az_id, "vm_history", "migrations", 1, "vm_id", v.vm_id)
                     break
                 else:
                     fail += 1
@@ -576,7 +599,7 @@ class Chave(object):
                             az.az_id, az.get_hosts_density(), vm.get_id(), self.sla.g_trace_class(), vm, az))
         else:
             self.logger.error("Finnaly, we can't do nothing!!!")
-            false_motive.append("Finnaly_Cant_do_Nothing!")
+            false_motive.append("Finnaly_do_Nothing!")
         return None, false_motive
 
     def place(self, vm: VirtualMachine, bhost: PhysicalMachine, az: AvailabilityZone, vm_type=None) -> bool:
@@ -585,8 +608,8 @@ class Chave(object):
         # if it is the first time, put VM in replica_pool and continue:
         if self.is_required_replica(vm, az) and vm_type is None:
             self.replicate_vm(vm, az)
-        vm.set_host_id(bhost.host_id)
         vm.az_id = az.az_id
+        vm.set_host_id(bhost.host_id)
         self.logger.debug("Allocating vmid:{} in h:{} t:{} az:{}".format(
             vm.vm_id, vm.host_id, vm.type, vm.az_id))
         if az.allocate_on_host(vm, defined_host=bhost):
@@ -617,55 +640,83 @@ class Chave(object):
         if len(self.replication_pool_d[lc_id].items()) > 0:
             replicas_for_this_lc = dict(self.replication_pool_d[lc_id])
             for pool_id, pool_d in replicas_for_this_lc.items():
+                az_list_temp = list(lc_obj.az_list)
                 lc_pool = pool_id.split(K_SEP)[0]
                 if lc_pool == lc_obj.lc_id:
-                    vm_r = pool_d[REPLICA][0][1]
-                    if vm_r.az_id in this_lc_azs:  # Apenas pra confirmar
-                        az = self.best_az_for_replica(vm_r, lc_obj.az_list)
-                        if az is not None:
-                            energy0 = az.get_az_energy_consumption2()
-                            _, hosts_on, _ = az.get_hosts_density(just_on=True)
-                            b_host, info_bh = self.best_host(vm_r, az)
-                            if b_host is not None:
-                                if self.place(vm_r, b_host, az, vm_type=REPLICA):
-                                    self.replicas_execution_d[lc_id][pool_id] = vm_r
-                                    self.logger.info("{}\t Successful Allocated {} {} on {}".format(
-                                        lc_id, REPLICA, vm_r.vm_id, vm_r.az_id))
-                                    try:
-                                        del self.replication_pool_d[lc_id][pool_id]
-                                    except Exception as e:
-                                        self.logger.error(type(e))
-                                        self.logger.error("{}\t Delete REPLICA from pool {} on {}".format(
-                                            lc_id, vm_r.vm_id, vm_r.az_id))
-                                    energyf = az.get_az_energy_consumption2()
-                                    _, hosts_on2, _ = az.get_hosts_density(just_on=True)
-                                    this_metric = {'gvt': self.global_time,
-                                                   'energy_0': energy0,
-                                                   'energy_f': energyf,
-                                                   'val_0': hosts_on2 - hosts_on,
-                                                   'val_f': len(self.replicas_execution_d[lc_id]),
-                                                   'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
-                                                       hosts_on, hosts_on2, pool_id, len(info_bh))}
-                                    self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
-                                    self.logger.info("this_metric: {}".format(this_metric))
-                                else:
-                                    self.logger.error("{}\t On place REPLICA {}".format(lc_id, pool_id))
-                            else:
-                                self.logger.error("{}\t NONE To find Best Host on {}".format(lc_id, pool_id))
+                    # Note: Before found the best AZ for place the replica, lets remove actual AZ from critical VM
+                    try:
+                        az_list_temp.remove(pool_d[CRITICAL][0])
+                    except Exception as e:
+                        self.logger.error("Problem for remove az_critical {} {}".format(pool_d[CRITICAL][0].az_id, e))
+                    # Note: iterate in replicas pool
+                    list_of_replicas = list(pool_d[REPLICA])
+                    for vm_r in list_of_replicas:
+                        if vm_r.az_id in this_lc_azs:  # Apenas pra confirmar
+                            tryes = 0
+                            az = self.best_az_for_replica(vm_r, az_list_temp)
+                            if az is not None:
+                                # Note: Ok! we found one AZ, lets remove for the, who knows, another replica:
+                                try:
+                                    az_list_temp.remove(az)
+                                except Exception as e:
+                                    self.logger.error("Problem for remove AZ Replica {} {}".format(az.az_id, e))
+                                b_host, info_bh = self.best_host(vm_r, az)
+                                if b_host is not None:
+                                    energy0 = az.get_az_energy_consumption2()
+                                    _, hosts_on0, _ = az.get_hosts_density(just_on=True)
+                                    if self.place(vm_r, b_host, az, vm_type=REPLICA):
+                                        self.replicas_execution_d[lc_id][pool_id] = vm_r
+                                        self.logger.info("{}\t Successful Allocated {} {} on {}".format(
+                                            lc_id, REPLICA, vm_r.vm_id, vm_r.az_id))
 
-                        else:  # Best az for replica is None
-                            del self.replication_pool_d[lc_id][pool_id]
-                            # Note: Must match columns_d:
-                            this_metric = {'gvt': self.global_time,
-                                           'val_0': 2,
-                                           'info': "pool:{}, AZ_None".format(
-                                               vm_r.pool_id)}
-                            self.sla.metrics.set(vm_r.az_id, 'reject_l', tuple(this_metric.values()))
-                            self.logger.warning(
-                                "{}\t Problem to find best AZ for {} az:{} at {}, metric: {}".format(
-                                    pool_id, vm_r.vm_id, vm_r.az_id, self.global_time, this_metric.items()))
-                    else:
-                        pass  # vm_replica not in this LC azs
+                                        #if len(pool_d[REPLICA]) > 1:
+                                        try:
+                                            del pool_d[REPLICA][0]
+                                            if not pool_d[REPLICA]:
+                                                del self.replication_pool_d[lc_id][pool_id]
+                                        except Exception as e:
+                                            self.logger.error(type(e))
+                                            self.logger.error("{}\t Delete REPLICA from pool {} on {}".format(
+                                                lc_id, vm_r.pool_id, vm_r.az_id))
+                                        energyf = az.get_az_energy_consumption2()
+                                        _, hosts_onf, _ = az.get_hosts_density(just_on=True)
+                                        this_metric = {'gvt': self.global_time,
+                                                       'energy_0': energy0,
+                                                       'energy_f': energyf,
+                                                       'val_0': hosts_onf - hosts_on0,
+                                                       'val_f': len(self.replicas_execution_d[lc_id]),
+                                                       'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
+                                                           hosts_on0, hosts_onf, pool_id, len(info_bh))}
+                                        self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
+                                        self.logger.info("this_metric: {}".format(this_metric))
+                                    else:
+                                        self.logger.error("{}\t On place REPLICA {}".format(lc_id, pool_id))
+                                else:
+                                    self.logger.error("{}->this: {}\t NONE To find Best Host for pool {}, trying other AZ? try{} ERR:{}".format(lc_id, az.az_id, pool_id, tryes, len(info_bh)))
+                                    tryes += 1
+                            else:  # Best az for replica is None
+                                try:
+                                    del self.replication_pool_d[lc_id][pool_id]
+                                except:
+                                    pass
+                                # Note: Must match columns_d:
+                                this_metric = {'gvt': self.global_time,
+                                               'val_0': 2,
+                                               'info': "pool:{}, AZ_None".format(
+                                                   vm_r.pool_id)}
+                                self.sla.metrics.set(vm_r.az_id, 'reject_l', tuple(this_metric.values()))
+                                self.sla.metrics.update(vm_r.az_id, "vm_history", "reject_code", 2, "vm_id", vm_r.vm_id)
+                                self.logger.warning(
+                                    "{}\t Problem to find best AZ for {} az:{} at {}, metric: {}".format(
+                                        pool_id, vm_r.vm_id, vm_r.az_id, self.global_time, this_metric.items()))
+                        else:
+                            pass  # vm_replica not in this LC azs
+                        # Todo: create other opportunities for replication:
+                        # 0 Reject
+                        # 1 Accept replicas in same AZ -> calculate final availability
+                        # 2 Accept replicas in other local_controler
+                        if self.replication_scale == 0:
+                            break
                 else:
                     pass  # self.logger.error("pool {} != {} lc_obj.lc_id".format(pool_id, lc_id))
         # self.logger.info("Exit for {} {}".format(self.global_time, lc_id))
@@ -684,17 +735,17 @@ class Chave(object):
         for az in az_list:
             if vm.az_id == az.get_id():
                 actual_az = az
-        try:
-            temp_az_list.remove(actual_az)
-        except ValueError:
-            self.logger.error(
-                "{}\t ACTUAL_AZ: ({}) not in list {} ValueError".format(vm.az_id, actual_az.az_id, temp_az_list))
-            return None
-        except Exception as e:
-            # self.logger.exception(type(e))
-            self.logger.error("{}\t UNKNOWN: ({}) not in list {} {}".format(vm.az_id, actual_az, temp_az_list, e))
-            # raise e
-            return None
+        #try:
+        #    temp_az_list.remove(actual_az)
+        #except ValueError:
+            #self.logger.error(
+            #    "{}\t ACTUAL_AZ: ({}) not in list {} ValueError".format(vm.az_id, actual_az.az_id, temp_az_list))
+            #return None
+        #except Exception as e:
+        #    # self.logger.exception(type(e))
+        #    self.logger.error("{}\t UNKNOWN: ({}) not in list {} {}".format(vm.az_id, actual_az, temp_az_list, e))
+        #    # raise e
+        #    return None
 
         # Todo: analizar e remover este bloco depois
         if is_forced and az_forced is not None:
@@ -761,36 +812,46 @@ class Chave(object):
             else:
                 self.logger.error("We must define the 'az selection' method, but have {}".format(self.sla.g_az_selection()))
         if best_az is None:
-            best_az = temp_az_list[randint(0, len(temp_az_list) - 1)]
+            try:
+                best_az = temp_az_list.pop()
+            except:
+                pass
             self.logger.warning("AZ selection '{}' fails, we'll place {} (from {}) RND in {} list:{}".format(
                 az_selection, vm.vm_id, vm.az_id, best_az, temp_az_list))
-            return None
+            return best_az
         self.logger.info("{} from ({}), {}  will be replicated for {}".format(
-            vm.vm_id, actual_az.az_id, az_selection, best_az.az_id))
+            vm.vm_id, vm.az_id, az_selection, best_az))
         return best_az
 
     def is_required_replica(self, vm, az):
-        if type(vm.type) is str and type(vm.availab) is float and type(az.availability) is float:
-            if vm.availab > az.availability and vm.type != REPLICA:
-                self.logger.debug("{}-{} require replication! {}=?{}".format(vm.vm_id, vm.type, vm.az_id, az.az_id))
-                return True
-            return False
-        else:
-            self.logger.error("{}\t Types: vm:{}, ha:{}, av:{}".format(
-                az.az_id, type(vm.type), type(vm.availab), type(az.availability)))
+        #if type(vm.type) is str and type(vm.availab) is float and type(az.availability) is float:
+        if vm.availab > az.availability and vm.type != REPLICA:
+            self.logger.debug("{}-{} require replication! {}=?{}".format(vm.vm_id, vm.type, vm.az_id, az.az_id))
+            return True
         return False
+        #else:
+        #    self.logger.error("{}\t Types: vm:{}, ha:{}, av:{}".format(
+        #        az.az_id, type(vm.type), type(vm.availab), type(az.availability)))
+        #return False
 
     def replicate_vm(self, vm, az):
         lc_id = az.lc_id
-        pool_id = vm.lc_id + K_SEP + vm.az_id + K_SEP + vm.vm_id
+        pool_id = "{}{}{}{}{}".format(vm.lc_id, K_SEP, vm.az_id, K_SEP, vm.vm_id)
         if pool_id not in self.replication_pool_d[lc_id]:
             attr = vm.getattr()
-            vm_replica = VirtualMachine(*attr)
-            vm_replica.type = REPLICA
+            number_of_replicas = self.sla.get_required_replicas(az.availability, ha=vm.availab)
+            # Todo: desfazer isso e arrumar no codigo
+            if number_of_replicas > 2:
+                number_of_replicas = 2
+            replicas_join = []
             vm.type = CRITICAL
-            vm_replica.pool_id = pool_id
             vm.pool_id = pool_id
-            self.replication_pool_d[lc_id][pool_id] = {CRITICAL: [az, vm], REPLICA: [["Undefined_AZ", vm_replica]]}
+            for i in range(number_of_replicas):
+                vm_replica = VirtualMachine(*attr)
+                vm_replica.type = "{}{}{}".format(REPLICA, K_SEP, i)
+                vm_replica.pool_id = pool_id
+                replicas_join.append(vm_replica)
+            self.replication_pool_d[lc_id][pool_id] = {CRITICAL: [az, vm], REPLICA: replicas_join}
             self.logger.info("Pool {} created for replication:\n\t\tCritical:{}\n\t\tReplicas:{}\n".format(
                 pool_id, self.replication_pool_d[lc_id][pool_id][CRITICAL],
                 self.replication_pool_d[lc_id][pool_id][REPLICA]))

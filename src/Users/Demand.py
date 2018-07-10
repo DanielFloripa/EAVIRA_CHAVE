@@ -28,6 +28,7 @@ class Demand(object):
         self.max_timestamp = 0
         self.last_ts_d = dict()
         self.ha_only_dict = dict()
+        self.az_availability_d = dict()
 
     def __repr__(self):
         return repr([self.sla, self.logger, self.algorithm,
@@ -52,6 +53,19 @@ class Demand(object):
             self.all_operations_dicts[azid], \
             self.all_ha_dicts[azid] = self._get_vms_from_source(source_file)
 
+            sla_az_dict = self.sla.g_az_dict()
+            db_info_d = {"max_gvt": self.last_ts_d[azid],
+                         "nodes": sla_az_dict[azid]['az_nodes'],
+                         "cores": sla_az_dict[azid]['az_cores'],
+                         "noperations": sla_az_dict[azid]['az_nit'],
+                         "availabiliy": self.az_availability_d[azid],
+                         "trace_dir": sla_az_dict[azid]['source_files'],
+                         "frag_class": self.sla.g_frag_class(),
+                         "az_select": self.sla.g_az_selection(),
+                         "trace_class": self.sla.g_trace_class()}
+            if self.sla.metrics.set(azid, "basic_info", tuple(db_info_d.values()), tuple(db_info_d.keys())):
+                self.sla.logger.debug("Created basic_info for {}".format(azid))
+
     def __get_availab_from_source(self, source_file):
         locked_case = self.sla.g_lock_case()
         is_enabled_repl = self.sla.g_enable_replication()
@@ -60,7 +74,7 @@ class Demand(object):
         elif locked_case == 'False':
             lock = False
         else:
-            lock = ""
+            lock = "None"
         av_source_file = source_file.split(".txt")[0] + "-plus.txt"
         av_demand_dict, lock_dict = dict(), dict()
         with open(av_source_file, "r") as source:
@@ -93,6 +107,7 @@ class Demand(object):
         line = 0
         av_az = availab_dict['this_az']
         az_id = self._get_this_az_id(source_file)
+        self.az_availability_d[az_id] = av_az
         with open(source_file, 'r') as source:
             for operation in source:
                 line = line + 1
@@ -124,7 +139,6 @@ class Demand(object):
                     operations_dict[op_id] = vm
                     if vtype is CRITICAL:
                         self.ha_only_dict[this_vm_id] = vm
-
                 elif state == "STOP":
                     last_op_id = str(this_vm_id + '_START')
                     vm_to_stop = operations_dict[last_op_id]
@@ -142,7 +156,6 @@ class Demand(object):
 
                     vm = VirtualMachine(this_vm_id, vcpu, vram, av_vm, vtype, host, az_id,
                                         timestamp, lifetime2, lock, self.logger)
-
                     operations_dict[op_id] = vm
                     try:
                         vmindex = for_testing_vm_list.index(vm_to_stop)
@@ -150,6 +163,10 @@ class Demand(object):
                     except Exception as e:
                         self.logger.exception(type(e))
                         self.logger.error("On pop VM from {} \n {}".format(op_id, sys.exc_info()[0]))
+
+                    db_hist_d = {"vm_id": this_vm_id, "gvt_start": vm_to_stop.timestamp, "gvt_end":timestamp, "host_place": host, "vcpu": vcpu, "vtype": vtype, "req_availability": av_vm, "lock_migration": lock, "lifetime": lifetime2, "migrations": 0}
+                    if self.sla.metrics.set(az_id, "vm_history", tuple(db_hist_d.values()), tuple(db_hist_d.keys())) is False:
+                        self.sla.logger.error("Problem on add hist for {}".format(this_vm_id))
             # Note: Se tiver algo, entao sobrou alguma vm
             if for_testing_vm_list:
                 self.logger.error("At the end of demand, we already have VMs: {}".format(for_testing_vm_list))

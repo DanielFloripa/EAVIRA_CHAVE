@@ -21,7 +21,6 @@ from Users.SLAHelper import *
 def resp(command, key, value=None):
     return "Key {} not found for command {} and val {}!!".format(key, command, value)
 
-
 class MetricSQLite(object):
     """
     Class Metrics
@@ -51,7 +50,7 @@ class MetricSQLite(object):
         return repr(["is_init:", self.is_init, 'az_id_list', self.__az_id_list, "az_id_list", self.__az_id_list])
 
     def set(self, az_id, key, value, column=None):
-        # Note: Se for uma tabela, e valor for int ou float
+        # Se for uma tabela, e valor for int ou float
         if (isinstance(value, float) or isinstance(value, int)) and column is not None:
             len_value = 1
             self.cursor[az_id].execute(query_insert(len_value).format(key, column), [value])
@@ -64,18 +63,17 @@ class MetricSQLite(object):
                 if k in all_metrics_l:
                     self.cursor[az_id].execute(query_insert(len_value).format(k, column), [value[i]])
         # Note: uma lista de colunas
-        elif isinstance(column, list) or isinstance(column, tuple):
-            for i, c in column:
-                self.cursor[az_id].execute(query_insert_one.format(key, c), [value[i]])
+        #elif isinstance(column, list) or isinstance(column, tuple):
+            #for i, c in column:
+                #self.cursor[az_id].execute(query_insert_one.format(key, c), [value[i]])
         # Note: Ou uma lista de valores (mais comum)
         elif isinstance(value, list) or isinstance(value, tuple):
-            if key in all_metrics_l[0: len_v]:
-                self.cursor[az_id].execute(query_insert(len_value).format(key, columns_v), value)
-            elif key in all_metrics_l[len_v: len_v+len_l]:
+            if key in all_metrics_l[0: len_l]:
                 self.cursor[az_id].execute(query_insert(len_value).format(key, columns_l), value)
-            elif key in all_metrics_l[len_v+len_l: len_v+len_l+len_d]:
+            elif key in all_metrics_l[len_l: len_l+len_d]:
                 self.cursor[az_id].execute(query_insert(len_value).format(key, columns_d), value)
-            else:
+            elif key in vm_info:
+                self.cursor[az_id].execute(query_insert(len_value).format(key, column), value)
                 pass
         else:
             self.logger.error("{} {} {}".format(type(value), type(column), type(key)))
@@ -84,15 +82,15 @@ class MetricSQLite(object):
         self.connection[az_id].commit()
         return True
 
-    def update(self, az_id: str, key: str, column: str, value: any, gvt: int) -> bool:
+    def update(self, az_id: str, key: str, column: str, value: any, pk_name: str, pk: int) -> bool:
         if key in all_metrics_l:
             try:
-                self.cursor[az_id].execute(query_update.format(key, column), (value, gvt,))
+                self.cursor[az_id].execute(query_update.format(key, column, pk_name), (value, pk,))
             except Exception as e:
                 self.logger.error("ERROR: {}".format(e))
                 return False
         else:
-            self.logger.error(resp('set', key, value))
+            self.logger.error(resp('update', key, value))
             return False
         self.connection[az_id].commit()
         return True
@@ -150,9 +148,6 @@ class MetricSQLite(object):
                 else:
                     ret[az] = None
             return ret
-        # if table in all_metrics_l[0: len_v]:
-        #        self.logger.error("This is only for lists, like: {}. Or use 'get' command".format(k_lists+k_dicts))
-        #        return False
         if table in all_metrics_l:
             if func in query_special_base.keys():
                 try:
@@ -220,7 +215,7 @@ class MetricSQLite(object):
                 self.logger.debug("\t\t{}".format(schema))
 
     def resume_global(self, elapsed):
-        for i, key in enumerate(k_values):
+        for i, key in enumerate(k_lists):
             total = 0
             for az_id in self.__az_id_list:
                 total += self.get(az_id, key)
