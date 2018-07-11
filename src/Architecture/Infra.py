@@ -263,9 +263,9 @@ class AvailabilityZone(Infrastructure):
                           "({})".format(self.az_id, type(defined_host), defined_host))
         return False
 
-    def deallocate_on_host(self, vm, defined_host=None, ts=None):
+    def deallocate_on_host(self, vm, defined_host=None, ts=None, wc0=""):
         if defined_host is not None:
-            if defined_host.deallocate(vm, ts, who_calls="DefinedHost"):
+            if defined_host.deallocate(vm, ts, who_calls="DefinedHost_"+wc0):
                 return True
             self.logger.error("{}\t Fail on Deallocate {} from defined_host {}".format(self.az_id, vm.vm_id, defined_host.host_id))
             return False
@@ -303,10 +303,10 @@ class AvailabilityZone(Infrastructure):
                 self.logger.error("Problem on migrate {} {} {}".format(vm.vm_id, vm.host_id, dest_host.host_id))
 
             if self.allocate_on_host(vm, defined_host=dest_host):
-                if self.deallocate_on_host(vm, defined_host=origin_host):
+                if self.deallocate_on_host(vm, defined_host=origin_host, wc0="origin"):
                     return True
                 else:
-                    self.deallocate_on_host(vm, defined_host=dest_host)
+                    self.deallocate_on_host(vm, defined_host=dest_host, wc0="dest")
         else:
             self.logger.info("Warning: Are you trying migrate {} to same O:{}->D:{}?".format(
                 vm.vm_id, vm.host_id, dest_host.host_id))
