@@ -21,7 +21,7 @@
 #install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org")#, "plyr","reshape2")
 library("fmsb")
 library("ggplot2")
-library(DBI)
+library("DBI")
 ############################## 0.1) MAIN PARAMETERS AND DIRS #################################
 # Get the parameter: # date = commandArgs(trailingOnly=TRUE)
 date = "18.07.03-14.44.35/" # labp2d
@@ -50,7 +50,7 @@ out <- tryCatch({
     }
 },
 error=function(cond){
-    message("ERROR:")
+    message("ERROR: Maybe you have other files in <dir>")
     message(root)
 },
 warning=function(cond){
@@ -87,26 +87,26 @@ dbListTables(matrix_db[["EUCA","AZ1"]])
 ############################## 0.6) BASIC QUERIES ###############
 q_info_str <- "SELECT count(val_0) FROM {} WHERE INSTR(info, 'substring') > 0" # or use the LIKE operator
 
-# h_av: <- c(0, 20, 40)        # em percentual de requisições
+# h_av: # em percentual de requisições
 q_replic_attend = "SELECT count(ai) FROM replic_d"
 q_replic_add_host = "SELECT count(ai) FROM replic_d WHERE abs(val_0) > 0"
 q_replic_add_energy = "SELECT sum(energy_f - energy_0) FROM replic_d"
-# cons: <- c(0, 30, 40)        # quantidade de operações realizadas
+# cons: # quantidade de operações realizadas
 q_cons = "SELECT count(val_0) FROM consol_d"
 q_cons_false_pos = "SELECT count(ai) from consol_d where val_0 = 0"
 q_cons_migrations = "SELECT sum(val_f) from consol_d where val_0 > 0"
-# energy: <- c(3000, 150, 450)   # em eficiencia/redução total
+# energy: # em eficiencia/redução total
 q_ener = "SELECT sum(val_0)/1000 FROM energy_l"
 q_ener_cons = "SELECT sum(energy_0 - energy_f) FROM consol_d"
 q_ener_ha = "SELECT sum(energy_0 - energy_f) FROM replic_d"
-# load: <- c(60, 75, 90)       # percentual medio de carga
+# load: # percentual medio de carga
 q_avg_load <- 'SELECT avg(val_0)*100 FROM az_load_l'
 q_avg_load_max <- 'SELECT max(val_0) FROM az_load_l'
 q_avg_load_min <- 'SELECT min(val_0) FROM az_load_l'
 q_az_load_val_0 <- 'SELECT val_0 FROM az_load_l'
 q_az_load_val_0_gvt <- 'SELECT val_0, gvt FROM az_load_l'
 q_energy_load <- 'SELECT val_0 FROM energy_l WHERE gvt=(SELECT gvt FROM az_load_l WHERE val_0 > 0)'
-# reject/slav: <- c(0, 3, 9)          # quantidade de rejeições
+# reject/slav: # quantidade de rejeições
 q_reject = "SELECT count(val_0) FROM reject_l"
 
 fun_q_select_from_load<-function(metric, table, load){
@@ -133,7 +133,6 @@ load_all <- c(25.320513,  0.000000, 72.435897,
 #load_objectives <- c(load_all[1], load_all[4], load_all[9], load_all[10], load_all[13], load_all[16])
 load_objectives <- c(load_all[1], load_all[13], load_all[16])
 this_tests_names <- c(tests_names[3:7], tests_names[9:10])
-
 #AZ_names2<-c("AZ2", "AZ3", "AZ4")  # az3 menos pior #this_tests_names<-c("Unlock_HA", "Lock_Rand_HA", "Max_HA")
 
 ###### APENAS PARA consol_d ####
@@ -195,7 +194,7 @@ for(az in this_az){
         
     data <- as.data.frame(matrix( c(load, reducp, energyf , migration , reduc_val), ncol=5))
     ## Metrics:
-    colnames(data)=c("Carga" , "%Reduc Consolid", "Energia Total (W)", "Migrações", "Redução (W)")
+    colnames(data)=c("Carga (%)" , "Redução (%)", "Energia Total (W)", "Nº Migrações", "Redução (W)")
     ## Tests:
     rownames(data)=this_tests_names
     ## To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
@@ -203,17 +202,16 @@ for(az in this_az){
                c(min(load), min(reducp), min(energyf), min(migration), min(reduc_val)), data)                     # Min values in range
     par(mar=c(5,4,4,2)+0.1)
     tranp<-1
-    colors_border=c( rgb(0.0,0.0,0.9,tranp),
-                     rgb(0.9,0.0,0.0,tranp),
-                     rgb(1.0,1.0,0.0,tranp),
-                     rgb(0.0,0.6,0.2,tranp),
-                     rgb(0.4,0.1,0.9,tranp),
-                     rgb(0.0,0.9,0.8,tranp),
-                     rgb(1.0,0.2,0.9,tranp)
-                     )
+    colors_border=c( rgb(0.0, 0.0, 1, tranp), 
+                     rgb(0.9, 0.0, 0.0, tranp), 
+                     rgb(.4, .4, .4, tranp), 
+                     rgb(0.0, 0.6, 0.2, tranp), 
+                     rgb(0.4, 0.2, 0.7, tranp), 
+                     rgb(0.0, 0.9, 0.8, tranp), 
+                     rgb(1.0, 0.2, 0.7, tranp) )
     #colors_in=c( rgb(0.0,0.0,0.9,0.3),rgb(0.9,0.0,0.0,0.3),rgb(0.9,0.9,0.0,0.3),rgb(0.0,0.6,0.2,0.3),rgb(0.5,0.2,1.0,0.3),rgb(0.0,0.9,0.8,0.3),rgb(0.7,0.8,0.2,0.3))
-    line_type=c(1,2,4, 5, 6, 7, 8)
-    mypdf<-paste0("radar_", toString(az), ".pdf")
+    line_type=c(1, 2, 4, 5, 6, 7, 8)
+    mypdf<-paste0("../Plots/radar_", toString(az), ".pdf")
     pdf(mypdf, title=mypdf, width = 9, height = 6)
     radarchart( data, axistype=1, 
                 #custom polygon
@@ -223,7 +221,7 @@ for(az in this_az){
                 #custom labels
                 vlcex=1.2 
     )
-    legend(x=2, y=1.5, legend = rownames(data[-c(1,2),]), 
+    legend(x=1.5, y=1.5, legend = rownames(data[-c(1,2),]), 
            y.intersp=2, x.intersp=1, bty="n", pch=21, lty =  line_type, lwd = 2,
            col=colors_border, text.col = "black", cex=1, pt.cex=5,
            title="Testes")

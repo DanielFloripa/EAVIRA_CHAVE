@@ -5,7 +5,7 @@ DS2: 7 nodes, 12 cores/node, Greedy scheduled
 DS3: 7 nodes, 8 cores/node, RR scheduled
 DS4: 12 nodes, 8 cores/node, RR scheduled
 DS5: 31 nodes, 32 cores/node, RR scheduled
-DS6: 32 nodes, 32 cores/node, RR scheduled
+DS6: 31 nodes, 32 cores/node, RR scheduled
 
 Each file contains a trace of the VM start and stop events recorded by a
 Eucalyptus Cluster Controller in a single Availability Zone.  The files

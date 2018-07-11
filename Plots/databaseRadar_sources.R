@@ -1,4 +1,14 @@
 # sources table for databaseRadar.R
+#Sys.setenv("plotly_username"="Daniel13")
+#Sys.setenv("plotly_api_key"="tEEharsCr0RaDBhGsmqB")
+#streamming<-"1mvsw4web5"
+
+#devtools::install_github("ropensci/plotly")
+#library(plotly)
+
+#options(browser = 'false')
+#api_create(p, filename = "r-docs-midwest-boxplots")
+
 metric2<-"t.gvt as gvt, t.energy_0, t.energy_f, max(t.energy_0-t.energy_f) as reduc_val, (t.energy_0-t.energy_f)/t.energy_0 as reduc_p, t.val_0 as fals_pos, t.val_f as migrations, l.val_0 as load, t.info as info"
 
 

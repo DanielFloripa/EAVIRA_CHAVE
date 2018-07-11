@@ -159,21 +159,8 @@ class Chave(object):
                         else:
                             self.logger.error("{}\t Problem on place vm: {}".format(az_id, vm.vm_id))
                     else:
-                        # Após ocorrer a rejeição, remova a start e a stop do dicionário
-                        del self.op_dict_temp_d[az_id][vm.vm_id + "_START"]
-                        del self.op_dict_temp_d[az_id][vm.vm_id + "_STOP"]
-                        is_critical = 0
-                        if vm.pool_id in self.replicas_execution_d[az.lc_id].keys():
-                            del self.replicas_execution_d[az.lc_id][vm.pool_id]
-                            is_critical = 1
-                        # Note: Must match columns_d:
-                        this_metric = {'gvt': self.global_time,
-                                       'val_0': is_critical,
-                                       'info': "pool:{}, {}, info_bh:{}, {}".format(
-                                           vm.pool_id, vm.type, len(info_bh), az.print_hosts_distribution())}
-                        self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
-                        self.sla.metrics.update(az.az_id, "vm_history", "reject_code", is_critical, "vm_id", vm.vm_id)
-                        self.logger.warning("{}\t Problem to find best host for {} t:{} h:{} az:{} at {}, d: {}".format(az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id, self.global_time, this_metric.items()))
+                        info = "{}, info_bh:{}, {}".format(vm.type, len(info_bh), az.print_hosts_distribution())
+                        self.set_rejection_for("placement", 0, info, az.lc_id, vm.pool_id, az_id, vm.vm_id)
                         break
 
                 elif this_state == "STOP":
@@ -184,7 +171,8 @@ class Chave(object):
                         self.logger.error("{}\t Problem INDEX on pop vm {}".format(az_id, vm.vm_id))
                     except KeyError:
                         self.logger.error("{}\t Problem KEY on pop vm {} {}".format(az_id, vm.vm_id, exec_vm))
-
+                    except Exception as e:
+                        self.logger.exception(e)
                     if exec_vm is not None:
                         if az.deallocate_on_host(exec_vm, ts=vm.timestamp):
                             del self.op_dict_temp_d[az_id][op_id]
@@ -629,6 +617,35 @@ class Chave(object):
             values = (self.global_time, azl2, az.print_hosts_distribution(level='MIN'),)
             self.sla.metrics.set(az.az_id, 'az_load_match', values)
 
+    def set_rejection_for(self, procedure, code, info, lc_id, pool_id, az_id, vm_id):
+        # Doc: `code` is 0, 1, 2 or 3
+        try:
+            if procedure == "replication":
+                # Após ocorrer a rejeição, remova o pool do dicionário
+                del self.replication_pool_d[lc_id][pool_id]
+            elif procedure == "placement":
+                # Após ocorrer a rejeição, remova as vms start e stop do dicionário
+                del self.op_dict_temp_d[az_id][vm_id + "_START"]
+                del self.op_dict_temp_d[az_id][vm_id + "_STOP"]
+                if pool_id in self.replicas_execution_d[lc_id].keys():
+                    del self.replicas_execution_d[lc_id][pool_id]
+                    code = 1
+            else:
+                self.logger.error("")
+                exit(10)
+        except Exception as e:
+            self.logger.exception(e)
+            pass
+        # Note: this_metric must match columns_d:
+        this_metric = {'gvt': self.global_time,
+                       'val_0': code,
+                       'info': "pool:{}, {}".format(
+                           pool_id, info)}
+        self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
+        self.sla.metrics.update(az_id, "vm_history", "reject_code", code, "vm_id", vm_id)
+
+        self.logger.warning("{}\t Problem to place {} az:{} at {}, metric: {}".format(
+                pool_id, vm_id, az_id, self.global_time, this_metric.items()))
 
     #############################################
     ### Replication
@@ -675,7 +692,7 @@ class Chave(object):
                                             if not pool_d[REPLICA]:
                                                 del self.replication_pool_d[lc_id][pool_id]
                                         except Exception as e:
-                                            self.logger.error(type(e))
+                                            self.logger.exception(e)
                                             self.logger.error("{}\t Delete REPLICA from pool {} on {}".format(
                                                 lc_id, vm_r.pool_id, vm_r.az_id))
                                         energyf = az.get_az_energy_consumption2()
@@ -692,23 +709,13 @@ class Chave(object):
                                     else:
                                         self.logger.error("{}\t On place REPLICA {}".format(lc_id, pool_id))
                                 else:
-                                    self.logger.error("{}->this: {}\t NONE To find Best Host for pool {}, trying other AZ? try{} ERR:{}".format(lc_id, az.az_id, pool_id, tryes, len(info_bh)))
+                                    info = "Best Host try:{}, bh:{}".format(tryes, len(info_bh))
+                                    self.set_rejection_for("replication", 3, info, lc_id, pool_id, az.az_id, vm_r.vm_id)
                                     tryes += 1
-                            else:  # Best az for replica is None
-                                try:
-                                    del self.replication_pool_d[lc_id][pool_id]
-                                except:
-                                    pass
-                                # Note: Must match columns_d:
-                                this_metric = {'gvt': self.global_time,
-                                               'val_0': 2,
-                                               'info': "pool:{}, AZ_None".format(
-                                                   vm_r.pool_id)}
-                                self.sla.metrics.set(vm_r.az_id, 'reject_l', tuple(this_metric.values()))
-                                self.sla.metrics.update(vm_r.az_id, "vm_history", "reject_code", 2, "vm_id", vm_r.vm_id)
-                                self.logger.warning(
-                                    "{}\t Problem to find best AZ for {} az:{} at {}, metric: {}".format(
-                                        pool_id, vm_r.vm_id, vm_r.az_id, self.global_time, this_metric.items()))
+                            else:
+                                # Best az for replica is None
+                                info = "Best AZ try:{}".format(tryes)
+                                self.set_rejection_for("replication", 2, info, lc_id, pool_id, vm_r.az_id, vm_r.vm_id)
                         else:
                             pass  # vm_replica not in this LC azs
                         # Todo: create other opportunities for replication:

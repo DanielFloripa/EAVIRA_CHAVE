@@ -10,7 +10,7 @@ fi
 echo -e "${CS_LOGO} ${_NC}"
 
 CLEAR_ALL=false
-PLOT=false
+PLOT=true
 SYNC=true
 
 if ${CLEAR_ALL} == true; then
@@ -144,8 +144,8 @@ popd > /dev/null
 if [ ${PLOT} == true ]; then
 	pushd .
 	cd ${CS_PROJ_ROOT}/Plots/
-	./database.R  
-	./databaseSpider.R
+	R -f database.R  ${CS_START}
+	R -f databaseSpider.R ${CS_START}
 	popd
 fi
 if [ ${SYNC} == true ]; then
