@@ -608,7 +608,7 @@ class Chave(object):
                 az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id))
         return False
 
-    # Note: deprecated
+    # Warning: deprecated
     def az_load_mach(self, az):
         azl2 = az.get_az_load()
         obj = self.sla.g_avg_load_objective(az_id=az.az_id)
@@ -639,11 +639,9 @@ class Chave(object):
         # Note: this_metric must match columns_d:
         this_metric = {'gvt': self.global_time,
                        'val_0': code,
-                       'info': "pool:{}, {}".format(
-                           pool_id, info)}
+                       'info': "pool:{}, {}".format(pool_id, info)}
         self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
         self.sla.metrics.update(az_id, "vm_history", "reject_code", code, "vm_id", vm_id)
-
         self.logger.warning("{}\t Problem to place {} az:{} at {}, metric: {}".format(
                 pool_id, vm_id, az_id, self.global_time, this_metric.items()))
 
@@ -666,66 +664,65 @@ class Chave(object):
                     except Exception as e:
                         self.logger.error("Problem for remove az_critical {} {}".format(pool_d[CRITICAL][0].az_id, e))
                     # Note: iterate in replicas pool
-                    list_of_replicas = list(pool_d[REPLICA])
-                    for vm_r in list_of_replicas:
-                        if vm_r.az_id in this_lc_azs:  # Apenas pra confirmar
-                            tryes = 0
-                            az = self.best_az_for_replica(vm_r, az_list_temp)
-                            if az is not None:
-                                # Note: Ok! we found one AZ, lets remove for the, who knows, another replica:
-                                try:
-                                    az_list_temp.remove(az)
-                                except Exception as e:
-                                    self.logger.error("Problem for remove AZ Replica {} {}".format(az.az_id, e))
-                                b_host, info_bh = self.best_host(vm_r, az)
-                                if b_host is not None:
-                                    energy0 = az.get_az_energy_consumption2()
-                                    _, hosts_on0, _ = az.get_hosts_density(just_on=True)
-                                    if self.place(vm_r, b_host, az, vm_type=REPLICA):
-                                        self.replicas_execution_d[lc_id][pool_id] = vm_r
-                                        self.logger.info("{}\t Successful Allocated {} {} on {}".format(
-                                            lc_id, REPLICA, vm_r.vm_id, vm_r.az_id))
-
-                                        #if len(pool_d[REPLICA]) > 1:
-                                        try:
-                                            del pool_d[REPLICA][0]
-                                            if not pool_d[REPLICA]:
-                                                del self.replication_pool_d[lc_id][pool_id]
-                                        except Exception as e:
-                                            self.logger.exception(e)
-                                            self.logger.error("{}\t Delete REPLICA from pool {} on {}".format(
-                                                lc_id, vm_r.pool_id, vm_r.az_id))
-                                        energyf = az.get_az_energy_consumption2()
-                                        _, hosts_onf, _ = az.get_hosts_density(just_on=True)
-                                        this_metric = {'gvt': self.global_time,
-                                                       'energy_0': energy0,
-                                                       'energy_f': energyf,
-                                                       'val_0': hosts_onf - hosts_on0,
-                                                       'val_f': len(self.replicas_execution_d[lc_id]),
-                                                       'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
-                                                           hosts_on0, hosts_onf, pool_id, len(info_bh))}
-                                        self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
-                                        self.logger.info("this_metric: {}".format(this_metric))
-                                    else:
-                                        self.logger.error("{}\t On place REPLICA {}".format(lc_id, pool_id))
+                    # Todo: for vm_r in replicas_pool_d
+                    vm_r = pool_d[REPLICA][0]
+                    if vm_r.az_id in this_lc_azs:  # Apenas pra confirmar
+                        tryes = 0
+                        az = self.best_az_for_replica(vm_r, az_list_temp)
+                        if az is not None:
+                            # Note: Ok! we found one AZ, lets remove for the, who knows, another replica:
+                            try:
+                                az_list_temp.remove(az)
+                            except Exception as e:
+                                self.logger.error("Problem for remove AZ Replica {} {}".format(az.az_id, e))
+                            b_host, info_bh = self.best_host(vm_r, az)
+                            if b_host is not None:
+                                energy0 = az.get_az_energy_consumption2()
+                                _, hosts_on0, _ = az.get_hosts_density(just_on=True)
+                                if self.place(vm_r, b_host, az, vm_type=REPLICA):
+                                    self.replicas_execution_d[lc_id][pool_id] = vm_r
+                                    self.logger.info("{}\t Successful Allocated {} {} on {}".format(
+                                        lc_id, REPLICA, vm_r.vm_id, vm_r.az_id))
+                                    try:
+                                        del pool_d[REPLICA][0]
+                                        if not pool_d[REPLICA]:
+                                            del self.replication_pool_d[lc_id][pool_id]
+                                    except Exception as e:
+                                        self.logger.exception(e)
+                                        self.logger.error("{}\t Delete REPLICA from pool {} on {}".format(
+                                            lc_id, vm_r.pool_id, vm_r.az_id))
+                                    energyf = az.get_az_energy_consumption2()
+                                    _, hosts_onf, _ = az.get_hosts_density(just_on=True)
+                                    this_metric = {'gvt': self.global_time,
+                                                   'energy_0': energy0,
+                                                   'energy_f': energyf,
+                                                   'val_0': hosts_onf - hosts_on0,
+                                                   'val_f': len(self.replicas_execution_d[lc_id]),
+                                                   'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
+                                                       hosts_on0, hosts_onf, pool_id, len(info_bh))}
+                                    self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
+                                    self.logger.info("this_metric: {}".format(this_metric))
                                 else:
-                                    info = "Best Host try:{}, bh:{}".format(tryes, len(info_bh))
-                                    self.set_rejection_for("replication", 3, info, lc_id, pool_id, az.az_id, vm_r.vm_id)
-                                    tryes += 1
+                                    self.logger.error("{}\t On place REPLICA {}".format(lc_id, pool_id))
                             else:
-                                # Best az for replica is None
-                                info = "Best AZ try:{}".format(tryes)
-                                self.set_rejection_for("replication", 2, info, lc_id, pool_id, vm_r.az_id, vm_r.vm_id)
+                                info = "Best Host try:{}, bh:{}".format(tryes, len(info_bh))
+                                self.set_rejection_for("replication", 3, info, lc_id, pool_id, az.az_id, vm_r.vm_id)
+                                tryes += 1
                         else:
-                            pass  # vm_replica not in this LC azs
-                        # Todo: create other opportunities for replication:
-                        # 0 Reject
-                        # 1 Accept replicas in same AZ -> calculate final availability
-                        # 2 Accept replicas in other local_controler
-                        if self.replication_scale == 0:
-                            break
+                            # Best az for replica is None
+                            info = "Best AZ try:{}".format(tryes)
+                            self.set_rejection_for("replication", 2, info, lc_id, pool_id, vm_r.az_id, vm_r.vm_id)
+                    else:
+                        pass  # vm_replica not in this LC azs
+                    # Todo: create other opportunities for replication:
+                    # 0 Reject
+                    # 1 Accept replicas in same AZ -> calculate final availability
+                    # 2 Accept replicas in other local_controler
+                    #if self.replication_scale == 0:
+                    #    break
                 else:
-                    pass  # self.logger.error("pool {} != {} lc_obj.lc_id".format(pool_id, lc_id))
+                    # pass
+                    self.logger.error("lc_pool {} != {} lc_obj.lc_id".format(pool_id, lc_id))
         # self.logger.info("Exit for {} {}".format(self.global_time, lc_id))
 
     def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> AvailabilityZone:

@@ -163,6 +163,9 @@ if [ ${SYNC} == true ]; then
 fi
 
 
+exit
+
+
 #aws s3 mv ${OUTPUT} s3://${S3_BUCK}
 
 #    LOG_FDR="/media/debian/logs/"
@@ -177,7 +180,6 @@ fi
 #    fi
 #fi
 
-exit
 
     for TEST in ${TEST_LIST[@]}; do
         if [ "$TEST" == "EUCA" ]; then
