@@ -11,7 +11,7 @@ echo -e "${CS_LOGO} ${_NC}"
 
 CLEAR_ALL=false
 PLOT=false
-SYNC=false
+SYNC=true
 
 if ${CLEAR_ALL} == true; then
     rm -rf "${CS_PROJ_ROOT}/output/"
@@ -31,12 +31,12 @@ AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 31 32 ) # ('node core')
   #\  | 5 | 31 | 32  | >LC1/    Log: ${CS_LOG_LEVEL}
    #\_|_6_|_31_|_32__|/
 
-TEST_LIST=( 'CHAVE' 'EUCA' ) # 'MM' MBFD )
+TEST_LIST=(  'EUCA' 'CHAVE' ) # 'MM' MBFD )
 FF_LIST=( 'FFD2I') # 'FF3D')
-CONSOLID_ALGO=( 'LOCK' 'MAX' ) #  'MIN' ) # 'ha' )
+CONSOLID_ALGO=( 'LOCK'  'MAX' ) #  'MIN' ) # 'ha' )
 WITH_CONSOLID=( 'False' 'True' )
-WITH_OVERCOMM=( 'False' ) # 'True' )
-ENABLE_REPLIC=( 'True' )
+WITH_OVERCOMM=( 'False' )
+ENABLE_REPLIC=( 'False' 'True' )
 LOCK_CASE=( 'RANDOM' 'False' 'True' 'None' )
 WT=('1' '2' '2')  # Window time: ('min' 'step' 'max')
 
