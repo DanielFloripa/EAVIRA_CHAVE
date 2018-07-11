@@ -13,26 +13,21 @@ k_lists = ['max_host_on_i',
            'reject_l'
            ]
 columns_l = ('gvt', 'val_0', 'info')
-# columns_l_dict = {columns_l[0]: 0, columns_l[1]: 0, columns_l[2]: ''}
 len_l = len(k_lists)
 
 k_dicts = ['consol_d',  # OK!
            'replic_d',  # OK!
            'time_steps_d'
            ]
-columns_d = ('gvt', 'energy_0', 'energy_f', 'val_0', 'val_f', 'info')
-# columns_d_dict = {columns_d[0]: 0, columns_d[1]: 0, columns_d[2]: 0, columns_d[3]: 0, columns_d[4]: 0, columns_d[5]: ''}
+columns_d = ('gvt', 'energy_0', 'energy_f', 'val_0', 'val_f', 'hosts_0', 'hosts_f', 'info')
 len_d = len(k_dicts)
 
-vm_info = ["basic_info", "vm_history"]
+k_info = ["basic_info", "vm_history"]
+columns_basic_info = ("max_gvt", "nodes", "cores", "noperations", "availabiliy", "trace_dir", "frag_class", "az_select", "trace_class", "ai")  # pk: ai
+columns_vm_hist = ("vm_id", "gvt_start", "gvt_end",  "host_place", "vcpu", "vtype", "req_avail", "lock_migr", "lifetime", "migrations", "reject_code")  # pk: vm_id
 
-columns_basic_info = ("max_gvt", "nodes", "cores", "noperations", "availabiliy", "trace_dir", "frag_class", "az_select", "trace_class", "ai")
-columns_vm_hist = ("vm_id", "gvt_start", "gvt_end",  "host_place", "vcpu", "vtype", "req_availability", "lock_migration", "lifetime", "migrations", "reject_code")
 
-
-all_metrics_l = k_lists + k_dicts + vm_info
-# columns_m_dict = columns_l_dict
-# columns_m_dict.update(columns_d_dict)
+all_metrics_l = k_lists + k_dicts + k_info
 len_m = len(all_metrics_l)
 
 query_pragma = [
@@ -43,8 +38,8 @@ query_pragma = [
     "PRAGMA main.journal_mode=OFF;",
     "PRAGMA main.locking_mode=EXCLUSIVE;",
     "PRAGMA main.temp_store=MEMORY;",
-    "CREATE TABLE {} ({} INTEGER NOT NULL, {} INTEGER NOT NULL, {} INTEGER NOT NULL, {} INTEGER NOT NULL, {} DOUBLE NOT NULL, {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} INTEGER PRIMARY KEY AUTOINCREMENT);".format(vm_info[0], *columns_basic_info),
-    "CREATE TABLE {} ({} TEXT NOT NULL PRIMARY KEY, {} INTEGER NOT NULL, {} INTEGER NOT NULL,  {} TEXT, {} INTEGER, {} TEXT DEFAULT 'regular', {} DOUBLE NOT NULL, {} BOOLEAN DEFAULT False, {} INTEGER, {} INTEGER, {} INTEGER DEFAULT 0);".format(vm_info[1], *columns_vm_hist)
+    "CREATE TABLE {} ({} INTEGER NOT NULL, {} INTEGER NOT NULL, {} INTEGER NOT NULL, {} INTEGER NOT NULL, {} DOUBLE NOT NULL, {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} INTEGER PRIMARY KEY AUTOINCREMENT);".format(k_info[0], *columns_basic_info),
+    "CREATE TABLE {} ({} TEXT NOT NULL PRIMARY KEY, {} INTEGER NOT NULL, {} INTEGER NOT NULL,  {} TEXT, {} INTEGER, {} TEXT DEFAULT 'regular', {} DOUBLE NOT NULL, {} BOOLEAN DEFAULT False, {} INTEGER, {} INTEGER, {} INTEGER DEFAULT -1);".format(k_info[1], *columns_vm_hist)
 ]
 
 query_create_default = "CREATE TABLE {} (gvt INTEGER NOT NULL, "

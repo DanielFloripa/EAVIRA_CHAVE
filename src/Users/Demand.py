@@ -54,15 +54,16 @@ class Demand(object):
             self.all_ha_dicts[azid] = self._get_vms_from_source(source_file)
 
             sla_az_dict = self.sla.g_az_dict()
-            db_info_d = {"max_gvt": self.last_ts_d[azid],
-                         "nodes": sla_az_dict[azid]['az_nodes'],
-                         "cores": sla_az_dict[azid]['az_cores'],
-                         "noperations": sla_az_dict[azid]['az_nit'],
-                         "availabiliy": self.az_availability_d[azid],
-                         "trace_dir": sla_az_dict[azid]['source_files'],
-                         "frag_class": self.sla.g_frag_class(),
-                         "az_select": self.sla.g_az_selection(),
-                         "trace_class": self.sla.g_trace_class()}
+            col = columns_basic_info
+            db_info_d = {col[0]: self.last_ts_d[azid],
+                         col[1]: sla_az_dict[azid]['az_nodes'],
+                         col[2]: sla_az_dict[azid]['az_cores'],
+                         col[3]: sla_az_dict[azid]['az_nit'],
+                         col[4]: self.az_availability_d[azid],
+                         col[5]: sla_az_dict[azid]['source_files'],
+                         col[6]: self.sla.g_frag_class(),
+                         col[7]: self.sla.g_az_selection(),
+                         col[8]: self.sla.g_trace_class()}
             if self.sla.metrics.set(azid, "basic_info", tuple(db_info_d.values()), tuple(db_info_d.keys())):
                 self.sla.logger.debug("Created basic_info for {}".format(azid))
 
@@ -163,8 +164,8 @@ class Demand(object):
                     except Exception as e:
                         self.logger.exception(type(e))
                         self.logger.error("On pop VM from {} \n {}".format(op_id, sys.exc_info()[0]))
-
-                    db_hist_d = {"vm_id": this_vm_id, "gvt_start": vm_to_stop.timestamp, "gvt_end":timestamp, "host_place": host, "vcpu": vcpu, "vtype": vtype, "req_availability": av_vm, "lock_migration": lock, "lifetime": lifetime2, "migrations": 0}
+                    col = columns_vm_hist
+                    db_hist_d = {col[0]: this_vm_id, col[1]: vm_to_stop.timestamp, col[2]: timestamp, col[3]: host, col[4]: vcpu, col[5]: vtype, col[6]: av_vm, col[7]: lock, col[8]: lifetime2, col[9]: 0, col[10]: -1}
                     if self.sla.metrics.set(az_id, "vm_history", tuple(db_hist_d.values()), tuple(db_hist_d.keys())) is False:
                         self.sla.logger.error("Problem on add hist for {}".format(this_vm_id))
             # Note: Se tiver algo, entao sobrou alguma vm

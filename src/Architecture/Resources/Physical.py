@@ -80,7 +80,7 @@ class PhysicalMachine(object):
         except Exception as e:
             self.logger.exception(e)  # ValueError:
             self.logger.error("Error on remove resources for: {} {} =? {} called by {} {} -> vm:{} -> host:{}".format(
-                vm.get_id(), vm.host_id, self.get_id(), sys._getframe(1).f_code.co_name, who_calls, vm, self))
+                vm.vm_id, vm.host_id, self.host_id, sys._getframe(1).f_code.co_name, who_calls, vm, self))
             # self.logger.error(traceback.format_exc())
             return False
         if self.algorithm == "CHAVE":

@@ -72,7 +72,7 @@ class MetricSQLite(object):
                 self.cursor[az_id].execute(query_insert(len_value).format(key, columns_l), value)
             elif key in all_metrics_l[len_l: len_l+len_d]:
                 self.cursor[az_id].execute(query_insert(len_value).format(key, columns_d), value)
-            elif key in vm_info:
+            elif key in k_info:
                 self.cursor[az_id].execute(query_insert(len_value).format(key, column), value)
                 pass
         else:

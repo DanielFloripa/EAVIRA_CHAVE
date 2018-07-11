@@ -7,7 +7,7 @@ from Users.SLAHelper import *
 
 
 class VirtualMachine(object):
-    def __init__(self, vm_id, vcpu, vram, av, type, host_id, az_id, timestamp, lifetime, lock, logger):
+    def __init__(self, vm_id, vcpu, vram, av, vtype, host_id, az_id, timestamp, lifetime, lock, logger):
         self.logger = logger
         self.vm_id = vm_id
         self.host_id = host_id
@@ -24,17 +24,16 @@ class VirtualMachine(object):
         self.lifetime = lifetime
         self._static_lifetime = lifetime
         self.last_ovcm_time = timestamp
-        self.velocidade = 1
         self._static_timestamp = timestamp  # do not change
         self.timestamp = timestamp
 
         self.dirty_pages = random.randint(100, 1000)
-        self.type = type
+        self.type = vtype
         self.availab = float(av)
         self.in_overcomm_host = False
 
     def __repr__(self):
-        return repr(('id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram,
+        return repr(('id:', self.vm_id, 'vcpu:', self.vcpu, 'vram:', self.vram, 'pool', self.pool_id,
                      'type:', self.type, 'ha:', self.availab, 'host:', self.host_id, self.az_id, self.lc_id,
                      'ts:', self.timestamp, 'lt:', self.lifetime))
 
