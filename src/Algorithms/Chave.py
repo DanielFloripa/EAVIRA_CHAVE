@@ -267,16 +267,17 @@ class Chave(object):
         _, hosts_on2, _ = az.get_hosts_density(just_on=True)
         energy2 = az.get_az_energy_consumption2()
         conf_f = az.print_hosts_distribution()
-        info = "on0: {}, onF:{}, obj:{}. {} __ {}".format(hosts_on, hosts_on2, objective, conf_0, conf_f)
+        info = "obj:{}. {} __ {}".format(objective, conf_0, conf_f)
         val_0 = hosts_on - hosts_on2
         this_metric = {'gvt': self.global_time,
                        'energy_0': energy,
                        'energy_f': energy2,
                        'val_0': val_0,
                        'val_f': migrations,
+                       'hosts_0': hosts_on,
+                       'hosts_f': hosts_on2,
                        'info': info}
         self.sla.metrics.set(az.az_id, 'consol_d', tuple(this_metric.values()))
-        # az.take_snapshot_for(['consol_d'], self.global_time, metric_d=this_metric, energy=-1)
         self.logger.info("{}\t Done! Before {} on, now {} on. lenVMS a:{}. Status:{}\nMetrics2: {}".format(
             az.az_id, hosts_on, hosts_on2, len(all_vms), ret, this_metric.items()))
         return ret
@@ -361,13 +362,15 @@ class Chave(object):
 
         _, hosts_on2, _ = az.get_hosts_density(just_on=True)
         conf_f = az.print_hosts_distribution()
-        info = "on0: {}, onF:{}, obj:{} __ {} {}".format(hosts_on, hosts_on2, objective, conf_0, conf_f)
+        info = "obj:{} __ {} {}".format(objective, conf_0, conf_f)
         val_0 = hosts_on - hosts_on2
         this_metric = {'gvt': self.global_time,
                        'energy_0': energy0,
                        'energy_f': az.get_az_energy_consumption2(),
                        'val_0': val_0,
                        'val_f': migrations,
+                       'hosts_0': hosts_on,
+                       'hosts_f': hosts_on2,
                        'info': info}
         self.sla.metrics.set(az.az_id, 'consol_d', tuple(this_metric.values()))
         self.logger.info("Before {} on, now {} on. Migrations:{}\n Metric:{}".format(
@@ -416,13 +419,14 @@ class Chave(object):
 
         conf_f = az.print_hosts_distribution()
         _, hosts_on2, _ = az.get_hosts_density(just_on=True)
-        info = "on0: {}, onF:{}, obj:{} __ {} {}".format(hosts_on, hosts_on2, objective, conf_0, conf_f)
-        val_0 = hosts_on - hosts_on2
+        info = "obj:{} __ {} {}".format(objective, conf_0, conf_f)
         this_metric = {'gvt': self.global_time,
                        'energy_0': energy0,
                        'energy_f': az.get_az_energy_consumption2(),
-                       'val_0': val_0,
+                       'val_0': hosts_on - hosts_on2,
                        'val_f': migrations,
+                       'hosts_0': hosts_on,
+                       'hosts_f': hosts_on2,
                        'info': info}
         self.sla.metrics.set(az.az_id, 'consol_d', tuple(this_metric.values()))
         return True
@@ -642,6 +646,7 @@ class Chave(object):
         this_lc_azs = [az.get_id() for az in lc_obj.az_list]
 
         if len(self.replication_pool_d[lc_id].items()) > 0:
+            # Note: copy because I'll `del` dict inside the loop
             replicas_for_this_lc = dict(self.replication_pool_d[lc_id])
             for pool_id, pool_d in replicas_for_this_lc.items():
                 az_list_temp = list(lc_obj.az_list)
@@ -651,7 +656,7 @@ class Chave(object):
                     try:
                         az_list_temp.remove(pool_d[CRITICAL][0])
                     except Exception as e:
-                        self.logger.error("Problem for remove az_critical {} {}".format(pool_d[CRITICAL][0].az_id, e))
+                        self.logger.error("Problem for remove az_critical from {} {}".format(pool_d, e))
                     # Note: iterate in replicas pool
                     # Todo: Create loop `for vm_r in replicas_pool_d`
                     vm_r = pool_d[REPLICA][0]
@@ -673,9 +678,8 @@ class Chave(object):
                                     self.logger.info("{}\t Successful Allocated {} {} on {}".format(
                                         lc_id, REPLICA, vm_r.vm_id, vm_r.az_id))
                                     try:
-                                        del pool_d[REPLICA][0]
-                                        if not pool_d[REPLICA]:
-                                            del self.replication_pool_d[lc_id][pool_id]
+                                        # del pool_d[REPLICA][0]
+                                        del self.replication_pool_d[lc_id][pool_id]
                                     except Exception as e:
                                         self.logger.exception(e)
                                         self.logger.error("{}\t Delete REPLICA from pool {} on {}".format(
@@ -687,8 +691,9 @@ class Chave(object):
                                                    'energy_f': energyf,
                                                    'val_0': hosts_onf - hosts_on0,
                                                    'val_f': len(self.replicas_execution_d[lc_id]),
-                                                   'info': "on0: {}, onF:{}, pool_id:{}, info_bh:{}".format(
-                                                       hosts_on0, hosts_onf, pool_id, len(info_bh))}
+                                                   'hosts_0': hosts_on0,
+                                                   'hosts_f': hosts_onf,
+                                                   'info': "pool_id:{}, info_bh:{}".format(pool_id, len(info_bh))}
                                     self.sla.metrics.set(az.az_id, 'replic_d', tuple(this_metric.values()))
                                     self.logger.info("this_metric: {}".format(this_metric))
                                 else:
@@ -825,20 +830,27 @@ class Chave(object):
         lc_id = az.lc_id
         pool_id = "{}{}{}{}{}".format(vm.lc_id, K_SEP, vm.az_id, K_SEP, vm.vm_id)
         if pool_id not in self.replication_pool_d[lc_id]:
+            vm.pool_id = pool_id
             attr = vm.getattr()
+            vm.type = CRITICAL
+            vm_replica = VirtualMachine(*attr)
+            vm_replica.type = REPLICA
+            vm_replica.pool_id = pool_id
+            replicas_join = [vm_replica]
+            self.replication_pool_d[lc_id][pool_id] = {CRITICAL: [az, vm], REPLICA: replicas_join}
+            ''' Todo: Refazer futuramente pra suportat multiplas réplicas
             number_of_replicas = self.sla.get_required_replicas(az.availability, ha=vm.availab)
             # Todo: desfazer isso e arrumar no codigo
             if number_of_replicas > 2:
                 number_of_replicas = 2
             replicas_join = []
-            vm.type = CRITICAL
-            vm.pool_id = pool_id
             for i in range(number_of_replicas):
                 vm_replica = VirtualMachine(*attr)
                 vm_replica.type = "{}{}{}".format(REPLICA, K_SEP, i)
                 vm_replica.pool_id = pool_id
                 replicas_join.append(vm_replica)
             self.replication_pool_d[lc_id][pool_id] = {CRITICAL: [az, vm], REPLICA: replicas_join}
+            '''
             self.logger.info("Pool {} created for replication:\n\t\tCritical:{}\n\t\tReplicas:{}\n".format(
                 pool_id, self.replication_pool_d[lc_id][pool_id][CRITICAL],
                 self.replication_pool_d[lc_id][pool_id][REPLICA]))

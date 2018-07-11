@@ -111,7 +111,7 @@ class Eucalyptus(object):
             end_milestone = time.time() - start_milestone   
 
             #metric_time = (self.global_time, -1.0, "plc:{} msc:{} for:{} mls:{}".format(end_place, end_misc, end_for, end_milestone))
-            metric_time = (self.global_time, end_place, end_misc, end_for, end_milestone, "")
+            metric_time = (self.global_time, end_place, end_misc, end_for, end_milestone, 0, 0, "")
             self.sla.metrics.set('global', 'time_steps_d', metric_time)
 
     def remove_finished_azs(self):
