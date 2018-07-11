@@ -5,16 +5,17 @@
 ###############################################
 ############################## 0.0) LIBRARIES AND PACKAGES ####
 #install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org")#, "plyr","reshape2")
+#install.packages("tidyverse")
+#library(tidyverse)
 #library("plyr")
 #library("reshape2")
-library(dplyr)
 library("fmsb")
 library("ggplot2")
 library(DBI)
 ############################## 0.1) MAIN PARAMETERS AND DIRS #################################
 # Get the parameter:
 # date = commandArgs(trailingOnly=TRUE)
-date = "18.07.03-14.44.35/"
+date = "18.06.27-12.42.39/"
 #date = "18.07.02-22.55.25/"
 pwd <- "/home/daniel/output/"
 #pwd <- "/media/debian/"
@@ -32,7 +33,10 @@ test_l <- c("EUCA_CF_L:None_O:False_C:False_R:False",
             "CHAVE_LOCK_L:True_O:False_C:True_R:True",
             "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:True",
             "CHAVE_MAX_L:None_O:False_C:True_R:True",
-            "CHAVE_CF_L:None_O:False_C:False_R:True")
+            "CHAVE_CF_L:None_O:False_C:False_R:True"
+            
+)
+
 main<-function(test){
 rdef <- paste0(toString(pwd), toString(date[1]), toString("results/"))
 root <- paste0(toString(rdef), toString(test))
@@ -57,7 +61,6 @@ finnaly={
 f <- list.files(pattern="*.db") # , ignore.case = TRUE)
 azs <- c("AZ1", "AZ2", "AZ3", "AZ4", "AZ5", "AZ6")
 for(files in f){
-    #testFiles(f)
     for(ff in files){
       if(!file.exists(ff)){
           message("ERROR ON: ")
@@ -107,7 +110,7 @@ q_az_load_val_0_gvt <- 'SELECT val_0, gvt FROM az_load_l'
 q_energy_all = 'SELECT * FROM energy_l'
 q_energy_load = 'SELECT val_0 FROM energy_l WHERE gvt=(SELECT gvt FROM az_load_l WHERE val_0 > 0)'
 Sq_info_str = "SELECT count(val_0) FROM {} WHERE INSTR(info, 'substring') > 0" # or use the LIKE operator
-############################## 11) AVG AZ LOAD #######################
+############################## 1.1) AVG AZ LOAD #######################
 data1 <- data.frame(
     AZs = azs,
     Load = result(q_avg_load),
@@ -115,7 +118,7 @@ data1 <- data.frame(
 )
 MAX<-max(data1$Load)
 theme_set(theme_grey(base_size=6))
-pdfName<-"11-Mean_Load_AZs.pdf"
+pdfName<-"1.1-Mean_Load_AZs.pdf"
 p1 <- ggplot(data1) +
     geom_bar(aes(x=AZs, y=Load), stat="identity", fill="blue", alpha=0.9) +
     geom_errorbar(aes(x=AZs, ymin=Load-std, ymax=Load+std), width=0.4, colour="orange", alpha=0.9, size=1) +
@@ -127,13 +130,13 @@ p1 <- ggplot(data1) +
          y = "Load (Mean / Standard Deviation)")
 ggsave(pdfName, p1, width = 4, height = 4, scale = 1)
 
-############################## 12) MAX AZ LOAD #######################
+############################## 1.2) MAX AZ LOAD #######################
 data1 <- data.frame(
     AZs = azs,
     Load = result(q_avg_load_max)
 )
 MAX<-max(data1$Load)
-pdfName<-"12-MAX_Load_AZs.pdf"
+pdfName<-"1.2-MAX_Load_AZs.pdf"
 p2 <- ggplot(data1) +
     geom_bar(aes(x=AZs, y=Load), stat="identity", fill="blue", alpha=0.9)+
     geom_hline(yintercept=MAX, color="red") +
@@ -143,7 +146,7 @@ p2 <- ggplot(data1) +
          x ="Availability Zones",
          y = "Load (Maximum)")
 ggsave(pdfName, p2, width = 4, height = 4, scale = 1)
-############################## 13) LOAD AND ENERGY #######################
+############################## 1.3) LOAD AND ENERGY #######################
 qdmin = "select energy_l.val_0 from energy_l inner join az_load_l on energy_l.gvt = az_load_l.gvt and az_load_l.val_0 < :x"
 qdmid = "select energy_l.val_0 from energy_l inner join az_load_l on energy_l.gvt = az_load_l.gvt and (az_load_l.val_0 > :x and az_load_l.val_0 < :y)"
 qdmax = "select energy_l.val_0 from energy_l inner join az_load_l on energy_l.gvt = az_load_l.gvt and az_load_l.val_0 > :x"
@@ -219,7 +222,7 @@ fun_load_energy_each_az <- function(con_az, i){
         Energy = c(mean(Load1, na.rm = TRUE), mean(Load2, na.rm = TRUE), mean(Load3, na.rm = TRUE), mean(Load4, na.rm = TRUE), mean(Load5, na.rm = TRUE), mean(Load6, na.rm = TRUE), mean(Load7, na.rm = TRUE), mean(Load8, na.rm = TRUE), mean(Load9, na.rm = TRUE), mean(Load10, na.rm = TRUE)),
         std = c(sd(Load1), sd(Load2), sd(Load3), sd(Load4), sd(Load5), sd(Load6), sd(Load7), sd(Load8), sd(Load9), sd(Load10))
     )
-    plot_name <- paste0(toString("13-Load_Energy_AZ"), toString(i), toString(ERR), toString(INCR))
+    plot_name <- paste0(toString("1.3-Load_Energy_AZ"), toString(i), toString(ERR), toString(INCR))
     pdf_name <- paste0(toString(plot_name), toString(".pdf"))
     ggplot(data=data_el) +
         geom_bar(aes(x=Legends, y=Energy), fill="blue", alpha=0.9, stat="identity") +
@@ -232,7 +235,7 @@ for (az_con in az_con_list){
     fun_load_energy_each_az(az_con, i)
     i<-i+1
 }
-############################## 21) HISTOGRAM AZ_LOAD #######################
+############################## 2.1) HISTOGRAM PLOT #######################
 fun_histogram_each_az <- function(con_az, i){
     x <- dbGetQuery(con_az, q_az_load_val_0_gvt)
     dat <- data.frame(
@@ -240,7 +243,7 @@ fun_histogram_each_az <- function(con_az, i){
         gvt=x$gvt
     )
     BREAKS<-20
-    pdf_name1 <- paste0(toString("21-Hist_AZ"), toString(i), toString(".pdf"))
+    pdf_name1 <- paste0(toString("2.1-Hist_AZ"), toString(i), toString(".pdf"))
     p21 <- ggplot(dat, aes(dat$AZLoad))+
         geom_histogram(bins=BREAKS)+
         labs(title=paste0("Load Histogram AZ",toString(i)),
@@ -248,112 +251,54 @@ fun_histogram_each_az <- function(con_az, i){
              y = "Frequency")
     ggsave(pdf_name1, p21, width = 4, height = 4, scale = 1)
 }
-print("Running (21) HISTOGRAM")
 i<-1
 for (az_con in az_con_list){
     print(i)
     fun_histogram_each_az(az_con, i)
     i<-i+1
 }
-############################## 22) Probability Frequency az_load ###############################
-# i<-6; con_az<-con6
-load_objectives <-c()
-i<-1
-print("Running (22) Prob Frequency")
-for (con_az in az_con_list){
-    print(i)
-    norm <- function(x){
-        return(round((x/sum(x)), digits = 3))
-    }
-    just<-function(x){
-        if(x > 50){
-            return(1)
-        }
-        return(-1)
-    }
-    wf <- table(dbGetQuery(con_az, q_az_load_val_0))
-    tf <- as.data.frame(wf)
-    tf<- tf %>% mutate(Freq = norm(Freq),
-                       #Var1 = as.numeric(as.character(Var1)))
-                       Var1 = round(as.numeric(as.character(Var1))*100, digits = 3))
 
+############################## 2.2) CDF ###############################
+fun_frequency <- function(con_az, i){
+    wf = table(dbGetQuery(con_az, q_az_load_val_0))
+    tf = as.data.frame(wf)
     maxFreq <- which.max(tf$Freq)
     MAX_xy <- tf[maxFreq,]
-    MAXx <- MAX_xy$Var1
+    MAXx <- levels(MAX_xy[1]$Var1)[maxFreq]
     MAXy <- MAX_xy$Freq
-    lab_max <- paste0(toString("1ª -> P("),toString(MAXy),toString(") de carga em "),toString(MAXx),toString("%"))
+    lab_max <- paste0(toString("1ª (Load="),toString(MAXx),toString(", Freq="),toString(MAXy),toString(")"))
+    
     
     #tf2 <- as.data.frame(tf[-c(maxFreq),-c(MAXy)])
     tf2 <- tf
     tf2[maxFreq,] <- 0
     maxFreq2 <- which.max(tf2$Freq)
     MAX_xy2 <- tf2[maxFreq2,]
-    MAXx2 <- MAX_xy2$Var1
+    MAXx2 <- as.numeric(levels(MAX_xy2[1]$Var1)[maxFreq2])
     MAXy2 <- MAX_xy2$Freq
-    lab_max2 <- paste0(toString("2ª -> P("),toString(MAXy2),toString(") de carga em "),toString(MAXx2),toString("%"))
+    lab_max2 <- paste0(toString("2ª (Load="),toString(MAXx2),toString(", Freq="),toString(MAXy2),toString(")"))
     
-    tf3 <- tf2
-    tf3[maxFreq2,] <- 0
-    maxFreq3 <- which.max(tf3$Freq)
-    MAX_xy3 <- tf3[maxFreq3,]
-    MAXx3 <- MAX_xy3$Var1
-    MAXy3 <- MAX_xy3$Freq
-    lab_max3 <- paste0(toString("3ª -> P("),toString(MAXy3),toString(") de carga em "),toString(MAXx3),toString("%"))
-    
-    load_objectives <-c(load_objectives, MAXx, MAXx2, MAXx3)
-    cols=c("red", "blue", "magenta")
-    fcols=c("white", "white", "white")
-    pch=c(21, 22, 23)
-    lty=c(1, 2, 4)
-    hjust=c(just(MAXx), just(MAXx2),just(MAXx3))
-    vjust=c(0,1,-0.3)
-
-    pdf_freq <- paste0(toString("22-Frequency_AZ"), toString(i), toString(".pdf"))
-    plt_freq <- ggplot(data=tf, aes(x=Var1, y=Freq, group = 1, ymax=0.2, xmax=100)) +
+    pdf_freq <- paste0(toString("2.2-Frequency_AZ"), toString(i), toString(".pdf"))
+    plt_freq <- ggplot(data=tf, aes(x=Var1, y=Freq, group = 1)) +
+        #geom_point()+
         geom_line()+
-        geom_point(size=0.7)+
-        #
-        geom_hline(yintercept=MAXy, color=cols[1], lty=lty[1], size=1) +
-        geom_hline(yintercept=MAXy2, color=cols[2], lty=lty[2], size=1) +
-        geom_hline(yintercept=MAXy3, color=cols[3], lty=lty[3], size=1) +
-        #
-        geom_label(aes(MAXx, MAXy, label=lab_max, vjust = vjust[1], hjust = hjust[1]), nudge_x = 1,  size = 4, colour = cols[1]) +
-        geom_label(aes(MAXx2, MAXy2, label=lab_max2, vjust = vjust[2], hjust = hjust[2]), nudge_x = 1, size = 4, colour = cols[2]) +
-        geom_label(aes(MAXx3, MAXy3, label=lab_max3, vjust = vjust[3], hjust = hjust[3]), nudge_x = 1, size = 4, colour = cols[3]) +
-        #
-        geom_point(aes(MAXx, MAXy), size=3, color=cols[1], pch=pch[1], fill=fcols[1])+
-        geom_point(aes(MAXx2, MAXy2), size=3, color=cols[2], pch=pch[2], fill=fcols[2])+
-        geom_point(aes(MAXx3, MAXy3), size=3, color=cols[3], pch=pch[3], fill=fcols[3])+
+        scale_x_discrete(breaks=seq(0.0, 1.0, 0.005)) +
+        geom_hline(yintercept=MAXy, color="red") +
+        geom_label(aes(MAXx, MAXy, label=lab_max, vjust = 0.0, hjust = 0.0), nudge_x = 12,  size = 4, colour = "red") +
+        geom_hline(yintercept=MAXy2, color="blue") +
+        geom_label(aes(MAXx2, MAXy2, label=lab_max2, vjust = 0, hjust = 0), nudge_x = 12, size = 4, colour = "blue") +
         #theme(axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
-        labs(title=paste0("Probabilidade de ocorrência de cargas na AZ",toString(i)), x ="Carga (%)",y ="Probabilidade (0~1)")
+        labs(title=paste0("Load Frequency AZ",toString(i)), x ="Load (%)",y ="Frequency")
     ggsave(pdf_freq, plt_freq, width = 9, height = 5, scale = 1)
+}
+i<-1
+print("2.2) Frequency")
+for (az_con in az_con_list){
+    print(i)
+    fun_frequency(az_con, i)
     i<-i+1
 }
 
-fun_frequency2<-function(){
-    ggplot(diamonds, aes(price, stat(density), colour = cut)) +
-        geom_freqpoly(binwidth = 500)
-}
-
-fun_todo<-function(){
-    
-    dfMAX<-data.frame(
-        cMAXx=c(MAXx, MAXx2, MAXx3),
-        cMAXy=c(MAXy, MAXy2, MAXy3),
-        clab_max=c(lab_max,lab_max2,lab_max3),
-        cols=c("red", "blue", "magenta"),
-        fcols=c("black", "black", "black"),
-        pch=c(21, 22, 23),
-        lty=c(1, 2, 4),
-        hjust=c(just(MAXx), just(MAXx2),just(MAXx3)),
-        vjust=c(0,1,0)
-    )
-    geom_hline(data=dfMAX, aes(yintercept=cMAXy, color=cols)) +
-        #
-        geom_label(data=dfMAX, aes(x=cMAXx, y=cMAXy, label=clab_max, vjust = vjust, hjust = hjust, colour = cols), nudge_x = 1,  size = 4) +
-        #
-        geom_point(data=dfMAX, aes(x=cMAXx, y=cMAXy, color=cols, pch=pch, fill=fcols), size=3)
-}
 fun_ecdf_ggplot<-function(){
     x1<-dbGetQuery(con1, q_az_load_val_0_gvt)
     cdf1<-ecdf(x1$val_0)
@@ -424,6 +369,7 @@ cdf_default<-function(){
     plot(cdf1, verticals=TRUE, do.points=FALSE, add=TRUE, col='blue')
     dev.off()
 }
+
 outroCDF<-function(){
     df_cdf1 <- data.frame(AZ1 = x1$val_0)
     df_cdf1 <- melt(df_cdf1)
@@ -462,11 +408,109 @@ outroCDF<-function(){
     ggsave("03-CDF_All_AZs.pdf", cdff, width = 9, height = 5, scale = 1)
 }
 
-############################## 23) RADAR / SPIDER ##################
-print("In the next file databaseRadar.R")
-source(databaseRadar.R, local = TRUE)
-############################## 24) SNAPSHOTS ###############
-############################## 25) TRIGGERS EACH ################
+############################## 2.3) RADAR / SPIDER ##################
+#h_av <- c(0, 20, 40)        # em percentual de requisições
+#cons <- c(0, 30, 40)        # quantidade de operações realizadas
+#ener <- c(3000, 150, 450)   # em eficiencia/redução total
+#load <- c(60, 75, 90)       # percentual medio de carga
+#slav <- c(0, 3, 9)          # quantidade de rejeições
+
+q_replic_attend = "SELECT count(ai) FROM replic_d"
+q_replic_add_host = "SELECT count(ai) FROM replic_d WHERE abs(val_0) > 0"
+q_replic_add_energy = "SELECT sum(energy_f - energy_0) FROM replic_d"
+h_av <- c(   # em percentual de requisições atendidas
+    0,
+    20,
+    40,
+    40
+)
+
+q_cons = "SELECT count(val_0) FROM consol_d"
+q_cons_false_pos = "select count(ai) from consol_d where val_0 = 0"
+q_cons_migrations = "select sum(val_f) from consol_d where val_0 > 0"
+cons <- c(   # quantidade de operações realizadas
+    0, 
+    30, 
+    40,
+    35
+)
+
+q_ener_cons = "SELECT sum(energy_0 - energy_f) FROM consol_d"
+q_ener_ha = "SELECT sum(energy_0 - energy_f) FROM replic_d"
+ener <- c(   # em eficiencia/redução total
+    0, 
+    150, 
+    750,
+    300
+)
+
+q_avg_load
+load <- c(   # percentual medio de carga
+    60,
+    75,
+    90,
+    90
+)
+
+q_reject = "SELECT count(val_0) FROM reject_l"
+slav <- c(   # quantidade de rejeições
+    0,
+    3, 
+    9,
+    11
+)
+data=as.data.frame(matrix( c(h_av,cons,ener,load,slav), ncol=5))
+## Metrics:
+colnames(data)=c("HA" , "Consolid", "Energy-Effic", "Load", "SLAV")
+## Tests:
+rownames(data)=c("EUCA", "CHAVE-MAX", "PLACE", "CHAVE-LOCKR") #paste("Test" , letters[1:3] , sep="-")
+# To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
+data=rbind(c(100, max(cons), max(ener), 100, max(slav)), # Max values in range
+           c(0, 0, 0, 0, 0) , data)                     # Min values in range
+data
+par(mar=c(1,1,1,1))
+# Plot 1: Default radar chart proposed by the library:
+radarchart(data)
+
+# Plot 2: Same plot with custom features
+colors_border=c( rgb(0.0,0.0,0.9,0.9),
+                 rgb(0.9,0.0,0.0,0.9),
+                 rgb(0.9,0.9,0.0,0.9),
+                 rgb(0.0,0.6,0.2,0.9) )
+colors_in=c( rgb(0.0,0.0,0.9,0.4),
+             rgb(0.9,0.0,0.0,0.4),
+             rgb(0.9,0.9,0.0,0.4),
+             rgb(0.0,0.6,0.2,0.4) )
+line_type=c(1,2,3,4)
+radarchart( data, axistype=1, 
+            #custom polygon
+            pcol=colors_border , pfcol=colors_in , plwd=line_type , plty=line_type,
+            #custom the grid
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=1,
+            #custom labels
+            vlcex=1.2 
+)
+legend(x=0.9, y=0.5, legend = rownames(data[-c(1,2),]), 
+       y.intersp=0.25, x.intersp=0.25, bty="n", pch=20 , 
+       col=colors_border, text.col = "black", cex=1, pt.cex=5,
+       title="Tests:")
+
+# Plot3: If you remove the 2 first lines, the function compute the max and min of each variable with the available data:
+radarchart( data[-c(1,2),]  , axistype=0 , maxmin=F,
+            #custom polygon
+            pcol=colors_border , pfcol=colors_in , plwd=line_type, plty=line_type,
+            #custom the grid
+            cglcol="grey", cglty=1, axislabcol="black", cglwd=0.8, 
+            #custom labels
+            vlcex=1.2 
+)
+legend(x=0.9, y=0.5, legend = rownames(data[-c(1,2),]), 
+       y.intersp=0.25, x.intersp=0.25, bty="n", pch=20 , 
+       col=colors_border, text.col = "black", cex=1, pt.cex=5,
+       title="Tests:")
+
+############################## 2.4) SNAPSHOTS ###############
+############################## 2.5) TRIGGERS EACH ################
 q_trigger = "SELECT count(val_0), gvt FROM consol_d"
 q_trigger_energy = "SELECT ai, (energy_0 - energy_f) as Efficiency FROM consol_d"
 
@@ -478,113 +522,56 @@ fun_trigger_each<-function(con, i){
         Efficiency=tt$Efficiency,
         Trigger=tt$ai)
 
-    pdf_trig <- paste0(toString("25-Trigger_consol_"), toString(az), toString(".pdf"))
+    pdf_trig <- paste0(toString("2.5-Trigger_consol_"), toString(az), toString(".pdf"))
     plt_trig1<-ggplot(data=df_trig1, aes(x=Trigger, y=Efficiency, colour=key)) + #, stat="identity", fill="blue", alpha=0.9) +
         geom_line()
     ggsave(pdf_trig, plt_trig1, width = 9, height = 5, scale = 1)
 }
 n<-1
-#for (con in az_con_list){
-#    fun_trigger_each(con, n)
-#    n<-n+1
-#}
-############################## 26) TRIGGERS HISTOGRAM EACH ################
-q_trigger = "SELECT count(val_0), gvt FROM consol_d"
-q_trigger_energy = "SELECT ai, (1-(energy_f/energy_0))*100 as Efficiency FROM consol_d" # where energy_0-energy_f > 1"
-i=1;con=con1
-fun_trigger_histogram<-function(con, i){
-    az <- paste0(toString("AZ"), toString(i))
-    pdf_trig <- function(x){
-        return(paste0(toString("26-Trigger_"), toString(az), toString(x), toString(".pdf")))
-    }
-    qq <-dbGetQuery(con, q_trigger_energy)
-    MEAN = mean(qq$Efficiency)
-    # Histograma  frequencia
-    freq_hist<-function(){
-        df1 <- as.data.frame(qq)
-        base<-ggplot(df1, aes(x=Efficiency))+
-            stat_bin(binwidth = 1, col="red")+
-            labs(title=paste0("Redução de energia na consolidação para AZ",toString(i)), 
-                 x = "Percentual de redução de energia (%)", 
-                 y = "Freqência (bin=1)")
-        ggsave(pdf_trig("_stat_bin_"), base, width = 9, height = 5, scale = 1)
-    }
-    #
-    # Lolipop
-    lolipop<-function(){
-        x= df1$ai #seq(0, 2*pi, length.out=100)
-        data=data.frame(x=x, y=df1$Efficiency)
-        data=data %>% mutate(mycolor = ifelse(y>0, "blue", "red"))
-        loli<-ggplot(data, aes(x=x, y=y)) +
-            geom_segment( aes(x=x, xend=x, y=0, yend=y, color=mycolor), size=1.3, alpha=0.9) +
-            geom_point(color="black", size=1)+
-            theme_light() + theme(legend.position = "none", panel.border = element_blank()) +
-            xlab("Trigger") + ylab("Redução (%)")
-        ggsave(pdf_trig("_loli_"), loli, width = 9, height = 5, scale = 1)
-    }
-    #
-    levs <- c(seq(from=0, to=100, by=5))
-    wf <- table(cut(qq$Efficiency, levs, right = FALSE))
-    df <- as.data.frame(wf)
-    df<- df %>% mutate(Var1 = c(seq(from=5, to=100, by=5)))
-    plt_trig1<-ggplot(data=df, aes(x=Freq, y=Var1)) + #, stat="identity", fill="blue", alpha=0.9) +
-        geom_bar(stat="identity")+
-        #geom_hline(yintercept=MEAN, color="red") +
-        #geom_text(aes(100, MEAN, label=MEAN, vjust = -1), size = 5)+
-        labs(title=paste0("Trigger Histogram AZ",toString(i)), x ="Triggers", y = "Redução de consumo (%)")
-    ggsave(pdf_trig("_Histogr_"), plt_trig1, width = 9, height = 5, scale = 1)
-}
-n<-1
 for (con in az_con_list){
-    fun_trigger_histogram(con, n)
+    fun_trigger_each(con, n)
     n<-n+1
 }
-############################## 2.7) TRIGGERS ALL ################
-fun_trigger_line_all<-function(){
-    q_trigger = "SELECT count(val_0), gvt FROM consol_d"
-    q_trigger_energy = "SELECT ai, (1-(energy_f/energy_0))*100 as Efficiency FROM consol_d"
-    
-    t1 <-dbGetQuery(con1, q_trigger_energy)
-    t2 <-dbGetQuery(con2, q_trigger_energy)
-    t3 <-dbGetQuery(con3, q_trigger_energy)
-    t4 <-dbGetQuery(con4, q_trigger_energy)
-    t5 <-dbGetQuery(con5, q_trigger_energy)
-    t6 <-dbGetQuery(con6, q_trigger_energy)
-    
-    df_trig <- data.frame(
-        #key =c("AZ1", "AZ2", "AZ3","AZ4","AZ5","AZ6"),
-        key=c(
-            rep("AZ1", nrow(t1)),
-            rep("AZ2", nrow(t2)),
-            rep("AZ3", nrow(t3)),
-            rep("AZ4", nrow(t4)),
-            rep("AZ5", nrow(t5)),
-            rep("AZ6", nrow(t6))),
-        Efficiency=c(
-            t1$Efficiency,
-            t2$Efficiency,
-            t3$Efficiency,
-            t4$Efficiency,
-            t5$Efficiency,
-            t6$Efficiency),
-        Trigger=c(
-            t1$ai,
-            t2$ai,
-            t3$ai,
-            t4$ai,
-            t5$ai,
-            t6$ai)
-    )
+############################## 2.6) TRIGGERS ALL ################
+q_trigger = "SELECT count(val_0), gvt FROM consol_d"
+q_trigger_energy = "SELECT ai, (energy_0 - energy_f) as Efficiency FROM consol_d"
 
-    plt_trig<-ggplot(data=df_trig, aes(x=Efficiency, colour=key)) + #, stat="identity", fill="blue", alpha=0.9) +
-        geom_freqpoly(binwidth = 5)+
-        labs(title="Percentual de redução de energia na consolidação", 
-             x = "% de redução de energia", 
-             y = "Freqência (bin=5)")
-    plt_trig
-    ggsave("27-Trigger_consol_ALL.pdf", plt_trig, width = 9, height = 5, scale = 1)
-}
-fun_trigger_line_all
+t1 <-dbGetQuery(con1, q_trigger_energy)
+t2 <-dbGetQuery(con2, q_trigger_energy)
+t3 <-dbGetQuery(con3, q_trigger_energy)
+t4 <-dbGetQuery(con4, q_trigger_energy)
+t5 <-dbGetQuery(con5, q_trigger_energy)
+t6 <-dbGetQuery(con6, q_trigger_energy)
+
+df_trig <- data.frame(
+    #key =c("AZ1", "AZ2", "AZ3","AZ4","AZ5","AZ6"),
+    key=c(
+        rep("AZ1", nrow(t1)),
+        rep("AZ2", nrow(t2)),
+        rep("AZ3", nrow(t3)),
+        rep("AZ4", nrow(t4)),
+        rep("AZ5", nrow(t5)),
+        rep("AZ6", nrow(t6))),
+    Efficiency=c(
+        t1$Efficiency,
+        t2$Efficiency,
+        t3$Efficiency,
+        t4$Efficiency,
+        t5$Efficiency,
+        t6$Efficiency),
+    Trigger=c(
+        t1$ai,
+        t2$ai,
+        t3$ai,
+        t4$ai,
+        t5$ai,
+        t6$ai)
+)
+
+plt_trig<-ggplot(data=df_trig, aes(x=Trigger, y=Efficiency, colour=key)) + #, stat="identity", fill="blue", alpha=0.9) +
+        geom_line() #+geom_point()
+ggsave("2.6-Trigger_consol.pdf", plt_trig, width = 9, height = 5, scale = 1)
+
 ######################## DISCONNECT in main func ######################
 dbDisconnect(con1)
 dbDisconnect(con2)
@@ -594,9 +581,8 @@ dbDisconnect(con5)
 dbDisconnect(con6)
 #dbDisconnect(con7)
 
-
-
 }
+
 for (test in test_l){
     main(test)
 } 
