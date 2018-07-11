@@ -229,7 +229,7 @@ class SLAHelper(object):
 
     def debug_sla(self):
         self.logger.critical("\nDateTime:\t {}\nOrder Mode:\t {}\nMain Algo:\t {}\nConsol Alg:\t {}\nConsolida?:\t {}"
-                             "\nOvercomm?:\t {}\nEnergyMon?:\t {}\nReplicate?:\t {}\nAZConf OK?:\t {}\nVMs Loked?:\t {}"
+                             "\nOvercomm?:\t {}\nEnergyMon?:\t {}\nReplicate?:\t {}\nAZConf OK?:\t {}\nVM Locked?:\t {}"
                              "\nWindowTime:\t {}\nNumb AZs:\t {}\nMaxAZs/Reg:\t {}\nCore2Ram:\t {}\nTrigger:\t {}"
                              "\nResultType:\t {}\nFrag Class:\t {}\nAZ Select:\t {}\nTraceClass:\t {}\nAZ Nodes:\t {}"
                              "\nAZ Cores:\t {}\nN. Operat.:\t {}\nAZ Identif:\t {}\nTraceFoldr:\t {}\nDataOutput:\t {}\n"

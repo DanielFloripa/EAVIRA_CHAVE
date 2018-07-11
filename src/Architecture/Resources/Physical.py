@@ -68,9 +68,8 @@ class PhysicalMachine(object):
             self.virtual_machine_list.append(vm)
             self.virtual_machine_dict[vm.vm_id] = vm
             if self.sla.g_enable_emon():
-                time = vm.timestamp
                 this_energy = self.get_cpu_energy_usage()
-                self.emon.alloc(vm.vm_id, time, this_energy, log=True)
+                self.emon.alloc(vm.vm_id, vm.timestamp, this_energy, log=True)
             return True
         return False
 
@@ -82,7 +81,7 @@ class PhysicalMachine(object):
             self.logger.exception(e)  # ValueError:
             self.logger.error("Error on remove resources for: {} {} =? {} called by {} {}".format(
                 vm.get_id(), vm.host_id, self.get_id(), sys._getframe(1).f_code.co_name, who_calls))
-            #self.logger.error(traceback.format_exc())
+            # self.logger.error(traceback.format_exc())
             return False
         if self.algorithm == "CHAVE":
             self.set_host_off()
