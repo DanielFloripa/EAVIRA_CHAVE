@@ -296,6 +296,7 @@ class AvailabilityZone(Infrastructure):
 
     def migrate(self, vm, host):
         if vm.host_id != host.host_id:
+            origin_host = host
             try:
                 origin_host = self.host_list_d.get(vm.host_id)
             except KeyError or IndexError:

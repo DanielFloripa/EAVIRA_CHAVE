@@ -79,10 +79,10 @@ class PhysicalMachine(object):
             self.virtual_machine_list.remove(vm)
             del self.virtual_machine_dict[vm.vm_id]
         except Exception as e:
-            self.logger.error(e)  # ValueError:
+            self.logger.exception(e)  # ValueError:
             self.logger.error("Error on remove resources for: {} {} =? {} called by {} {}".format(
                 vm.get_id(), vm.host_id, self.get_id(), sys._getframe(1).f_code.co_name, who_calls))
-            self.logger.error(traceback.format_exc())
+            #self.logger.error(traceback.format_exc())
             return False
         if self.algorithm == "CHAVE":
             self.set_host_off()
