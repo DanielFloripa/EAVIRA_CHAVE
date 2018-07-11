@@ -573,7 +573,7 @@ class Chave(object):
                 self.best_host(vm, az, recursive=True)
             # or if VM is a replica, we can force choose other AZ
             elif vm.type is REPLICA:
-                azlist = list(self.api.get_localcontroller_from_lcid(az.lc_id).az_list)
+                azlist = self.api.get_localcontroller_from_lcid(az.lc_id).az_list
                 # Todo: para remover bloco em 'best_az_for..' basta:
                 # del azlist.remove(az)
                 other_az = self.best_az_for_replica(vm, azlist, is_forced=True, az_forced=az)
@@ -586,14 +586,13 @@ class Chave(object):
                         "{}\t Not found best host in (d, on, off): {} for place {}. Trace: {}.\n {}\n{}".format(
                             az.az_id, az.get_hosts_density(), vm.get_id(), self.sla.g_trace_class(), vm, az))
         else:
-            self.logger.error("Finnaly, we can't do nothing!!!")
+            self.logger.warning("Finnaly, we can't do nothing!!!")
             false_motive.append("Finnaly_do_Nothing!")
         return None, false_motive
 
     def place(self, vm: VirtualMachine, bhost: PhysicalMachine, az: AvailabilityZone, vm_type=None) -> bool:
         vm.lc_id = az.lc_id
-
-        # if it is the first time, put VM in replica_pool and continue:
+        # Doc: if it is the first time, put VM in replica_pool and continue:
         if self.is_required_replica(vm, az) and vm_type is None:
             self.replicate_vm(vm, az)
         vm.az_id = az.az_id
@@ -601,21 +600,11 @@ class Chave(object):
         self.logger.debug("Allocating vmid:{} in h:{} t:{} az:{}".format(
             vm.vm_id, vm.host_id, vm.type, vm.az_id))
         if az.allocate_on_host(vm, defined_host=bhost):
-            #self.az_load_mach(az)
             return True
         else:
             self.logger.error("{}\t Problem on allocate {} t:{} h:{} az:{}".format(
                 az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id))
         return False
-
-    # Warning: deprecated
-    def az_load_mach(self, az):
-        azl2 = az.get_az_load()
-        obj = self.sla.g_avg_load_objective(az_id=az.az_id)
-        var = 0.01
-        if (obj - var) >= azl2 >= (obj + var):
-            values = (self.global_time, azl2, az.print_hosts_distribution(level='MIN'),)
-            self.sla.metrics.set(az.az_id, 'az_load_match', values)
 
     def set_rejection_for(self, procedure, code, info, lc_id, pool_id, az_id, vm_id):
         # Doc: `code` is 0, 1, 2 or 3
@@ -664,7 +653,7 @@ class Chave(object):
                     except Exception as e:
                         self.logger.error("Problem for remove az_critical {} {}".format(pool_d[CRITICAL][0].az_id, e))
                     # Note: iterate in replicas pool
-                    # Todo: for vm_r in replicas_pool_d
+                    # Todo: Create loop `for vm_r in replicas_pool_d`
                     vm_r = pool_d[REPLICA][0]
                     if vm_r.az_id in this_lc_azs:  # Apenas pra confirmar
                         tryes = 0
@@ -718,12 +707,11 @@ class Chave(object):
                     # 0 Reject
                     # 1 Accept replicas in same AZ -> calculate final availability
                     # 2 Accept replicas in other local_controler
-                    #if self.replication_scale == 0:
+                    # if self.replication_scale == 0:
                     #    break
                 else:
-                    # pass
                     self.logger.error("lc_pool {} != {} lc_obj.lc_id".format(pool_id, lc_id))
-        # self.logger.info("Exit for {} {}".format(self.global_time, lc_id))
+        # EXIT!
 
     def best_az_for_replica(self, vm, az_list, is_forced=False, az_forced=None) -> AvailabilityZone:
         """
@@ -828,15 +816,10 @@ class Chave(object):
         return best_az
 
     def is_required_replica(self, vm, az):
-        #if type(vm.type) is str and type(vm.availab) is float and type(az.availability) is float:
         if vm.availab > az.availability and vm.type != REPLICA:
             self.logger.debug("{}-{} require replication! {}=?{}".format(vm.vm_id, vm.type, vm.az_id, az.az_id))
             return True
         return False
-        #else:
-        #    self.logger.error("{}\t Types: vm:{}, ha:{}, av:{}".format(
-        #        az.az_id, type(vm.type), type(vm.availab), type(az.availability)))
-        #return False
 
     def replicate_vm(self, vm, az):
         lc_id = az.lc_id

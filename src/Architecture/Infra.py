@@ -294,21 +294,22 @@ class AvailabilityZone(Infrastructure):
             self.az_id, vm, self.host_list))
         return False
 
-    def migrate(self, vm, host):
-        if vm.host_id != host.host_id:
-            origin_host = host
+    def migrate(self, vm, dest_host):
+        if vm.host_id != dest_host.host_id:
+            origin_host = ""
             try:
                 origin_host = self.host_list_d.get(vm.host_id)
             except KeyError or IndexError:
-                self.logger.error("Problem on migrate {} {} {}".format(vm.vm_id, vm.host_id, host.host_id))
+                self.logger.error("Problem on migrate {} {} {}".format(vm.vm_id, vm.host_id, dest_host.host_id))
 
-            if self.allocate_on_host(vm, defined_host=host):
+            if self.allocate_on_host(vm, defined_host=dest_host):
                 if self.deallocate_on_host(vm, defined_host=origin_host):
                     return True
                 else:
-                    self.deallocate_on_host(vm, defined_host=host)
+                    self.deallocate_on_host(vm, defined_host=dest_host)
         else:
-            self.logger.info("Warning: Are you trying migrate {} to same O:{}->D:{}?".format(vm.vm_id, vm.host_id, host.host_id))
+            self.logger.info("Warning: Are you trying migrate {} to same O:{}->D:{}?".format(
+                vm.vm_id, vm.host_id, dest_host.host_id))
         return False
 
     def get_host_list(self):
