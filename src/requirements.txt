@@ -4,7 +4,7 @@ pympler
 argparse
 psutil
 matplotlib
-logging
+#logging
 # itertools
 # operator
 # csv
