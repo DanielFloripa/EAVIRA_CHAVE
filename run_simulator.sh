@@ -7,6 +7,9 @@ if [ "$1" == "install" ]; then
 	exit
 fi
 
+mkdir -p ${CS_LOG_PATH} 2> /dev/null
+mkdir -p ${CS_DATA_PATH} 2> /dev/null
+
 echo -e "${CS_LOGO} ${_NC}"
 
 CLEAR_ALL=false
@@ -16,9 +19,6 @@ SYNC=true
 if ${CLEAR_ALL} == true; then
     rm -rf "${CS_PROJ_ROOT}/output/"
 fi
-
-mkdir -p ${CS_LOG_PATH} 2> /dev/null
-mkdir -p ${CS_DATA_PATH} 2> /dev/null
 
 AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 31 32 ) # ('node core')
     #________________
@@ -38,7 +38,7 @@ WITH_CONSOLID=( 'False' 'True' )
 WITH_OVERCOMM=( 'False' )
 ENABLE_REPLIC=( 'False' 'True' )
 LOCK_CASE=( 'RANDOM' 'False' 'True' 'None' )
-WT=('1' '2' '2')  # Window time: ('min' 'step' 'max')
+WT=('1' '2' '2')  # Window time means: ('min' 'step' 'max')
 
 # TODO: implemetar um criador de AZs e regioes
 # AZ_2_REGIONS=('HA' 'LB' 'BF')

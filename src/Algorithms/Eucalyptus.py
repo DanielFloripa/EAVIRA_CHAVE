@@ -138,7 +138,7 @@ class Eucalyptus(object):
                 this_state = op_id.split(K_SEP)[1]
                 if this_state == "START":
                     ''' Let's PLACE!'''
-                    if az.allocate_on_host(vm, vm.host_id):
+                    if az.allocate_on_host(vm, defined_host=vm.host_id):
                         self.vms_in_execution_d[az_id][vm.vm_id] = vm
                     else:
                         del self.op_dict_temp_d[az_id][vm.vm_id + "_START"]
@@ -146,8 +146,8 @@ class Eucalyptus(object):
                         # Note: Must match columns_d:
                         this_metric = {'gvt': self.global_time,
                                        'val_0': 0,
-                                       'info': "{}, host:{}. {}".format(
-                                           vm.vm_id, vm.host_id, az.print_hosts_distribution(level='Min'))}
+                                       'info': "{}, host:{}".format(
+                                           vm.vm_id, vm.host_id)}
                         self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
                         self.logger.error("{}\tReject {} {} at gt:{}".format(az_id, vm.vm_id, vm.host_id, self.global_time))
                         break

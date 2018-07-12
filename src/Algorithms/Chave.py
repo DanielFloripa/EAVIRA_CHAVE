@@ -102,39 +102,15 @@ class Chave(object):
             # Doc: At the end, increment the clock with the window_time:
             self.global_time += self.window_time
 
-    def remove_finished_azs(self):
-        """
-        Note: This will remove the AZ that had its last operation
-        :return: None
-        """
-        if self.global_time >= self.last_ts_d[0][1]:
-            azid = self.last_ts_d[0][0]
-            az_list = list(self.az_list)
-            for az in az_list:
-                if az.az_id == azid:
-                    del self.last_ts_d[0]
-                    self.az_list.remove(az)
-                    self.logger.warning("{}\t has nothing else to a! Deleted at {}, remain {}".format(
-                        azid, self.global_time, len(self.az_list)))
-
-    def have_new_max_host_on(self, az):
-        host_on, _, _ = az.each_cycle_get_hosts_on()
-        if host_on > self.max_host_on[az.az_id]:
-            self.max_host_on[az.az_id] = host_on
-            self.sla.metrics.set(az.az_id, 'max_host_on_i', (self.global_time, host_on, az.az_id))
-            self.logger.info("{}\t New max hosts on: {} at gt: {}".format(
-                az.az_id, self.max_host_on[az.az_id], self.global_time))
-
     #############################################
     ### Consolidation: Placement + Migration
     #############################################
     def initial_placement(self, az):
         az_id = az.az_id
         remaning_operations_for_this_az = dict(self.op_dict_temp_d[az_id])
-        remain_this_gvt = 0
+        is_deallocated = False
         for op_id, vm in remaning_operations_for_this_az.items():
             if vm.timestamp <= self.global_time:
-                remain_this_gvt += 1
                 this_state = op_id.split(K_SEP)[1]
 
                 if this_state == "START":
@@ -159,11 +135,12 @@ class Chave(object):
                         else:
                             self.logger.error("{}\t Problem on place vm: {}".format(az_id, vm.vm_id))
                     else:
-                        info = "{}, info_bh:{}, {}".format(vm.type, len(info_bh), az.print_hosts_distribution())
+                        info = "{}, info_bh:{}".format(vm.type, len(info_bh))
                         self.set_rejection_for("placement", 0, info, az.lc_id, vm.pool_id, az_id, vm.vm_id)
                         break
 
                 elif this_state == "STOP":
+                    is_deallocated = True
                     exec_vm = None
                     try:
                         exec_vm = self.vms_in_execution_d[az_id].pop(vm.vm_id)
@@ -190,13 +167,35 @@ class Chave(object):
                     continue
             else:
                 break
-        # Note: We are consolidating after the all placement/deallocation
-        # Decision making: Because the running time after the optimization (consol)
-        # is grather than the time after each change (placement)
-        # Note: Outside the `remaining_operations` because will do the consolidation just one time for each `window_time`
-        if self.can_consolidate(az):
-            self.do_consolidation(az)
+        # Note: We are consolidating after the deallocation,
+        # Decision making: because at this momment the AZ can have fragmentation
+        if is_deallocated:
+            if self.can_consolidate(az):
+                self.do_consolidation(az)
         # OUT!
+
+    def remove_finished_azs(self):
+        """
+        Note: This will remove the AZ that had its last operation
+        :return: None
+        """
+        if self.global_time >= self.last_ts_d[0][1]:
+            azid = self.last_ts_d[0][0]
+            az_list = list(self.az_list)
+            for az in az_list:
+                if az.az_id == azid:
+                    del self.last_ts_d[0]
+                    self.az_list.remove(az)
+                    self.logger.warning("{}\t has nothing else to a! Deleted at {}, remain {}".format(
+                        azid, self.global_time, len(self.az_list)))
+
+    def have_new_max_host_on(self, az):
+        host_on, _, _ = az.each_cycle_get_hosts_on()
+        if host_on > self.max_host_on[az.az_id]:
+            self.max_host_on[az.az_id] = host_on
+            self.sla.metrics.set(az.az_id, 'max_host_on_i', (self.global_time, host_on, az.az_id))
+            self.logger.info("{}\t New max hosts on: {} at gt: {}".format(
+                az.az_id, self.max_host_on[az.az_id], self.global_time))
 
     def can_consolidate(self, az: AvailabilityZone) -> bool:
         """
@@ -624,7 +623,7 @@ class Chave(object):
                     del self.replicas_execution_d[lc_id][pool_id]
                     code = 1
             else:
-                self.logger.error("")
+                self.logger.error("{}\t Rejection procedure incorrect! in code {}".format(az_id, code))
                 exit(10)
         except Exception as e:
             self.logger.exception(e)
