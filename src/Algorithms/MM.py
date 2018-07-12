@@ -3,10 +3,12 @@
 
 import threading
 from Users.SLAHelper import *
+from Algorithms import BaseAlgorithm
 
 
-class MM(object):
+class MM(BaseAlgorithm):
     def __init__(self, api):
+        BaseAlgorithm.__init__(self, api)
         self.api = api
         self.sla = api.sla
         self.logger = api.sla.g_logger()

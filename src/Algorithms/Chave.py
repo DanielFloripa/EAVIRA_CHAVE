@@ -5,19 +5,18 @@ from random import randint
 from typing import Union, Tuple
 import time
 import math
+from unittest.mock import Base
+
 from Architecture.Resources.Virtual import *
 from Architecture.Resources.Physical import *
 from Architecture.Infra import AvailabilityZone
 from Users.SLAHelper import *
+from Algorithms import BaseAlgorithm
 
 
-class Chave(object):
-
+class Chave(BaseAlgorithm):
     def __init__(self, api):
-        """
-        CHAVE class
-        :rtype: object
-        """
+        BaseAlgorithm.__init__(self, api)
         self.api = api
         self.sla = api.sla
         self.logger = api.sla.g_logger()
@@ -61,7 +60,6 @@ class Chave(object):
             self.max_host_on[az_id] = 0
             self.vms_in_execution_d[az_id] = dict()
             self.op_dict_temp_d[az_id] = dict(az.op_dict)
-
         for lc_id, lc_obj in self.api.get_localcontroller_d().items():
             self.localcontroller_list.append(lc_obj)
             self.replicas_execution_d[lc_id] = dict()
@@ -173,21 +171,6 @@ class Chave(object):
             if self.can_consolidate(az):
                 self.do_consolidation(az)
         # OUT!
-
-    def remove_finished_azs(self):
-        """
-        Note: This will remove the AZ that had its last operation
-        :return: None
-        """
-        if self.global_time >= self.last_ts_d[0][1]:
-            azid = self.last_ts_d[0][0]
-            az_list = list(self.az_list)
-            for az in az_list:
-                if az.az_id == azid:
-                    del self.last_ts_d[0]
-                    self.az_list.remove(az)
-                    self.logger.warning("{}\t has nothing else to a! Deleted at {}, remain {}".format(
-                        azid, self.global_time, len(self.az_list)))
 
     def have_new_max_host_on(self, az):
         host_on, _, _ = az.each_cycle_get_hosts_on()
@@ -336,7 +319,7 @@ class Chave(object):
             else:
                 self.logger.debug("Host {} is OFF".format(h.host_id))
 
-        # This approach will redux the number of migrations
+        # This approach will minimize the number of migrations
         for host in sorted(vms_to_order_d.values(), key=lambda v: len(v)):
             for vm in host:
                 all_vms_updated[vm.vm_id] = vm
@@ -608,34 +591,6 @@ class Chave(object):
             self.logger.error("{}\t Problem on allocate {} t:{} h:{} az:{}".format(
                 az.az_id, vm.vm_id, vm.type, vm.host_id, vm.az_id))
         return False
-
-    def set_rejection_for(self, procedure, code, info, lc_id, pool_id, az_id, vm_id):
-        # Doc: `code` is 0, 1, 2 or 3
-        try:
-            if procedure == "replication":
-                # Após ocorrer a rejeição, remova o pool do dicionário
-                del self.replication_pool_d[lc_id][pool_id]
-            elif procedure == "placement":
-                # Após ocorrer a rejeição, remova as vms start e stop do dicionário
-                del self.op_dict_temp_d[az_id][vm_id + "_START"]
-                del self.op_dict_temp_d[az_id][vm_id + "_STOP"]
-                if pool_id in self.replicas_execution_d[lc_id].keys():
-                    del self.replicas_execution_d[lc_id][pool_id]
-                    code = 1
-            else:
-                self.logger.error("{}\t Rejection procedure incorrect! in code {}".format(az_id, code))
-                exit(10)
-        except Exception as e:
-            self.logger.exception(e)
-            pass
-        # Note: this_metric must match columns_d:
-        this_metric = {'gvt': self.global_time,
-                       'val_0': code,
-                       'info': "pool:{}, {}".format(pool_id, info)}
-        self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
-        self.sla.metrics.update(az_id, "vm_history", "reject_code", code, "vm_id", vm_id)
-        self.logger.warning("{}\t Problem to place {} az:{} at {}, metric: {}".format(
-                pool_id, vm_id, az_id, self.global_time, this_metric.items()))
 
     #############################################
     ### Replication

@@ -324,10 +324,10 @@ class PhysicalMachine(object):
 
     def get_energy_consumption(self):
         if (not self.has_virtual_resources()) and (self.power_state is HOST_ON):
-            self.logger.debug("Host on but empty. Return min energy")
+            #self.logger.debug("Host on but empty. Return min energy")
             return self.get_min_energy()
         elif not self.power_state:
-            self.logger.info("Host off. Return {}".format(0))
+            #self.logger.info("Host off. Return {}".format(0))
             return 0.0
         else:
             p = (float(self.default_cpu) - float(self.cpu)) / float(self.default_cpu)

@@ -5,10 +5,12 @@ import threading
 import time
 import math
 from Users.SLAHelper import *
+from Algorithms import BaseAlgorithm
 
 
-class Eucalyptus(object):
+class Eucalyptus(BaseAlgorithm):
     def __init__(self, api):
+        BaseAlgorithm.__init__(self, api)
         self.api = api
         self.sla = api.sla
         self.logger = api.sla.g_logger()
@@ -77,27 +79,12 @@ class Eucalyptus(object):
         start = time.time()
         milestones = int(self.api.demand.max_timestamp / self.sla.g_milestones())
         while self.global_time <= self.api.demand.max_timestamp:
-            start_for = time.time()
             for az in self.api.get_az_list():
-                start_place = time.time()
                 self.placement(az)
-                end_place = time.time() - start_place
-
-                start_misc = time.time()
-                values = (self.global_time, az.get_az_energy_consumption2(), "",)
-                self.sla.metrics.set(az.az_id, 'energy_l', values)
-
-                azload = az.get_az_load()
-                if self.az_load_change_d[az.az_id] != azload:
-                    self.az_load_change_d[az.az_id] = azload
-                    values = (self.global_time, azload, str(az.print_hosts_distribution(level='MIN')),)
-                else:
-                    values = (self.global_time, azload, "0",)
-                self.sla.metrics.set(az.az_id, 'az_load_l', values)
-                end_misc = time.time() - start_misc
-            end_for = time.time() - start_for
-
-            start_milestone = time.time()
+                self.sla.metrics.set(az.az_id, 'energy_l',
+                                     (self.global_time, az.get_az_energy_consumption2(), "",))
+                self.sla.metrics.set(az.az_id, 'az_load_l',
+                                     (self.global_time, az.get_az_load(), str(az.print_hosts_distribution(level='MIN')),))
             if self.global_time % milestones == 0:
                 memory = self.sla.check_simulator_memory()
                 elapsed = time.time() - start
@@ -108,26 +95,6 @@ class Eucalyptus(object):
             self.remove_finished_azs()
             # At the end, increment the clock:
             self.global_time += self.window_time
-            end_milestone = time.time() - start_milestone   
-
-            #metric_time = (self.global_time, -1.0, "plc:{} msc:{} for:{} mls:{}".format(end_place, end_misc, end_for, end_milestone))
-            metric_time = (self.global_time, end_place, end_misc, end_for, end_milestone, 0, 0, "")
-            self.sla.metrics.set('global', 'time_steps_d', metric_time)
-
-    def remove_finished_azs(self):
-        """
-        Note: This will remove the AZ that had its last operation
-        :return: None
-        """
-        if self.global_time >= self.last_ts_d[0][1]:
-            azid = self.last_ts_d[0][0]
-            new_az_list = list(self.az_list)
-            for az in new_az_list:
-                if az.az_id == azid:
-                    del self.last_ts_d[0]
-                    self.az_list.remove(az)
-                    self.logger.critical("{}\t has nothing else! Deleted at {}, remain {}".format(
-                        azid, self.global_time, len(self.az_list)))
 
     def placement(self, az):
         az_id = az.az_id
@@ -140,18 +107,11 @@ class Eucalyptus(object):
                     ''' Let's PLACE!'''
                     if az.allocate_on_host(vm, defined_host=vm.host_id):
                         self.vms_in_execution_d[az_id][vm.vm_id] = vm
-                    else:
                         del self.op_dict_temp_d[az_id][vm.vm_id + "_START"]
-                        del self.op_dict_temp_d[az_id][vm.vm_id + "_STOP"]
-                        # Note: Must match columns_d:
-                        this_metric = {'gvt': self.global_time,
-                                       'val_0': 0,
-                                       'info': "{}, host:{}".format(
-                                           vm.vm_id, vm.host_id)}
-                        self.sla.metrics.set(az_id, 'reject_l', tuple(this_metric.values()))
-                        self.logger.error("{}\tReject {} {} at gt:{}".format(az_id, vm.vm_id, vm.host_id, self.global_time))
+                    else:
+                        info = "{}, host:{}".format(vm.type, vm.host_id)
+                        self.set_rejection_for("placement", 0, info, az.lc_id, vm.pool_id, az_id, vm.vm_id)
                         break
-                    del self.op_dict_temp_d[az_id][vm.vm_id + "_START"]
                 elif this_state == "STOP":
                     exec_vm = None
                     try:
@@ -172,12 +132,4 @@ class Eucalyptus(object):
                     self.logger.error("{}\t OOOps, DIVERGENCE between {} and {} ".format(az_id, this_state, op_id))
                     continue
         # OUT!
-
-
-
-
-
-
-
-
 

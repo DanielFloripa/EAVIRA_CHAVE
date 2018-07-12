@@ -1,10 +1,11 @@
 
 import logging
+from Architecture.Resources.EnergyMonitor import *
 
 logging.basicConfig(level=logging.DEBUG, format='(%(funcName)-2s) %(message)s')
 logger = logging.getLogger('Teste')
 
-BS=60
+BS = 60
 
 e = EnergyMonitor(130, 'em_az1_host2', logger)
 # add 1

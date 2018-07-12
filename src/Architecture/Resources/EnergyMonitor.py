@@ -6,7 +6,8 @@ from collections import OrderedDict
 
 FULL = 3600.0
 
-class EnergyMonitor():
+
+class EnergyMonitor(object):
     def __init__(self, base, em_id, logger):
         self.em_id = em_id
         self.base = base
