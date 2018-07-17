@@ -300,10 +300,29 @@ class SLAHelper(object):
             out = int(raw_data)
         return out
 
-    def feedback_operator(self, time):
-        if time == 0:
-            return '\n'
-        return "Milestone: {} \tfor {}_{}_{}_{}_{}".format(time, self.g_consolidation_alg(), self.g_lock_case(), self.g_has_overcommitting(), self.g_has_consolidation(), self.g_enable_replication())
+    def set_test_mode(self):
+        #self.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
+        #self.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
+        #self.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
+        self.set_logger(print)
+        self.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
+        self.source_folder(str(os.environ.get("CS_SOURCE_FOLDER")))
+        self.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
+        self.output_type(str(os.environ["CS_OUTPUT_TYPE"]), str(os.environ["CS_OUTPUT_SEPARATOR"]))
+        self.trace_class(str(os.environ["CS_TRACE_CLASS"]))
+        self.enable_emon(eval(os.environ["CS_ENABLE_EMON"]))
+        self.az_selection(str(os.environ["CS_AZ_SELECTION"]))
+        self.trigger_to_migrate(int(os.environ.get('CS_TRIGGER_MIGRATE')))
+        self.frag_class(str(os.environ.get('CS_FRAGMENTATION_CLASS')))
+        self.vcpu_per_core(float(os.environ.get('CS_VCPUS_PER_CORE')))
+        self.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))
+        self.energy_model_src(str(os.environ.get("CS_ENERGY_MODEL")))
+        self.milestones(int(os.environ.get("CS_MILESTONES")))
+        # self.doc(doc)
+        """From now, we can't change this SLA parameters"""
+        self.init_metrics()
+        self.set_sla_lock(True)
+        self.debug_sla()
 
     def is_sla_lock(self):
         if self.__sla_is_locked:
@@ -345,6 +364,8 @@ class SLAHelper(object):
         if self.is_sla_lock():
             return False
         self.__algorithm = algorithm
+        if algorithm == "TEST":
+            self.set_test_mode()
         return True
 
     def source_folder(self, source):

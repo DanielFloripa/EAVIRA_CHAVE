@@ -4,6 +4,7 @@ import os
 import operator
 # From packages:
 from Users.SLAHelper import *
+from Architecture.Infra import *
 
 """
 Class: Architecture
@@ -164,14 +165,14 @@ class GlobalController(Controller):
 
     def get_vms_dict_from_az(self, azid):
         az = self.get_az(azid)
-        if az:
-            return az.vms_dict
+        if isinstance(az, AvailabilityZone):
+            return az.op_dict
         self.logger.error("Not found az: {}".format(azid))
         return False
 
     def get_vm_object_from_az(self, vmid, azid):
-        for vm in self.get_vms_dict_from_az(azid):
-            if vm.id == vmid:
+        for vm in self.get_vms_dict_from_az(azid).values():
+            if vm.vm_id == vmid:
                 return vm
         self.logger.error("Not found vm {} in az: {}".format(vmid, azid))
         return False
@@ -186,9 +187,6 @@ class GlobalController(Controller):
         # Choose a random virtual file
         virtual_files = os.listdir(virtual_folder)
         return virtual_folder + virtual_files[random.randint(0, len(virtual_files) - 1)]
-
-    def execute_mbfd(self, az, vi):
-        return self.az.mbfd(vi)
 
     # Todo:
     def get_list_overcom_amount_from_cloud(self):
