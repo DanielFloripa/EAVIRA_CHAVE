@@ -177,7 +177,7 @@ class Chave(BaseAlgorithm):
         if host_on > self.max_host_on[az.az_id]:
             self.max_host_on[az.az_id] = host_on
             self.sla.metrics.set(az.az_id, 'max_host_on_i', (self.global_time, host_on, az.az_id))
-            self.logger.info("{}\t New max hosts on: {} at gt: {}".format(
+            self.logger.info("{}\t New max host on: {} at gt: {}".format(
                 az.az_id, self.max_host_on[az.az_id], self.global_time))
 
     def can_consolidate(self, az: AvailabilityZone) -> bool:
@@ -527,31 +527,33 @@ class Chave(BaseAlgorithm):
                 return host, false_motive
             else:
                 false_motive.append("Overcommitting")
-            # 3rd, If our trace is not real, we can create hosts on demand
-            if self.sla.g_trace_class() != "REAL":
-                self.logger.warning("{}\t Not found existing best host in len:{} for place {}. Lets create a new host."
-                                    " \n {}\n{}".format(az.az_id, len(az.host_list), vm.get_id(), vm, az))
-                if self.api.create_new_host(az.az_id, host_state=HOST_ON):
-                    for new_host in az.host_list:
-                        if new_host.cpu >= vm.get_vcpu() and new_host.ram >= vm.get_vram():
-                            self.logger.info("OK! After create new host, for {} (vcpu:{}) is {} (cpu:{}). ovcCount:{}, "
-                                             "tax:{} hasOvc? {}.".format(vm.get_id(), vm.get_vcpu(), new_host.get_id(),
-                                                                         new_host.cpu, new_host.overcom_count,
-                                                                         new_host.actual_overcom,
-                                                                         new_host.has_overcommitting))
-                            return new_host, false_motive
-                    # if out of loop:
-                    false_motive.append("Resource_New_Host")
-                else:
-                    false_motive.append("Create_New_Host")
+
+        # if outside the loop, we can have a problem, but we still can:
+        # 3rd, If our trace is not real, we can create hosts on demand
+        if self.sla.g_trace_class() != "REAL":
+            self.logger.warning("{}\t Not found existing best host in len:{} for place {}. Lets create a new host."
+                                " \n {}\n{}".format(az.az_id, len(az.host_list), vm.get_id(), vm, az))
+            if self.api.create_new_host(az.az_id, host_state=HOST_ON):
+                for new_host in az.host_list:
+                    if new_host.cpu >= vm.get_vcpu() and new_host.ram >= vm.get_vram():
+                        self.logger.info("OK! After create new host, for {} (vcpu:{}) is {} (cpu:{}). ovcCount:{}, "
+                                         "tax:{} hasOvc? {}.".format(vm.get_id(), vm.get_vcpu(), new_host.get_id(),
+                                                                     new_host.cpu, new_host.overcom_count,
+                                                                     new_host.actual_overcom,
+                                                                     new_host.has_overcommitting))
+                        return new_host, false_motive
+                # if out of loop:
+                false_motive.append("Resource_New_Host")
             else:
-                false_motive.append("Trace_Real")
-        # if outsides loop, we can have a problem, but we still can force one consolidation to find a best host
+                false_motive.append("Create_New_Host")
+        else:
+            false_motive.append("Trace_Real")
+        #  4th We can force one consolidation and recursive to find a best host
         if not recursive:
             if self.can_consolidate(az):
                 self.do_consolidation(az)
                 self.best_host(vm, az, recursive=True)
-            # or if VM is a replica, we can force choose other AZ
+            # 5th or if VM is a replica, we can force choose other AZ
             elif vm.type is REPLICA:
                 azlist = self.api.get_localcontroller_from_lcid(az.lc_id).az_list
                 # Todo: para remover bloco em 'best_az_for..' basta:
