@@ -180,10 +180,14 @@ class MetricSQLite(object):
             try:
                 os.mkdir(self.db_path)
             except Exception as e:
+                self.logger.critical("{}".format(os.system("ls")))
                 self.logger.debug("Can't make dir: {}".format(e))
                 pass
             self.logger.debug('Init database: {}'.format(db_file))
-            self.connection[az_id] = sqlite3.connect(self.db_path + '/' + db_file)
+            if self.sla.g_algorithm() == "TEST":
+                self.connection[az_id] = sqlite3.connect(":memory:")
+            else:
+                self.connection[az_id] = sqlite3.connect(self.db_path + '/' + db_file)
             # print(self.db_path + '/' + db_file, self.db_file_default)
             for q in query_init:
                 # Todo: colocar pra fora connection e commit para testar
@@ -191,7 +195,7 @@ class MetricSQLite(object):
                 try:
                     self.cursor[az_id].execute(q)
                 except sqlite3.OperationalError:
-                    self.logger.fatal("Error on query {} for {}".format(q, db_file))
+                    self.logger.critical("Error on query {} for {}".format(q, db_file))
                     exit(1)
             self.connection[az_id].commit()
 

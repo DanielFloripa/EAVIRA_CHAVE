@@ -36,7 +36,6 @@ query_pragma = [
     "PRAGMA main.locking_mode=EXCLUSIVE;",
     "PRAGMA main.synchronous=OFF;",
     "PRAGMA main.journal_mode=OFF;",
-    "PRAGMA main.locking_mode=EXCLUSIVE;",
     "PRAGMA main.temp_store=MEMORY;",
     "CREATE TABLE {} ({} INTEGER NOT NULL, {} INTEGER NOT NULL, {} INTEGER NOT NULL, {} INTEGER NOT NULL, {} DOUBLE NOT NULL, {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} TEXT DEFAULT '', {} INTEGER PRIMARY KEY AUTOINCREMENT);".format(k_info[0], *columns_basic_info),
     "CREATE TABLE {} ({} TEXT NOT NULL PRIMARY KEY, {} INTEGER NOT NULL, {} INTEGER NOT NULL,  {} TEXT, {} INTEGER, {} TEXT DEFAULT 'regular', {} DOUBLE NOT NULL, {} BOOLEAN DEFAULT False, {} INTEGER, {} INTEGER, {} INTEGER DEFAULT -1);".format(k_info[1], *columns_vm_hist)
