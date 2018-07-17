@@ -89,6 +89,7 @@ class AvailabilityZone(Infrastructure):
         self.frag_min = float(self.azCores) / float(self.max_cpu_available)
         self.op_dict = ops
         self.ha_dict = ha
+        self.vms_dict = vms
         self.base_infrastructure = None
         self.host_list = []
         self.host_list_d = dict()
