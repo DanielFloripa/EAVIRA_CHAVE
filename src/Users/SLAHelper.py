@@ -708,7 +708,7 @@ class Print(object):
     @staticmethod
     def error(param):
         print("error: {}".format(param))
-        exit(96)
+        # exit(96)
 
     @staticmethod
     def critical(param):
