@@ -178,7 +178,7 @@ class GlobalController(Controller):
         return False
 
     def get_az_from_lc(self, az_id):
-        for lc_id, lc_obj in self.localcontroller_d.viewitems():
+        for lc_id, lc_obj in self.localcontroller_d.items():
             for az in lc_obj.az_list:
                 if az.az_id == az_id:
                     return az

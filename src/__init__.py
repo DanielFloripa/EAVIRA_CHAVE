@@ -134,9 +134,9 @@ def test():
     """
     Todo a test in api
     """
-    print("\n api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-648A423A', 'AZ1'))
-    print("\n api_response: ", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-2BFF3F02', 'AZ4'))
-    print("\n api_response: ", api.get_az_from_lc('AZ4'))
+    print("1) api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-5521424F', 'AZ1'))
+    print("2) api_response: ", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-1D5646FD', 'AZ4'))
+    print("3) api_response: ", api.get_az_from_lc('AZ4'))
     exit(1)
 
 
