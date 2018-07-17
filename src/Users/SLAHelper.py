@@ -301,9 +301,9 @@ class SLAHelper(object):
         return out
 
     def set_test_mode(self):
-        #self.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
-        #self.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
-        #self.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
+        self.log_output("testl.txt")
+        self.data_output("testd.txt")
+        self.default_file_output("test.txt")
         self.set_logger(Print)
         self.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
         self.source_folder(str(os.environ.get("CS_SOURCE_FOLDER")))
@@ -696,22 +696,28 @@ class SLAHelper(object):
 
 
 class Print(object):
-    def debug(self, param):
+    @staticmethod
+    def debug(param):
         print(param)
 
-    def info(self, param):
+    @staticmethod
+    def info(param):
         print(param)
 
-    def warning(self, param):
+    @staticmethod
+    def warning(param):
         print(param)
 
-    def error(self, param):
+    @staticmethod
+    def error(param):
         print(param)
 
-    def critical(self, param):
+    @staticmethod
+    def critical(param):
         print(param)
 
-    def exception(self, param):
+    @staticmethod
+    def exception(param):
         print(param)
 
 """
