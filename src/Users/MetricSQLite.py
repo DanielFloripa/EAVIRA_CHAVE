@@ -101,7 +101,6 @@ class MetricSQLite(object):
                 column = '*'
             if gvt is not None:
                 query = query_select_one.format(column, key)
-                #self.logger.debug(query)
                 self.cursor[az_id].execute(query, [gvt])
             else:
                 query = query_select.format(column, key)
@@ -181,7 +180,7 @@ class MetricSQLite(object):
             try:
                 os.mkdir(self.db_path)
             except Exception as e:
-                #self.logger.debug("Can't make dir : {}".format(e))
+                self.logger.debug("Can't make dir: {}".format(e))
                 pass
             self.logger.debug('Init database: {}'.format(db_file))
             self.connection[az_id] = sqlite3.connect(self.db_path + '/' + db_file)
@@ -192,8 +191,7 @@ class MetricSQLite(object):
                 try:
                     self.cursor[az_id].execute(q)
                 except sqlite3.OperationalError:
-                    print("Error on query {} for {}".format(q, self.sla.g_data_output()))
-                    self.logger.fatal("Error on query {} for {}".format(q, self.sla.g_data_output()))
+                    self.logger.fatal("Error on query {} for {}".format(q, db_file))
                     exit(1)
             self.connection[az_id].commit()
 
