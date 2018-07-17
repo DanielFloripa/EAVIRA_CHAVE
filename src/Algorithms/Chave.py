@@ -187,10 +187,10 @@ class Chave(BaseAlgorithm):
         :param az:
         :return: bool
         """
-        if self.sla.g_has_consolidation() is True:
+        if self.sla.g_can_do_consolidation() is True:
             factor = self.sla.fragmentation_class_dict.get(self.sla.g_frag_class())
             overcom_max = 1
-            if self.sla.g_has_overcommitting():
+            if self.sla.g_can_do_overcommitting():
                 overcom_max = float(self.sla.g_vcpu_per_core())
             if float(az.fragmentation()) >= float(factor * az.frag_min) * overcom_max:
                 return True
@@ -267,14 +267,12 @@ class Chave(BaseAlgorithm):
     def do_consolidation_locked(self, az):
         hosts_on = 0
         all_vms_od, hosts_locked, hosts_2_migrate_after = OrderedDict(), OrderedDict(), OrderedDict()
-        # temp_vms_d = dict()
         all_vms_updated = dict()
         destiny_hosts = dict()
 
         # Todo: Equação xx
         frag = az.fragmentation()
         objective = math.floor(frag * len(az.host_list))
-        vms_total = az.get_vms_dict()
         vms_to_order_d = dict()
         ordered_host_list = sorted(az.host_list, key=lambda hh: len(hh.virtual_machine_list))
         # Objetivo é ter a consolidação considerando os passos:
@@ -291,7 +289,6 @@ class Chave(BaseAlgorithm):
                     for vm in h.virtual_machine_list:
                         # Ignore vms in locked state and from full hosts
                         if vm.is_locked is False:
-                            #temp_vms_d[vm.vm_id] = vm
                             vms_to_order_d[h.host_id].append(vm)
                             self.logger.info(
                                 "\tSelecting {} from {} to migrate (pool: {}) cpu{}>0 lkd?{} ovc{}<movc{}".format(
@@ -301,16 +298,14 @@ class Chave(BaseAlgorithm):
                                 h.host_id, vm.vm_id, vm.is_locked))
                             mark_host_locked = True
                             break
-                    # Doc: Ignore hosts w/ vms in locked state
+                    # Doc: Ignore hosts with vms in locked state
                     if mark_host_locked:
                         hosts_locked[h.host_id] = h
-                        #temp_vms_d.clear()
                         del vms_to_order_d[h.host_id]
                         pass
                     else:
-                        #all_vms_updated.update(temp_vms_d)
                         hosts_2_migrate_after[h.host_id] = h
-                        # e se este host ainda pode receber algo
+                        # if host can receive something:
                     destiny_hosts[h.host_id] = h
                 else:
                     self.logger.debug("Host {} is Full, don't considerate. ovc?:{} (actual_ovc:{} < max:{})".format(
@@ -332,8 +327,6 @@ class Chave(BaseAlgorithm):
         self.logger.info("\n\tlock:{}\n\tdest:{}\n\tafter:{}\n\tgroup:{}\n\tvms:{}".format(
             hosts_locked.keys(), destiny_hosts.keys(), hosts_2_migrate_after.keys(), host_group_2_migrate.keys(),
             all_vms_updated.keys()))
-        # old_host_listd = dict(az.host_list_d)
-        # old_host_list = list(az.host_list)
         energy0 = az.get_az_energy_consumption2()
         conf_0 = az.print_hosts_distribution()
 
@@ -536,17 +529,18 @@ class Chave(BaseAlgorithm):
                 false_motive.append("Overcommitting")
             # 3rd, If our trace is not real, we can create hosts on demand
             if self.sla.g_trace_class() != "REAL":
-                self.logger.warning("{}\t Not found existing best host in len:{} for place {}. Trying a new host."
+                self.logger.warning("{}\t Not found existing best host in len:{} for place {}. Lets create a new host."
                                     " \n {}\n{}".format(az.az_id, len(az.host_list), vm.get_id(), vm, az))
                 if self.api.create_new_host(az.az_id, host_state=HOST_ON):
                     for new_host in az.host_list:
                         if new_host.cpu >= vm.get_vcpu() and new_host.ram >= vm.get_vram():
-                            self.logger.info("After new host, for {} (vcpu:{}) is {} (cpu:{}). ovcCount:{}, "
-                                             "tax:{} hasOvc? {}.".format(vm.get_id(), vm.get_vcpu(), host.get_id(),
-                                                                         host.cpu, host.overcom_count, host.actual_overcom,
-                                                                         host.has_overcommitting))
-                            return host, false_motive
-                    # Out of loop:
+                            self.logger.info("OK! After create new host, for {} (vcpu:{}) is {} (cpu:{}). ovcCount:{}, "
+                                             "tax:{} hasOvc? {}.".format(vm.get_id(), vm.get_vcpu(), new_host.get_id(),
+                                                                         new_host.cpu, new_host.overcom_count,
+                                                                         new_host.actual_overcom,
+                                                                         new_host.has_overcommitting))
+                            return new_host, false_motive
+                    # if out of loop:
                     false_motive.append("Resource_New_Host")
                 else:
                     false_motive.append("Create_New_Host")
@@ -569,8 +563,8 @@ class Chave(BaseAlgorithm):
                     pass
                 else:
                     self.logger.warning(
-                        "{}\t Not found best host in (d, on, off): {} for place {}. Trace: {}.\n {}\n{}".format(
-                            az.az_id, az.get_hosts_density(), vm.get_id(), self.sla.g_trace_class(), vm, az))
+                        "{}\t Not found best host in (d, on, off): {} for place {}. \n {}\n{}".format(
+                            az.az_id, az.get_hosts_density(), vm.get_id(), vm, az))
         else:
             self.logger.warning("Finnaly, we can't do nothing!!!")
             false_motive.append("Finnaly_do_Nothing!")

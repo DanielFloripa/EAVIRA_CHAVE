@@ -137,7 +137,7 @@ class GlobalController(Controller):
     def get_lc_id_from_az_id(self, az_id):
         return self.az_2_lc[az_id]
 
-    def create_new_host(self, az_id, host_state=True):
+    def create_new_host(self, az_id, host_state=HOST_ON):
         az = self.get_az(az_id)
         if az.add_new_host_to_list(host_state):
             return True

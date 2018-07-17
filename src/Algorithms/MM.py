@@ -19,7 +19,7 @@ class MM(BaseAlgorithm):
         self.ff_mode = api.sla.g_ff()
         self.window_time = api.sla.g_window_time()
         self.window_size = api.sla.g_window_size()
-        self.has_overcommitting = api.sla.g_has_overcommitting()
+        self.has_overcommitting = api.sla.g_can_do_overcommitting()
         self.localcontroller_list = []
         self.region_list = None
         self.all_vms_dict = dict()

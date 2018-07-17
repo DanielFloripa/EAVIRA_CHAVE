@@ -178,10 +178,10 @@ class SLAHelper(object):
     def __init__(self):
         # vars
         self.__sla_is_locked = False
-        self.__has_overcommitting = False  # bool
-        self.__consolidation = False  # bool
+        self.__can_do_overcommitting = False  # bool
+        self.__can_do_consolidation = False  # bool
         self.__enable_emon = False  # bool
-        self.__enable_replication = False  # bool
+        self.__can_do_replication = False  # bool
         self.__window_time = 1  # int
         self.__number_of_azs = 6  # int
         self.__number_of_milestones = 10  # int
@@ -235,8 +235,8 @@ class SLAHelper(object):
                              "\nAZ Cores:\t {}\nN. Operat.:\t {}\nAZ Identif:\t {}\nTraceFoldr:\t {}\nDataOutput:\t {}\n"
                              "Log Output:\t {}\nSourcesF.:\t {}\nHAInput:\t {}\nAZ Dictionary:\t {}\nMetrics:\t {}\n"
                              "LoggerObj:\t {}\nSLA locked?:\t {}\n".format(  # self.p_list(self.__doc),
-            self.__date, self.__ff, self.__algorithm, self.__consolidation_alg, self.__consolidation,
-            self.__has_overcommitting, self.__enable_emon, self.__enable_replication, self.__az_conf, self.__lock_case,
+            self.__date, self.__ff, self.__algorithm, self.__consolidation_alg, self.__can_do_consolidation,
+            self.__can_do_overcommitting, self.__enable_emon, self.__can_do_replication, self.__az_conf, self.__lock_case,
             self.__window_time, self.__number_of_azs, self.__max_az_per_region,  self.__core_2_ram_default,
             self.__trigger_to_migrate, self.__output_type, self.__frag_class, self.__az_selection, self.__trace_class,
             self.__az_nodes, self.__az_cores, self.__nit, self.__az_id_list, self.__source,
@@ -244,8 +244,8 @@ class SLAHelper(object):
             self.print_dic(self.__az_dict), self.metrics.__doc__, self.logger, self.__sla_is_locked))
 
     def __repr__(self):
-        return repr([self.__consolidation_alg, self.__ff, self.__algorithm, self.__source, self.__has_overcommitting,
-                     self.__consolidation, self.__enable_emon, self.__enable_replication, self.__window_time, self.__lock_case,
+        return repr([self.__consolidation_alg, self.__ff, self.__algorithm, self.__source, self.__can_do_overcommitting,
+                     self.__can_do_consolidation, self.__enable_emon, self.__can_do_replication, self.__window_time, self.__lock_case,
                      self.__number_of_azs, self.__max_az_per_region, self.__date, self.__core_2_ram_default,
                      self.__data_output, self.__log_output, self.__trigger_to_migrate, self.__output_type,
                      self.__frag_class, self.__az_selection, self.__trace_class, self.__ha_input, self.__az_nodes,
@@ -374,13 +374,13 @@ class SLAHelper(object):
     def has_overcommitting(self, has_overcommitting):
         if self.is_sla_lock():
             return False
-        self.__has_overcommitting = has_overcommitting
+        self.__can_do_overcommitting = has_overcommitting
         return True
 
     def has_consolidation(self, consolidation):
         if self.is_sla_lock():
             return False
-        self.__consolidation = consolidation
+        self.__can_do_consolidation = consolidation
         return True
 
     def enable_emon(self, enable_emon):
@@ -392,7 +392,7 @@ class SLAHelper(object):
     def enable_replication(self, enable_replication):
         if self.is_sla_lock():
             return False
-        self.__enable_replication = enable_replication
+        self.__can_do_replication = enable_replication
         return True
 
     def window_time(self, window_time):
@@ -611,17 +611,17 @@ class SLAHelper(object):
     def g_source_folder(self):
         return self.__source
 
-    def g_has_overcommitting(self):
-        return self.__has_overcommitting
+    def g_can_do_overcommitting(self):
+        return self.__can_do_overcommitting
 
-    def g_has_consolidation(self):
-        return self.__consolidation
+    def g_can_do_consolidation(self):
+        return self.__can_do_consolidation
 
     def g_enable_emon(self):
         return self.__enable_emon
 
-    def g_enable_replication(self):
-        return self.__enable_replication
+    def g_can_do_replication(self):
+        return self.__can_do_replication
 
     def g_window_time(self):
         return self.__window_time

@@ -77,7 +77,7 @@ class AvailabilityZone(Infrastructure):
         self.az_id = az_id
         self.lc_id = None  # until instance object
         self.logger = sla.g_logger()
-        self.has_overcommitting = sla.g_has_overcommitting()
+        self.has_overcommitting = sla.g_can_do_overcommitting()
         self.algorithm = sla.g_algorithm()
         self.azNodes = sla.g_az_dict()[az_id]['az_nodes']
         self.azCores = sla.g_az_dict()[az_id]['az_cores']

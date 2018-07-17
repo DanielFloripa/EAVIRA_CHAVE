@@ -1,10 +1,10 @@
-peewee
 numpy
 pympler
 argparse
 psutil
-matplotlib
-#logging
+# matplotlib
+# peewee
+# logging
 # itertools
 # operator
 # csv

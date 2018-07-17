@@ -21,7 +21,7 @@ class Demand(object):
         self.az_id = sla.g_az_id_list()
         self.number_of_azs = sla.g_number_of_azs()
         self.vmRam_default = sla.g_core_2_ram_default()
-        # Tres dicionarios iportantes:
+        # Tres dicionarios importantes:
         self.all_vms_dict = dict()  # Dicionaario de listas
         self.all_operations_dicts = dict()  # Dicionario de dicionarios
         self.all_ha_dicts = dict()  # Dicionario de dicionarios
@@ -69,7 +69,7 @@ class Demand(object):
 
     def __get_availab_from_source(self, source_file):
         locked_case = self.sla.g_lock_case()
-        is_enabled_repl = self.sla.g_enable_replication()
+        is_enabled_repl = self.sla.g_can_do_replication()
         if locked_case == 'True':
             lock = True
         elif locked_case == 'False':
@@ -165,8 +165,11 @@ class Demand(object):
                         self.logger.exception(type(e))
                         self.logger.error("On pop VM from {} \n {}".format(op_id, sys.exc_info()[0]))
                     col = columns_vm_hist
-                    db_hist_d = {col[0]: this_vm_id, col[1]: vm_to_stop.timestamp, col[2]: timestamp, col[3]: host, col[4]: vcpu, col[5]: vtype, col[6]: av_vm, col[7]: lock, col[8]: lifetime2, col[9]: 0, col[10]: -1}
-                    if self.sla.metrics.set(az_id, "vm_history", tuple(db_hist_d.values()), tuple(db_hist_d.keys())) is False:
+                    db_hist_d = {col[0]: this_vm_id, col[1]: vm_to_stop.timestamp, col[2]: timestamp, col[3]: host,
+                                 col[4]: vcpu, col[5]: vtype, col[6]: av_vm, col[7]: lock, col[8]: lifetime2, col[9]: 0,
+                                 col[10]: -1}
+                    if self.sla.metrics.set(az_id, "vm_history", tuple(db_hist_d.values()),
+                                            tuple(db_hist_d.keys())) is False:
                         self.sla.logger.error("Problem on add hist for {}".format(this_vm_id))
             # Note: Se tiver algo, entao sobrou alguma vm
             if for_testing_vm_list:
