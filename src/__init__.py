@@ -73,7 +73,6 @@ def parse_arguments_to_sla():
     sla.ha_input(args.ha_input)
     sla.az_conf(sla.set_conf(args.az_conf, 'az_conf'))
     sla.nit(sla.set_conf(args.nit, 'nit'))
-    sla.algorithm(args.alg[0])
     sla.window_time(args.wt[0])
     sla.date(os.environ.get("CS_START"))
     # Note: If add new parameter, this gambiarra must be reviewed
@@ -90,13 +89,14 @@ def parse_arguments_to_sla():
             exit(1)
     if args.consol[0] == "False":
         args.ca[0] = "CF"
-
     sla.consolidation_alg(str(args.ca[0]))
     sla.has_consolidation(eval(args.consol[0]))
     sla.ff(args.ff[0])
     sla.has_overcommitting(eval(args.overcom[0]))
     sla.enable_replication(eval(args.repl[0]))
     sla.lock_case(str(args.lock[0]))
+    # The algoritm() must be the last of `args` call, because the 'TEST' mode
+    sla.algorithm(args.alg[0])
     sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
     sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
     sla.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
@@ -229,10 +229,6 @@ if __name__ == '__main__':
 
     api = GlobalController(sla, demand, lcontroller_d, region_d)
 
-    ''' Lets test the api? '''
-    if sla.g_algorithm() == "TEST":
-        test()
-
     # ################### Begin algorithms ###############
     start = time.time()
     if sla.g_algorithm() == "CHAVE":
@@ -247,6 +243,17 @@ if __name__ == '__main__':
     elif sla.g_algorithm() == "MBFD":
         mbfd = MBFD(api)
         mbfd.run()
+    elif sla.g_algorithm() == "TEST":
+        test()
+        #sla.set_test_mode()
+        chave = Chave(api)
+        chave.run()
+        euca = Eucalyptus(api)
+        euca.run()
+        mm = MM(api)
+        #mm.run()
+        mbfd = MBFD(api)
+        #mbfd.run()
     elapsed = time.time() - start
     # ################### End of algorithms ###############
 
