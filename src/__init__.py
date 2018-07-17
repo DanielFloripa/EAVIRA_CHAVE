@@ -245,11 +245,8 @@ if __name__ == '__main__':
         mbfd.run()
     elif sla.g_algorithm() == "TEST":
         test(api)
-        #sla.set_test_mode()
         chave = Chave(api)
         chave.run()
-        euca = Eucalyptus(api)
-        euca.run()
         # Todo: after we finish this new algorithms, add to test mode
         #mm = MM(api)
         #mm.run()

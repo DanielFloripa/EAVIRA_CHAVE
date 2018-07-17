@@ -49,7 +49,10 @@ def test_consistency(source_file):
                     consistent_list = [state, timestamp, vm_id]
                     can_save = True
                 else:
-                    consistent_dictionary.pop(vm_id + "_START")
+                    try:
+                        consistent_dictionary.pop(vm_id + "_START")
+                    except KeyError:
+                        print("KeyError in ", vm_id, source_file)
                     print("Problem in ", vm_id, source_file)
                     can_save = False
                 try:

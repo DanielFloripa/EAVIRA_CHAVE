@@ -31,7 +31,7 @@ AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 31 32 ) # ('node core')
   #\  | 5 | 31 | 32  | >LC1/    Log: ${CS_LOG_LEVEL}
    #\_|_6_|_31_|_32__|/
 
-TEST_LIST=(  'EUCA' 'CHAVE' ) # 'MM' MBFD )
+TEST_LIST=(  'EUCA' ) # 'CHAVE' ) # 'MM' MBFD )
 FF_LIST=( 'FFD2I') # 'FF3D')
 CONSOLID_ALGO=( 'LOCK'  'MAX' ) #  'MIN' ) # 'ha' )
 WITH_CONSOLID=( 'False' 'True' )
