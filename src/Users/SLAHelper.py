@@ -324,7 +324,7 @@ class SLAHelper(object):
     def is_sla_lock(self):
         if self.__sla_is_locked:
             res = "The SLA Object is locked, please, re-run the simulator with desired parameters"
-            self.logger.error(res)
+            self.logger.warning(res)
             return True
         return False
 
