@@ -134,9 +134,9 @@ def test(this_api):
     """
     Todo a test in api
     """
-    print("1) api response: ", this_api.localcontroller_d['lc0'].get_vm_object_from_az('i-5521424F', 'AZ1'))
-    print("2) api_response: ", this_api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-1D5646FD', 'AZ4'))
-    print("3) api_response: ", this_api.get_az_from_lc('AZ4'))
+    print("1) api response: ", this_api.localcontroller_d['lc0'].get_vm_object_from_az('i-5521424F', 'DS1'))
+    print("2) api_response: ", this_api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-1D5646FD', 'DS4'))
+    print("3) api_response: ", this_api.get_az_from_lc('DS4'))
     print("Basic tests is done!")
 
 
