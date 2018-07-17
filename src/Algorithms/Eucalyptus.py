@@ -84,7 +84,8 @@ class Eucalyptus(BaseAlgorithm):
                 self.sla.metrics.set(az.az_id, 'energy_l',
                                      (self.global_time, az.get_az_energy_consumption2(), "",))
                 self.sla.metrics.set(az.az_id, 'az_load_l',
-                                     (self.global_time, az.get_az_load(), str(az.print_hosts_distribution(level='MIN')),))
+                                     (self.global_time, az.get_az_load(), "",))
+                                      # az.print_hosts_distribution(level='MIN'),
             if self.global_time % milestones == 0:
                 memory = self.sla.check_simulator_memory()
                 elapsed = time.time() - start
@@ -93,7 +94,7 @@ class Eucalyptus(BaseAlgorithm):
                 self.sla.metrics.set('global', 'lap_time_l', (self.global_time, elapsed, "Status:{}".format(memory)))
                 start = time.time()
             self.remove_finished_azs()
-            # At the end, increment the clock:
+            # Note: At the end, increment the clock:
             self.global_time += self.window_time
 
     def placement(self, az):

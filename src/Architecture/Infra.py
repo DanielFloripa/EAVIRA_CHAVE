@@ -341,13 +341,13 @@ class AvailabilityZone(Infrastructure):
         :return: float
         """
         _sum = 0
-        host_cons_dict = dict()
+        # host_cons_dict = dict()
         for host in self.host_list:
             if host.power_state:
                 host_cons = host.get_energy_consumption()
                 _sum += host_cons
-                host_cons_dict[host.get_id()] = host_cons
-        return _sum
+                # host_cons_dict[host.host_id] = host_cons
+        return _sum  # , host_cons_dict
 
     def get_az_watt_hour(self):
         total_az_hour = 0
@@ -446,11 +446,11 @@ class AvailabilityZone(Infrastructure):
             str2 = "[{} {} {} {}]"
             str3 = ")|"
 
-        ret = str0
+        dist = str0
         for hi, ho in self.host_list_d.items():
             if ho.power_state == HOST_ON:
-                ret += str1.format(hi, ho.cpu)
+                dist += str1.format(hi, ho.cpu)
                 for vi, vo in ho.virtual_machine_dict.items():
-                    ret += str2.format(vi, vo.vcpu, vo.g_type(), vo.g_is_locked())
-                ret += str3
-        return ret
+                    dist += str2.format(vi, vo.vcpu, vo.g_type(), vo.g_is_locked())
+                dist += str3
+        return dist
