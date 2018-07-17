@@ -129,12 +129,12 @@ class PhysicalMachine(object):
 
     def check_overcom(self):
         # Todo: in future test and remove redundancy: has and actual
-        if self.sla.g_has_overcommitting() is True and (self.actual_overcom > 1 or self.has_overcommitting):
+        if self.sla.g_can_do_overcommitting() is True and (self.actual_overcom > 1 or self.has_overcommitting):
             return self.actual_overcom
         return 0
 
     def can_overcommitting(self, vm):
-        if self.sla.g_has_overcommitting() is True:
+        if self.sla.g_can_do_overcommitting() is True:
             used = self.get_used_cpu()
             overcom_cpu = (float(used) + float(vm.get_vcpu())) / float(self.default_cpu)
             # overcom_ram = (float(self.get_used_ram()) + float(vm.get_vram())) / float(self.default_ram)
@@ -207,9 +207,9 @@ class PhysicalMachine(object):
         return times
 
     def has_available_resources(self):
-        if self.sla.g_has_overcommitting() and self.actual_overcom < self.overcom_max:
+        if self.sla.g_can_do_overcommitting() and self.actual_overcom < self.overcom_max:
             return True
-        elif not self.sla.g_has_overcommitting() and self.cpu > 0:
+        elif not self.sla.g_can_do_overcommitting() and self.cpu > 0:
             return True
         else:
             pass
