@@ -304,7 +304,7 @@ class SLAHelper(object):
         #self.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
         #self.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
         #self.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
-        self.set_logger(print)
+        self.set_logger(Print)
         self.max_az_per_region(int(os.environ["CS_MAX_AZ_REGION"]))
         self.source_folder(str(os.environ.get("CS_SOURCE_FOLDER")))
         self.core_2_ram_default(int(os.environ.get('CS_CORE2RAM')))
@@ -686,11 +686,6 @@ class SLAHelper(object):
     def g_logger(self):
         return self.logger
 
-    '''    def xxx(self, xxx):
-        if not self.set_sla_lock():
-            return False
-        self.__xxx = xxx'''
-
     def check_simulator_memory(self) -> str:
         ram = psutil.virtual_memory()[2]
         disk = psutil.disk_usage(self.g_data_output())[3]
@@ -699,6 +694,25 @@ class SLAHelper(object):
             exit(code=3)
         return "RAM: {}, Disc: {}".format(ram, disk)
 
+
+class Print(object):
+    def debug(self, param):
+        print(param)
+
+    def info(self, param):
+        print(param)
+
+    def warning(self, param):
+        print(param)
+
+    def error(self, param):
+        print(param)
+
+    def critical(self, param):
+        print(param)
+
+    def exception(self, param):
+        print(param)
 
 """
 class Metrics(object):
