@@ -130,14 +130,14 @@ def parse_arguments_to_sla():
     sla.debug_sla()
 
 
-def test():
+def test(this_api):
     """
     Todo a test in api
     """
-    print("1) api response: ", api.localcontroller_d['lc0'].get_vm_object_from_az('i-5521424F', 'AZ1'))
-    print("2) api_response: ", api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-1D5646FD', 'AZ4'))
-    print("3) api_response: ", api.get_az_from_lc('AZ4'))
-    exit(1)
+    print("1) api response: ", this_api.localcontroller_d['lc0'].get_vm_object_from_az('i-5521424F', 'AZ1'))
+    print("2) api_response: ", this_api.region_d['rg1'].lcontroller.get_vm_object_from_az('i-1D5646FD', 'AZ4'))
+    print("3) api_response: ", this_api.get_az_from_lc('AZ4'))
+    print("Basic tests is done!")
 
 
 def output_stream():
@@ -244,7 +244,7 @@ if __name__ == '__main__':
         mbfd = MBFD(api)
         mbfd.run()
     elif sla.g_algorithm() == "TEST":
-        test()
+        test(api)
         #sla.set_test_mode()
         chave = Chave(api)
         chave.run()

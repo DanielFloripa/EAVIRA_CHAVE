@@ -318,11 +318,8 @@ class SLAHelper(object):
         self.define_az_id(str(os.environ.get("CS_DEFINE_AZID")))
         self.energy_model_src(str(os.environ.get("CS_ENERGY_MODEL")))
         self.milestones(int(os.environ.get("CS_MILESTONES")))
-        # self.doc(doc)
         """From now, we can't change this SLA parameters"""
-        self.init_metrics()
         self.set_sla_lock(True)
-        self.debug_sla()
 
     def is_sla_lock(self):
         if self.__sla_is_locked:
