@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/DanielFloripa/CHAVE-Sim.svg?style=svg)](https://circleci.com/gh/DanielFloripa/CHAVE-Sim)
+
 ## Master Degree Project
 # CHAVE:
 

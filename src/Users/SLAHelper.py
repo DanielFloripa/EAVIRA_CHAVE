@@ -713,7 +713,7 @@ class Print(object):
     @staticmethod
     def critical(param):
         print("critical: {}".format(param))
-        exit(97)
+        # exit(97)
 
     @staticmethod
     def exception(param):
