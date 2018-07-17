@@ -250,9 +250,10 @@ if __name__ == '__main__':
         chave.run()
         euca = Eucalyptus(api)
         euca.run()
-        mm = MM(api)
+        # Todo: after we finish this new algorithms, add to test mode
+        #mm = MM(api)
         #mm.run()
-        mbfd = MBFD(api)
+        #mbfd = MBFD(api)
         #mbfd.run()
     elapsed = time.time() - start
     # ################### End of algorithms ###############
@@ -261,5 +262,4 @@ if __name__ == '__main__':
     # output_stream()
     sla.logger.critical("This simulation take {} seconds".format(elapsed))
     sla.metrics.close_all_dbs()
-
-
+    exit(0)
