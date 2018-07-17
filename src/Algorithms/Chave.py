@@ -529,7 +529,7 @@ class Chave(BaseAlgorithm):
                 false_motive.append("Overcommitting")
 
         # if outside the loop, we can have a problem, but we still can:
-        # 3rd, If our trace is not real, we can create hosts on demand
+        # 3rd, If our trace is marked as not real, we can create hosts on demand
         if self.sla.g_trace_class() != "REAL":
             self.logger.warning("{}\t Not found existing best host in len:{} for place {}. Lets create a new host."
                                 " \n {}\n{}".format(az.az_id, len(az.host_list), vm.get_id(), vm, az))

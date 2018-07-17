@@ -93,6 +93,7 @@ class AvailabilityZone(Infrastructure):
         self.base_infrastructure = None
         self.host_list = []
         self.host_list_d = dict()
+        self.rollback_hosts_added_after_d = dict()
         self.rollback_list = []
         self.total_SLA_violations = 0
         # @TODO: olha a gambi:
@@ -141,6 +142,7 @@ class AvailabilityZone(Infrastructure):
                             self.logger)
         h.power_state = host_state
         h.activate_hypervisor_dom0(log=True)
+        self.rollback_hosts_added_after_d[host_id] = h
         try:
             self.host_list.append(h)
             self.host_list_d[host_id] = h
@@ -151,6 +153,15 @@ class AvailabilityZone(Infrastructure):
         self.azNodes += 1
         self.logger.info("{}\t Done! {}, now we have {} hosts. {}.".format(self.az_id, h.get_id(), self.azNodes, h))
         return True
+
+    def remove_generated_hosts(self, host):
+        if host.host_id in self.rollback_hosts_added_after_d.keys():
+            if host.has_virtual_resources():
+                del self.rollback_hosts_added_after_d[host.host_id]
+                self.host_list.remove(host)
+                del self.host_list_d[host.host_id]
+                self.azNodes -= 1
+                self.logger.info("{}\tRemoving host:{} added previously".format(self.az_id, host.host_id))
 
     def is_required_replication(self, vm):
         if vm.ha > self.availability:
@@ -267,6 +278,7 @@ class AvailabilityZone(Infrastructure):
     def deallocate_on_host(self, vm, defined_host=None, ts=None, wc0=""):
         if defined_host is not None:
             if defined_host.deallocate(vm, ts, who_calls="DefinedHost_"+wc0):
+                self.remove_generated_hosts(defined_host)
                 return True
             self.logger.error("{}\t Fail on Deallocate {} from defined_host {}".format(self.az_id, vm.vm_id, defined_host.host_id))
             return False
@@ -277,6 +289,7 @@ class AvailabilityZone(Infrastructure):
                 if host.deallocate(vm, ts, who_calls="Undefined"):
                     self.logger.info("{}\t Deallocated {} from {} ({} remain) pool: {} type: {}".format(
                         self.az_id, vm.vm_id, hostid, host.cpu, vm.pool_id, vm.type))
+                    self.remove_generated_hosts(host)
                     return True
                 else:
                     self.logger.error("{}\t Problem on deallocate: {} != {} {} {}".format(
