@@ -231,22 +231,26 @@ if __name__ == '__main__':
 
     # ################### Begin algorithms ###############
     start = time.time()
-    if sla.g_algorithm() == "CHAVE":
+    if sla.g_algorithm().rsplit(sep="_")[0] == "CHAVE":
         chave = Chave(api)
         chave.run()
-    elif sla.g_algorithm() == "EUCA":
+    elif sla.g_algorithm().rsplit(sep="_")[0] == "EUCA":
         euca = Eucalyptus(api)
         euca.run()
-    elif sla.g_algorithm() == "MM":
+    elif sla.g_algorithm().rsplit(sep="_")[0] == "MM":
         mm = MM(api)
         mm.run()
-    elif sla.g_algorithm() == "MBFD":
+    elif sla.g_algorithm().rsplit(sep="_")[0] == "MBFD":
         mbfd = MBFD(api)
         mbfd.run()
-    elif sla.g_algorithm() == "TEST":
+    elif sla.g_algorithm().rsplit(sep="_")[0] == "TEST":
         test(api)
-        chave = Chave(api)
-        chave.run()
+        if sla.g_algorithm().rsplit(sep="_")[1] == "CHAVE":
+            chave = Chave(api)
+            chave.run()
+        if sla.g_algorithm().rsplit(sep="_")[1] == "EUCA":
+            euca = Eucalyptus(api)
+            euca.run()
         # Todo: after we finish this new algorithms, add to test mode
         #mm = MM(api)
         #mm.run()

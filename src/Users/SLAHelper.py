@@ -361,7 +361,8 @@ class SLAHelper(object):
         if self.is_sla_lock():
             return False
         self.__algorithm = algorithm
-        if algorithm == "TEST":
+        if algorithm.rsplit(sep="_")[0] == "TEST":
+            self.__algorithm = algorithm.rsplit(sep="_")[1]
             self.set_test_mode()
         return True
 
