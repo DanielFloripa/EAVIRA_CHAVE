@@ -180,8 +180,8 @@ class MetricSQLite(object):
             try:
                 os.mkdir(self.db_path)
             except Exception as e:
-                self.logger.exception(e)
-                self.logger.critical("{}".format(os.system("ls")))
+                #self.logger.exception(e)
+                self.logger.warning("Except: {}-> ls: {}".format(e, os.system("ls")))
                 #self.logger.debug("Can't make dir: {}".format(e))
                 pass
             self.logger.debug('Init database: {}'.format(db_file))
