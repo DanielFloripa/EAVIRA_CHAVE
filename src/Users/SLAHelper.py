@@ -695,31 +695,35 @@ class SLAHelper(object):
 class Print(object):
     @staticmethod
     def debug(param):
-        print(param)
+        print("debug: {}".format(param))
 
     @staticmethod
     def info(param):
-        print(param)
+        print("info: {}".format(param))
 
     @staticmethod
     def warning(param):
-        print(param)
+        print("warning: {}".format(param))
 
     @staticmethod
     def error(param):
-        print(param)
+        print("error: {}".format(param))
+        exit(96)
 
     @staticmethod
     def critical(param):
-        print(param)
+        print("critical: {}".format(param))
+        exit(97)
 
     @staticmethod
     def exception(param):
-        print(param)
+        print("exception: {}".format(param))
+        exit(98)
 
     @staticmethod
     def fatal(param):
-        print(param)
+        print("fatal: {}".format(param))
+        exit(99)
 
 """
 class Metrics(object):
