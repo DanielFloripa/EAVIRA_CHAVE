@@ -130,7 +130,7 @@ class AvailabilityZone(Infrastructure):
             return True
         return host_list
 
-    def add_new_host_to_list(self, host_state=True):
+    def add_new_host_to_list(self, host_state=HOST_ON):
         host_id = NODE + str(self.azNodes)
         h = PhysicalMachine(host_id,
                             self.azCores,
@@ -155,7 +155,7 @@ class AvailabilityZone(Infrastructure):
 
     def remove_generated_hosts(self, host):
         if host.host_id in self.rollback_hosts_added_after_d.keys():
-            if host.has_virtual_resources():
+            if host.try_set_host_off():
                 del self.rollback_hosts_added_after_d[host.host_id]
                 self.host_list.remove(host)
                 del self.host_list_d[host.host_id]
@@ -274,18 +274,20 @@ class AvailabilityZone(Infrastructure):
                           "({})".format(self.az_id, type(defined_host), defined_host))
         return False
 
-    def deallocate_on_host(self, vm, defined_host=None, ts=None, wc0=""):
+    def deallocate_on_host(self, vm, defined_host=None, ts=None, wc0="", set_state=HOST_ON):
         if defined_host is not None:
-            if defined_host.deallocate(vm, ts, who_calls="DefinedHost_"+wc0):
+            if defined_host.deallocate(vm, ts, who_calls="DefinedHost_"+wc0, set_state=set_state):
                 self.remove_generated_hosts(defined_host)
                 return True
-            self.logger.error("{}\t Fail on Deallocate {} from defined_host {}".format(self.az_id, vm.vm_id, defined_host.host_id))
+            self.logger.error("{}\t Fail on Deallocate {} from defined_host {}".format(
+                self.az_id, vm.vm_id, defined_host.host_id))
             return False
+
         vm_host_id = vm.host_id
         for host in self.host_list:
             hostid = host.get_id()
             if hostid == vm_host_id:
-                if host.deallocate(vm, ts, who_calls="Undefined"):
+                if host.deallocate(vm, ts, who_calls="Undefined", set_state=set_state):
                     self.logger.info("{}\t Deallocated {} from {} ({} remain) pool: {} type: {}".format(
                         self.az_id, vm.vm_id, hostid, host.cpu, vm.pool_id, vm.type))
                     self.remove_generated_hosts(host)
@@ -299,6 +301,7 @@ class AvailabilityZone(Infrastructure):
                 self.logger.error("{}\t {} found in vm_host_id when deallocate: {} or {} for {} {}".format(
                     self.az_id, vm_host_id, vm.obj_id(), vm, hostid, vm.az_id, vm.type))
                 return False
+
             elif hostid is None:
                 self.logger.error("{}\t {} found in hostid when deallocate: {} for {} {} {}".format(
                     self.az_id, hostid, vm_host_id, host, vm.az_id, vm.type))
@@ -307,16 +310,16 @@ class AvailabilityZone(Infrastructure):
             self.az_id, vm, self.host_list))
         return False
 
-    def migrate(self, vm, dest_host):
+    def migrate(self, vm, dest_host, set_state=HOST_ON):
         if vm.host_id != dest_host.host_id:
             origin_host = ""
             try:
                 origin_host = self.host_list_d.get(vm.host_id)
             except KeyError or IndexError:
                 self.logger.error("Problem on migrate {} {} {}".format(vm.vm_id, vm.host_id, dest_host.host_id))
-
+            # Note: This is the real migration!
             if self.allocate_on_host(vm, defined_host=dest_host):
-                if self.deallocate_on_host(vm, defined_host=origin_host, wc0="origin"):
+                if self.deallocate_on_host(vm, defined_host=origin_host, wc0="origin", set_state=set_state):
                     return True
                 else:
                     self.deallocate_on_host(vm, defined_host=dest_host, wc0="dest")

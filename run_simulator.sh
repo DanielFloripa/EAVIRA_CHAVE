@@ -4,7 +4,6 @@ source chave.conf
 
 if [ "$1" == "install" ]; then
 	CS_INSTALL
-	exit
 fi
 
 mkdir -p ${CS_LOG_PATH} 2> /dev/null
@@ -147,8 +146,8 @@ sleep 30
 if [ ${PLOT} == true ]; then
 	pushd .
 	cd ${CS_PROJ_ROOT}/Plots/
-	R -f database.R  ${CS_START}
-	R -f databaseSpider.R ${CS_START}
+	R -f database.R  ${CS_OUTPUT_PATH}
+	R -f databaseRadar.R ${CS_OUTPUT_PATH}
 	popd
 fi
 

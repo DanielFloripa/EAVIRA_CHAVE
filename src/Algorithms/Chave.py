@@ -119,8 +119,8 @@ class Chave(BaseAlgorithm):
                             self.vms_in_execution_d[az_id][vm.vm_id] = vm
                             self.sla.metrics.update(az_id, "vm_history", "host_place", b_host.host_id, "vm_id", vm.vm_id)
                             # Todo: Change this to accept overcom
-                            #tax = 0  # b_host.check_overcom()
-                            #if tax > 1:  # or vm.in_overcomm_host:
+                            # tax = 0  # b_host.check_overcom()
+                            # if tax > 1:  # or vm.in_overcomm_host:
                             #    vm_id_future = vm.vm_id + K_SEP + "STOP"
                             #    vm_ovc = self.op_dict_temp_d[az_id][vm_id_future]
                             #    old_ts = vm_ovc.timestamp
@@ -148,7 +148,7 @@ class Chave(BaseAlgorithm):
                     except Exception as e:
                         self.logger.exception(e)
                     if exec_vm is not None:
-                        if az.deallocate_on_host(exec_vm, ts=vm.timestamp):
+                        if az.deallocate_on_host(exec_vm, ts=vm.timestamp, set_state=HOST_OFF):
                             del self.op_dict_temp_d[az_id][op_id]
                         else:
                             self.logger.error("{}\t Problem for deallocate {}".format(az_id, exec_vm.vm_id))
@@ -197,7 +197,8 @@ class Chave(BaseAlgorithm):
 
     def do_consolidation(self, az, who_call=""):
         cons_alg = self.sla.g_consolidation_alg()
-        self.logger.info("{}\tStart consolidation: {}. {}".format(az.az_id, cons_alg, az.print_hosts_distribution(level='Middle')))
+        self.logger.info(
+            "{}\tStart consolidation: {}. {}".format(az.az_id, cons_alg, az.print_hosts_distribution(level='Middle')))
         if cons_alg == 'MAX':
             self.do_consolidation_max(az)
         elif cons_alg == 'LOCK':
@@ -276,7 +277,7 @@ class Chave(BaseAlgorithm):
         ordered_host_list = sorted(az.host_list, key=lambda hh: len(hh.virtual_machine_list))
         # Objetivo é ter a consolidação considerando os passos:
         for h in ordered_host_list:
-            mark_host_locked = False
+            this_host_is_locked = False
             # Se o host estiver ligado!
             if h.power_state == HOST_ON:
                 hosts_on += 1
@@ -295,16 +296,16 @@ class Chave(BaseAlgorithm):
                         else:
                             self.logger.debug("\tHost {} has locked VM ({}->{}), previous VMs will be removed!".format(
                                 h.host_id, vm.vm_id, vm.is_locked))
-                            mark_host_locked = True
+                            this_host_is_locked = True
                             break
                     # Doc: Ignore hosts with vms in locked state
-                    if mark_host_locked:
+                    if this_host_is_locked:
                         hosts_locked[h.host_id] = h
                         del vms_to_order_d[h.host_id]
                         pass
                     else:
                         hosts_2_migrate_after[h.host_id] = h
-                        # if host can receive something:
+                    # if host can receive something:
                     destiny_hosts[h.host_id] = h
                 else:
                     self.logger.debug("Host {} is Full, don't considerate. ovc?:{} (actual_ovc:{} < max:{})".format(
@@ -318,10 +319,10 @@ class Chave(BaseAlgorithm):
             for vm in host:
                 all_vms_updated[vm.vm_id] = vm
 
-        host_group_2_migrate = OrderedDict()
-        host_group_2_migrate.update(hosts_locked)
-        host_group_2_migrate.update(destiny_hosts)
-        host_group_2_migrate.update(hosts_2_migrate_after)
+        host_group_2_migrate = OrderedDict()  # Dict ordered by 3 criteria:
+        host_group_2_migrate.update(hosts_locked)  # 1st) The hosts wich can't migrate
+        host_group_2_migrate.update(destiny_hosts)  # 2nd) Any host without restrictions
+        host_group_2_migrate.update(hosts_2_migrate_after)  # 3rd) Finnaly, the best hosts to turn off
 
         self.logger.info("\n\tlock:{}\n\tdest:{}\n\tafter:{}\n\tgroup:{}\n\tvms:{}".format(
             hosts_locked.keys(), destiny_hosts.keys(), hosts_2_migrate_after.keys(), host_group_2_migrate.keys(),
@@ -477,33 +478,48 @@ class Chave(BaseAlgorithm):
     def do_consolidation_ha(self, az):
         migrations = 0
         return True if migrations > 0 else False
-        pass
 
-    def send_to_azmigrate(self, vm_d, host_destiny, az, order_hosts=False, order_vms=False):
+    def send_to_azmigrate(self, vm_d, hosts_d, az, order_hosts=False, order_vms=False):
         suc = 0
         fail = 0
         """Dicionario de VMs em ordem decrescente"""
         if order_hosts:
-            host_destiny = OrderedDict(sorted(host_destiny.items(), key=self.sla.key_from_item(lambda k, v: (v.cpu, k))))
+            hosts_d = OrderedDict(sorted(hosts_d.items(), key=self.sla.key_from_item(lambda k, v: (v.cpu, k))))
         if order_vms:
             vm_d = sorted(vm_d.items(), key=self.sla.key_from_item(lambda k, v: (v.vcpu, k)), reverse=True)
-
-        for i, v in vm_d.items():
-            origin = v.host_id
-            for j, h in host_destiny.items():
-                self.logger.info("{}\tTrying match h:{} v:{}({})".format(az.az_id, j, i, v.host_id))
-                if az.migrate(v, h):
-                    self.logger.info("{}\tSuccesful Migrated: {} from {} to {} (cpu-remain:{})".format(
-                        az.az_id, v.vm_id, origin, h.host_id, h.cpu))
-                    suc += 1
-                    self.sla.metrics.update(az.az_id, "vm_history", "migrations", 1, "vm_id", v.vm_id)
-                    break
+        host_to_remove = []
+        for i, vm in vm_d.items():
+            h_origin = vm.host_id
+            for j, host in hosts_d.items():
+                if host.power_state is HOST_ON:
+                    self.logger.info("{}\tTrying match v:{}(from {}) to h:{} ".format(az.az_id, i, vm.host_id, j))
+                    if az.migrate(vm, host, set_state=HOST_OFF):
+                        self.logger.info("{}\tSuccesful Migrated: {} from {} to {} (cpu-remain:{})".format(
+                            az.az_id, vm.vm_id, h_origin, host.host_id, host.cpu))
+                        suc += 1
+                        # Todo: change this to `metrics.incr_1()`
+                        self.sla.metrics.update(az.az_id, "vm_history", "migrations", 1, "vm_id", vm.vm_id)
+                        break
+                    else:
+                        fail += 1
                 else:
-                    fail += 1
-            if az.host_list_d.get(origin).power_state is HOST_OFF:
-                self.logger.debug("Deleting {}, len:{} remain".format(origin, len(host_destiny.keys())))
-                del host_destiny[origin]
-                self.logger.info("Deleted {}, now {}".format(origin, host_destiny.keys()))
+                    host_to_remove.append(host)
+            try:
+                host_origin_obj = az.host_list_d.get(h_origin)
+            except AttributeError:
+                self.logger.error("{}\t AttributeError for h_origin: {} p:{} t:{} azvm:{}".format(
+                    az.az_id, h_origin, vm.pool_id, vm.type, vm.az_id))
+            else:
+                if host_origin_obj is not None:
+                    if az.remove_generated_hosts(host_origin_obj) or host_origin_obj.try_set_host_off():
+                        self.logger.debug("Deleting {}, len:{} remain".format(h_origin, len(hosts_d.keys())))
+                        del hosts_d[h_origin]
+                        self.logger.info("Deleted {}, now {}".format(h_origin, hosts_d.keys()))
+                    else:
+                        pass
+                else:
+                    self.logger.error("Host_Object {} is None! {}".format(h_origin, host_origin_obj))
+                    del hosts_d[h_origin]
         return suc, fail
 
     #############################################
@@ -684,13 +700,13 @@ class Chave(BaseAlgorithm):
         for az in az_list:
             if vm.az_id == az.get_id():
                 actual_az = az
-        #try:
+        # try:
         #    temp_az_list.remove(actual_az)
-        #except ValueError:
-            #self.logger.error(
-            #    "{}\t ACTUAL_AZ: ({}) not in list {} ValueError".format(vm.az_id, actual_az.az_id, temp_az_list))
-            #return None
-        #except Exception as e:
+        # except ValueError:
+        # self.logger.error(
+        #    "{}\t ACTUAL_AZ: ({}) not in list {} ValueError".format(vm.az_id, actual_az.az_id, temp_az_list))
+        # return None
+        # except Exception as e:
         #    # self.logger.exception(type(e))
         #    self.logger.error("{}\t UNKNOWN: ({}) not in list {} {}".format(vm.az_id, actual_az, temp_az_list, e))
         #    # raise e

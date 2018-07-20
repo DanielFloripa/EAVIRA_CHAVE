@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
-###############################################
-#### This R is part of CHAVE-SIM Project    ###
-#### Avalable at dscar.ga/chave             ###
-###############################################
+###################################################
+#### This R script is part of CHAVE-SIM Project####
+#### Avalable at dscar.ga/chave                ####
+###################################################
 #                   1   2   3   4   7   6   7
 #                 AZ1 AZ2 AZ3 AZ4 AZ5 AZ6 Global
 #1     Place        ?   ?   ?   ?   ?   ?   ?     
@@ -17,8 +17,9 @@
 #10    Max_HA       ?   ?   ?   ?   ?   ?   ?     
 #11    EUCA         ?   ?   ?   ?   ?   ?   ? 
 # matrix_db[[11,1]] or matrix_db[["EUCA","AZ1"]] or matrix_db["EUCA",] or matrix_db[,"AZ1"]
+
 ############################## 0.0) LIBRARIES AND PACKAGES ####
-#install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org")#, "plyr","reshape2")
+install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org")
 library("fmsb")
 library("ggplot2")
 library("DBI")
@@ -26,6 +27,7 @@ library("DBI")
 # Get the parameter: # date = commandArgs(trailingOnly=TRUE)
 date = "18.07.03-14.44.35/" # labp2d
 pwd <- "/home/daniel/output/"
+path = commandArgs(trailingOnly=TRUE)
 test_l <- c("CHAVE_CF_L:None_O:False_C:False_R:False", "CHAVE_CF_L:None_O:False_C:False_R:True",
             "CHAVE_LOCK_L:False_O:False_C:True_R:False", "CHAVE_LOCK_L:False_O:False_C:True_R:True",
             "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:False", "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:True",
@@ -36,8 +38,9 @@ tests_names <- c("Place", "Place_HA", "Unlock", "Unlock_HA", "Lock_Rand", "Lock_
                  "Locked", "Locked_HA", "Max", "Max_HA", "EUCA")
 AZ_names = c("AZ1", "AZ2", "AZ3","AZ4","AZ5","AZ6", "Global")
 df_test_name <- data.frame(test_l, tests_names)
-#main<-function(test){
-root <- paste0(toString(pwd), toString(date), toString("results/")) #, toString(test))
+
+#root <- paste0(toString(pwd), toString(date), toString("results/")) #, toString(test))
+root <- paste0(toString(path), toString("results/")) #, toString(test))
 ############################## 0.2) CHOOSE THE DIRECTORY #####################
 out <- tryCatch({
     setwd(root)

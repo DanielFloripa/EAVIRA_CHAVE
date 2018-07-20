@@ -61,7 +61,7 @@ class PhysicalMachine(object):
 
     def allocate(self, vm):
         if self.can_allocate(vm):
-            if not self.power_state:
+            if self.power_state is HOST_OFF:
                 self.force_set_host_on()
             self.cpu -= vm.vcpu
             self.ram -= vm.vram
@@ -74,7 +74,7 @@ class PhysicalMachine(object):
             return True
         return False
 
-    def deallocate(self, vm, timestamp=None, who_calls=''):
+    def deallocate(self, vm, timestamp=None, who_calls='', set_state=HOST_ON):
         try:
             self.virtual_machine_list.remove(vm)
             del self.virtual_machine_dict[vm.vm_id]
@@ -84,8 +84,8 @@ class PhysicalMachine(object):
                 vm.vm_id, vm.host_id, self.host_id, sys._getframe(1).f_code.co_name, who_calls, vm, self))
             # self.logger.error(traceback.format_exc())
             return False
-        if self.algorithm == "CHAVE":
-            self.set_host_off()
+        if set_state is HOST_OFF:
+            self.try_set_host_off()
         self.cpu += vm.get_vcpu()
         self.ram += vm.get_vram()
         if self.has_overcommitting:
@@ -232,7 +232,7 @@ class PhysicalMachine(object):
                              self.host_id, self.has_virtual_resources(), self.power_state))
         return False
 
-    def set_host_off(self):
+    def try_set_host_off(self):
         if not self.has_virtual_resources() and self.power_state is HOST_ON:
             self.power_state = HOST_OFF
             self.logger.info("Change state in {}: {} turned OFF".format(self.az_id, self.host_id))
@@ -259,17 +259,14 @@ class PhysicalMachine(object):
     def get_type(self):
         return self.algorithm
 
-    def get_virtual_resources(self):
-        return self.virtual_machine_list
-
     def has_restricted_resources(self):
-        for vm in self.get_virtual_resources():
+        for vm in self.virtual_machine_list:
             if vm.is_locked:
                 return True
         return False
 
     def get_cpu_usage(self):
-        return sum([vm.get_vcpu_usage() for vm in self.get_virtual_resources()])
+        return sum([vm.get_vcpu_usage() for vm in self.virtual_machine_list])
 
     def get_total_ram(self):
         return self.ram + self.get_used_ram()
@@ -278,7 +275,7 @@ class PhysicalMachine(object):
         return self.cpu + self.get_used_cpu()
 
     def has_virtual_resources(self):
-        if len(self.get_virtual_resources()) > 0:
+        if len(self.virtual_machine_list) > 0:
             return True
         return False
 
@@ -381,7 +378,7 @@ class PhysicalMachine(object):
     def get_total_vcpu_energy_usage(self):
         # due to overcommitting we can have more vcpus than previously discussed.
         # In this case, I'm assuming the power consumption isn't impacted and returning the max value
-        usage = sum([vm.get_vcpu_usage() for vm in self.get_virtual_resources()])
+        usage = sum([vm.get_vcpu_usage() for vm in self.virtual_machine_list])
         if usage > next(reversed(self.energy_table)):
             usage = next(reversed(self.energy_table))
         return self.energy_table[usage]
@@ -397,7 +394,6 @@ class PhysicalMachine(object):
         host_energy.close()
 
         return host_table  # , 'NET': net_table}
-
 
     """
     Method: returns the fraction of energy that's being paid by the

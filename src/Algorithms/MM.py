@@ -141,7 +141,7 @@ class MM(BaseAlgorithm):
         # print ("\n ################################ \n")
 
     def mbfd(self, vi):
-        max_power = self.get_resources(MACHINE)[0].get_max_energy()
+        max_power = self.virtual_machine_list(MACHINE)[0].get_max_energy()
         vmList = sorted(vi.get_virtual_resources(), key=lambda v: v.get_vcpu_usage())
         rollback = []
         # VMs: if something went wrong, just return -1. We shouldn't fix MBFD :)
@@ -162,8 +162,7 @@ class MM(BaseAlgorithm):
                     pnode = row[0]
                     vnode = row[1]
                     pnode.deallocate(vnode)
-                print
-                "MBFD - None: Without solution for node %s" % (vm.get_id())
+                print("MBFD - None: Without solution for node %s" % (vm.get_id()))
                 return -1
 
             if not allocatedHost.allocate(vm):
@@ -230,7 +229,7 @@ class MM(BaseAlgorithm):
             if allocatedHost != None:
                 # migrate vm
                 original = vm.get_physical_host()
-                original.deallocate(vm)
+                original.deallocate2(vm)
                 allocatedHost.allocate(vm)
 
                 # Try to reconnect all vnode's adjacencies to destination
