@@ -24,7 +24,7 @@ __version__ = "3.0.0"
 __maintainer__ = "Daniel Camargo"
 __organization__ = "LabP2D - UDESC"
 __email__ = "daniel@colmeia.udesc.br"
-__status__ = "Under Tests"
+__status__ = "Under developement"
 doc = [__description__, __author__, __license__, __version__, __maintainer__, __organization__, __email__, __status__]
 
 

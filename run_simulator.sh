@@ -1,5 +1,5 @@
 #!/bin/bash
-
+clear
 source chave.conf
 
 if [ "$1" == "install" ]; then
@@ -28,7 +28,7 @@ AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 31 32 ) # ('node core')
 #/ /\ | 3 | 7  | 8   |/       \__/l__/L___/l_/l__M___
 #\ \/ |===|====|=====K         >_GC___  ____  ___ __/
  #\   | 4 | 12 | 8   |\     __/  \/   \/    \/   V
-  #\  | 5 | 31 | 32  | >LC1/    Log: ${CS_LOG_LEVEL}
+  #\  | 5 | 31 | 32  | >LC1/    Log Level: ${CS_LOG_LEVEL}
    #\_|_6_|_31_|_32__|/
 
 TEST_LIST=(  'EUCA' 'CHAVE' ) # 'MM' MBFD )
@@ -141,6 +141,7 @@ popd > /dev/null
 #fi
 
 CS_BELL 3
+sleep 30
 
 # Todo: Automatizar processo
 if [ ${PLOT} == true ]; then
@@ -151,7 +152,6 @@ if [ ${PLOT} == true ]; then
 	popd
 fi
 
-sleep 30
 if [ ${SYNC} == true ]; then
     command -v aws >/dev/null 2>&1 || {
         echo >&2 "Is required 'awscli' but it's not installed...";
