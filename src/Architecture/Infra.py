@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # From packages:
-
-import inspect
 from itertools import combinations
+
 from Architecture.Resources.Physical import *
 
 

@@ -2,19 +2,15 @@
 # -*- coding: utf-8 -*-
 
 # import matplotlib.pyplot as plt
-import pickle
-import argparse
-from datetime import datetime
-import os
 import csv
 import json
-from pympler import summary, muppy
+import argparse
 
 # From our packages:
 from Algorithms.Chave import *
+from Algorithms.Eucalyptus import *
 from Algorithms.MBFD import *
 from Algorithms.MM import *
-from Algorithms.Eucalyptus import *
 from Architecture.Controller import *
 from Architecture.Infra import *
 from Users.Demand import *
@@ -99,7 +95,7 @@ def parse_arguments_to_sla():
     sla.algorithm(args.alg[0])
     sla.log_output(str(eval(os.environ["CS_LOG_OUTPUT"])))
     sla.data_output(str(eval(os.environ["CS_DATA_OUTPUT"])))
-    sla.default_file_output(str(eval("\"" + os.environ["CS_DEF_FILE"])))
+    sla.default_file_output(str(eval("\"" + os.environ["CS_DEF_TEST_NAME"])))
     """Configurations for logger objects:"""
     logger = logging.getLogger(__name__)
     hdlr = logging.FileHandler(sla.g_log_output())

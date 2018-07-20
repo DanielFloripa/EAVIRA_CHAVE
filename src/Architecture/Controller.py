@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
 import operator
-# From packages:
-from Users.SLAHelper import *
+import os
+import random
+
 from Architecture.Infra import *
 
 """
@@ -83,20 +83,20 @@ class Controller(object):
                 idx1 = ((r + 1) * s_mapr) - 1
                 local_controller = LocalController(self.sla, r, az_list[idx0:idx1])
                 lcontroller_list.append(local_controller)
-                #del local_controller
+                # del local_controller
             r += 1
             local_controller1 = LocalController(self.sla, r,  az_list[s_noa - 2: s_noa - 1])
             lcontroller_list.append(local_controller1)
             return lcontroller_list
         else:
             self.logger.error("Relation between 'number_of_azs' and 'max_az_per_region' must be modulus <= 2!")
-            #exit(1)
+            # exit(1)
             raise ConnectionAbortedError
         return False
 
 
 #################################################
-#######      CLASS GLOBAL CONTROLLER      #######
+#      CLASS GLOBAL CONTROLLER
 #################################################
 class GlobalController(Controller):
     def __init__(self, sla, demand, localcontroller_d, region_d=None):
@@ -158,7 +158,6 @@ class GlobalController(Controller):
     def get_az(self, azid):
         for az in self.az_list:
             if az.az_id == azid:
-                #print 'Found azid', azid
                 return az
         self.logger.error("Not found azid: {}".format(azid))
         return False
@@ -183,7 +182,8 @@ class GlobalController(Controller):
                 if az.az_id == az_id:
                     return az
 
-    def choose_config(self, virtual_folder):
+    @staticmethod
+    def choose_config(virtual_folder):
         # Choose a random virtual file
         virtual_files = os.listdir(virtual_folder)
         return virtual_folder + virtual_files[random.randint(0, len(virtual_files) - 1)]
@@ -191,18 +191,16 @@ class GlobalController(Controller):
     # Todo:
     def get_list_overcom_amount_from_cloud(self):
         return 0.3
-        pass
 
     def get_total_energy_consumption_from_cloud(self):
         return 0.2
-        pass
 
     def get_total_SLA_violations_from_cloud(self):
         return 0.1
-        pass
+
 
 #################################################
-#######       CLASS LOCAL CONTROLLER      #######
+#       CLASS LOCAL CONTROLLER
 #################################################
 class LocalController(Controller):
     def __init__(self, sla, lc_id, az_list):
@@ -287,7 +285,6 @@ class LocalController(Controller):
                 return vm
         self.logger.error("Not found vm {} in az: {}".format(vmid, azid))
         return False
-        #return (vm[vmid] for vm in self.get_vms_dict_from_az(azid) if vm.has_key(vmid))
 
     def execute_elasticity(self, az, delete_requests, recfg_requests, repl_requests, offline):
         repl_requests_count = 0

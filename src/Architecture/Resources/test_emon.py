@@ -1,5 +1,6 @@
 
 import logging
+
 from Architecture.Resources.EnergyMonitor import *
 
 logging.basicConfig(level=logging.DEBUG, format='(%(funcName)-2s) %(message)s')

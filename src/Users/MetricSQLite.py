@@ -4,29 +4,24 @@
 CHAVE-Sim: The simulator for research based in clouds architecture
     CHAVE: Consolidation with High Availability on virtualyzed environments
 """
+from os import mkdir
 from typing import Union
-import random
-from math import sqrt
-import psutil
-import numpy as np
-import logging
 import sqlite3
-from collections import OrderedDict
-from Users.globalData import *
-import os
-import time
+
 from Users.SLAHelper import *
+from Users.globalData import *
 
 
 def resp(command, key, value=None):
     return "Key {} not found for command {} and val {}!!".format(key, command, value)
 
+
 class MetricSQLite(object):
     """
     Class Metrics
-    All metrics used in CHAVE simulator
+    All metrics used in CHAVE simulator based on SQLite
     """
-    def __init__(self, az_id, logger=None, sla=None):
+    def __init__(self, az_id_l, logger=None, sla=None):
         if sla is None:
             self.logger = logger
             self.sla = None
@@ -35,11 +30,11 @@ class MetricSQLite(object):
             self.logger = sla.logger
             self.sla = sla
             self.db_path = sla.g_data_output()
-            self.db_file_default = sla.g_default_file_output()
+            self.db_file_l = []
         else:
             print("ERROR, logger or SLA must be setted!!!")
             exit(1)
-        self.__az_id_list = list(az_id)  # One copy
+        self.__az_id_list = list(az_id_l)  # One copy
         self.__az_id_list.append('global')
         self.tables = []
         self.connection = dict()
@@ -63,9 +58,9 @@ class MetricSQLite(object):
                 if k in all_metrics_l:
                     self.cursor[az_id].execute(query_insert(len_value).format(k, column), [value[i]])
         # Note: uma lista de colunas
-        #elif isinstance(column, list) or isinstance(column, tuple):
-            #for i, c in column:
-                #self.cursor[az_id].execute(query_insert_one.format(key, c), [value[i]])
+        # elif isinstance(column, list) or isinstance(column, tuple):
+            # for i, c in column:
+                # self.cursor[az_id].execute(query_insert_one.format(key, c), [value[i]])
         # Note: Ou uma lista de valores (mais comum)
         elif isinstance(value, list) or isinstance(value, tuple):
             if key in all_metrics_l[0: len_l]:
@@ -161,12 +156,9 @@ class MetricSQLite(object):
             else:
                 self.logger.error("ERROR: Function: {} not in {}".format(func, query_special_base.keys()))
         else:
-            self.logger.error(resp('special', table+column, func))
+            self.logger.error(resp('special', table + column, func))
             return False
         return
-
-    def commit_db(self, az_id):
-        self.connection[az_id].commit()
 
     def close_all_dbs(self):
         for az_id in self.__az_id_list:
@@ -176,22 +168,21 @@ class MetricSQLite(object):
 
     def init_db(self):
         for az_id in self.__az_id_list:
-            db_file = str(self.db_file_default) + "_" + az_id + ".db"
+            db_file = "{}/{}.db".format(self.db_path, az_id)
             try:
-                os.mkdir(self.db_path)
+                mkdir(self.db_path)
             except Exception as e:
-                #self.logger.exception(e)
-                self.logger.warning("Except: {}-> ls: {}".format(e, os.system("ls")))
-                #self.logger.debug("Can't make dir: {}".format(e))
+                self.logger.warning("Except: {}".format(e))
                 pass
             self.logger.debug('Init database: {}'.format(db_file))
-            if self.sla.g_algorithm() == "TEST":
+
+            if self.sla.g_algorithm().rsplit(sep="_")[0] == "TEST":
                 self.connection[az_id] = sqlite3.connect(":memory:")
             else:
-                self.connection[az_id] = sqlite3.connect(self.db_path + '/' + db_file)
-            # print(self.db_path + '/' + db_file, self.db_file_default)
+                self.connection[az_id] = sqlite3.connect(db_file)
+
             for q in query_init:
-                # Todo: colocar pra fora connection e commit para testar
+                # Todo: colocar pra fora connection e commit para testar eficiência
                 self.cursor[az_id] = self.connection[az_id].cursor()
                 try:
                     self.cursor[az_id].execute(q)
@@ -199,6 +190,7 @@ class MetricSQLite(object):
                     self.logger.critical("Error on query {} for {}".format(q, db_file))
                     exit(1)
             self.connection[az_id].commit()
+            self.db_file_l.append(db_file)
 
         with open('tables.txt', 'w') as outfile:
             for q in query_init:

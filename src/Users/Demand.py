@@ -7,6 +7,7 @@ CHAVE-Sim: The simulator for research based in clouds architecture
 """
 
 import sys
+
 from Architecture.Resources.Virtual import *
 from Users.SLAHelper import *
 
@@ -21,7 +22,7 @@ class Demand(object):
         self.az_id = sla.g_az_id_list()
         self.number_of_azs = sla.g_number_of_azs()
         self.vmRam_default = sla.g_core_2_ram_default()
-        # Tres dicionarios importantes:
+        # Tres dicionários importantes:
         self.all_vms_dict = dict()  # Dicionaario de listas
         self.all_operations_dicts = dict()  # Dicionario de dicionarios
         self.all_ha_dicts = dict()  # Dicionario de dicionarios

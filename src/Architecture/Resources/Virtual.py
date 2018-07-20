@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import random
 import math
+import random
+
 from Users.SLAHelper import *
 
 
@@ -19,14 +20,12 @@ class VirtualMachine(object):
         self.vcpu = vcpu
         self.usage = 1.0
         self.vram = vram
-
         self.running_time = 0
         self.lifetime = lifetime
         self._static_lifetime = lifetime
         self.last_ovcm_time = timestamp
         self._static_timestamp = timestamp  # do not change
         self.timestamp = timestamp
-
         self.dirty_pages = random.randint(100, 1000)
         self.type = vtype
         self.availab = float(av)
@@ -48,8 +47,8 @@ class VirtualMachine(object):
         if bw == 0 or self.availab == -1:
             return float('inf')
         # d = random.uniform(100.0, 1000.0)
-        d = self.dirty_pages
-        l = 4.0 * 1024.0  # bytes
+        dd = self.dirty_pages
+        ll = 4.0 * 1024.0  # bytes
         max_it = 30
         # vRAM GB -> bytes
         v = self.get_vram() * 1024 * 1024 * 1024
@@ -59,14 +58,12 @@ class VirtualMachine(object):
         bw = (bw / 8.0) * 1024 * 1024
         vmig = 0.0
         tmig = 0.0
-        t = 0.0
         for i in range(max_it):
-            t = v / bw
-            v = t * d * l
-            tmig += t
+            v = (v / bw) * dd * ll
+            tmig += (v / bw)
             vmig += v
             # print(v/1024.0/1024.0)
-            if vmig >= max_mem or v / l < p:
+            if vmig >= max_mem or v / ll < p:
                 break
         tdown = v / bw
         tmig += tdown

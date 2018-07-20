@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import threading
-from Users.SLAHelper import *
+
 from Algorithms import BaseAlgorithm
 
 

@@ -3,7 +3,7 @@
 source chave.conf
 
 if [ "$1" == "install" ]; then
-	install_chave
+	CS_INSTALL
 	exit
 fi
 
@@ -31,7 +31,7 @@ AZ_CONF=( 13 24 7 12 7 8 12 8 31 32 31 32 ) # ('node core')
   #\  | 5 | 31 | 32  | >LC1/    Log: ${CS_LOG_LEVEL}
    #\_|_6_|_31_|_32__|/
 
-TEST_LIST=(  'EUCA' ) # 'CHAVE' ) # 'MM' MBFD )
+TEST_LIST=(  'EUCA' 'CHAVE' ) # 'MM' MBFD )
 FF_LIST=( 'FFD2I') # 'FF3D')
 CONSOLID_ALGO=( 'LOCK'  'MAX' ) #  'MIN' ) # 'ha' )
 WITH_CONSOLID=( 'False' 'True' )
@@ -48,7 +48,7 @@ SRC_LIST=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace.txt`)
 SRC_LIST_PLUS=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-plus.txt`)
 if [[ ${#SRC_LIST_PLUS[@]} -lt ${#SRC_LIST[@]} ]]; then
     echo -e "${_RED}Genearting some plus info! ${#SRC_LIST_PLUS[@]} < ${#SRC_LIST[@]} ${_NC}"
-    # Doc: two parameters: <'create_trace'> or <'trace_plus'>
+    # Doc: two parameters: <'trace_plus'> or :TODO: <'create_trace'>
     bash gvt.sh 'trace_plus'
     SRC_LIST_PLUS=(`ls -d ${CS_FDR_EUCALYPTUS}/* | grep trace-plus.txt`)
 fi
@@ -140,6 +140,8 @@ popd > /dev/null
 #    scp -i /home/${USER}/Dropbox/chave2.pem ${CS_LOG_PATH} 10.0.0.16:/var/www/html/
 #fi
 
+CS_BELL 3
+
 # Todo: Automatizar processo
 if [ ${PLOT} == true ]; then
 	pushd .
@@ -148,6 +150,8 @@ if [ ${PLOT} == true ]; then
 	R -f databaseSpider.R ${CS_START}
 	popd
 fi
+
+sleep 30
 if [ ${SYNC} == true ]; then
     command -v aws >/dev/null 2>&1 || {
         echo >&2 "Is required 'awscli' but it's not installed...";
@@ -159,7 +163,8 @@ if [ ${SYNC} == true ]; then
     }
     S3_BUCK="chave-output"
     OUTPUT="${CS_PROJ_ROOT}"/output/
-    aws s3 sync ${OUTPUT} s3://${S3_BUCK} --acl public-read # --grants full=uri=http://acs.amazonaws.com/groups/global/AllUsers
+    aws s3 sync ${OUTPUT} s3://${S3_BUCK} --acl public-read
+    # --grants full=uri=http://acs.amazonaws.com/groups/global/AllUsers
 fi
 
 

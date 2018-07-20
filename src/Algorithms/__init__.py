@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import threading
 import time
-import math
-from Users.SLAHelper import *
+from collections import OrderedDict
+
 from Architecture.Controller import *
 
 
@@ -131,7 +130,7 @@ class BaseAlgorithm:
         # OUT!
 
     def set_rejection_for(self, procedure, code, info, lc_id, pool_id, az_id, vm_id):
-        # Doc: `code` is 0, 1, 2 or 3
+        # Doc: `code` is 0, 1, 2, 3 or 5
         try:
             if procedure == "replication":
                 # Após ocorrer a rejeição, remova o pool do dicionário
@@ -143,6 +142,8 @@ class BaseAlgorithm:
                 if pool_id in self.replicas_execution_d[lc_id].keys():
                     del self.replicas_execution_d[lc_id][pool_id]
                     code = 1
+            elif procedure == "add_new_host":
+                pass
             else:
                 self.logger.error("{}\t Rejection procedure incorrect! in code {}".format(az_id, code))
                 exit(10)

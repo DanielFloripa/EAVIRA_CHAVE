@@ -70,7 +70,8 @@ def query_create(tup):
     it = ''
     for i in range(len_tuple - 2):
         it += '{} REAL DEFAULT 0, '.format(tup[i+1])
-    ret = "{}{}{} TEXT DEFAULT '', ai INTEGER PRIMARY KEY AUTOINCREMENT);".format(query_create_default, it, format(tup[i+2]))
+    ret = "{}{}{} TEXT DEFAULT '', ai INTEGER PRIMARY KEY AUTOINCREMENT);".format(
+        query_create_default, it, format(tup[i+2]))
     return ret
 
 

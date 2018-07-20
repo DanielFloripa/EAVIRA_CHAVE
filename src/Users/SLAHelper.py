@@ -5,15 +5,12 @@ CHAVE-Sim: The simulator for research based in clouds architecture
     CHAVE: Consolidation with High Availability on virtualyzed environments
 """
 
-import psutil
-from copy import deepcopy
-import random
-from math import sqrt
-from numpy import std, mean
 import numpy as np
-import logging
 from collections import OrderedDict
-from Users.globalData import *
+import os
+import logging
+import psutil
+
 from Users.MetricSQLite import *
 
 # VMs:
@@ -165,11 +162,10 @@ class SLAHelper(object):
             return True
         return False
 
-    @staticmethod
-    def my_std(data):
-        u = mean(data)
-        std = sqrt(1.0 / (len(data) - 1) * sum([(e - u) ** 2 for e in data]))
-        return 1.96 * std / sqrt(len(data))
+    def my_std(self, data):
+        u = self.mean(data)
+        std = np.sqrt(1.0 / (len(data) - 1) * sum([(e - u) ** 2 for e in data]))
+        return 1.96 * std / np.sqrt(len(data))
 
     @staticmethod
     def mean(data):
@@ -677,9 +673,6 @@ class SLAHelper(object):
 
     def g_az_dict(self):
         return self.__az_dict
-
-    def g_metrics_dict(self):
-        return self.metrics.get_metrics()
 
     def g_logger(self):
         return self.logger

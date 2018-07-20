@@ -1,9 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import argparse
-from collections import OrderedDict
-
 FULL = 3600.0
 
 

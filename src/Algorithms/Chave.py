@@ -1,17 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import time
 from random import randint
 from typing import Union, Tuple
-import time
-import math
-from unittest.mock import Base
+from collections import OrderedDict
 
-from Architecture.Resources.Virtual import *
-from Architecture.Resources.Physical import *
-from Architecture.Infra import AvailabilityZone
-from Users.SLAHelper import *
 from Algorithms import BaseAlgorithm
+from Architecture.Infra import AvailabilityZone
+from Architecture.Resources.Physical import *
+from Architecture.Resources.Virtual import *
+from Users.SLAHelper import *
 
 
 class Chave(BaseAlgorithm):
@@ -196,7 +195,7 @@ class Chave(BaseAlgorithm):
                 return True
         return False
 
-    def do_consolidation(self, az):
+    def do_consolidation(self, az, who_call=""):
         cons_alg = self.sla.g_consolidation_alg()
         self.logger.info("{}\tStart consolidation: {}. {}".format(az.az_id, cons_alg, az.print_hosts_distribution(level='Middle')))
         if cons_alg == 'MAX':
@@ -350,6 +349,7 @@ class Chave(BaseAlgorithm):
         self.sla.metrics.set(az.az_id, 'consol_d', tuple(this_metric.values()))
         self.logger.info("Before {} on, now {} on. Migrations:{}\n Metric:{}".format(
             hosts_on, hosts_on2, migrations, this_metric.items()))
+        return True if migrations > 0 else False
 
     def do_consolidation_min_mig(self, az):
         all_vms_od, all_hosts_od = OrderedDict(), OrderedDict()
@@ -404,7 +404,7 @@ class Chave(BaseAlgorithm):
                        'hosts_f': hosts_on2,
                        'info': info}
         self.sla.metrics.set(az.az_id, 'consol_d', tuple(this_metric.values()))
-        return True
+        return True if migrations > 0 else False
 
     def pin_quantity(self, all_vms, all_hosts):
         max_len = 0
@@ -475,6 +475,8 @@ class Chave(BaseAlgorithm):
         return fixedHost, hosts_to_migrate, fixedVM, vm_to_migrate
 
     def do_consolidation_ha(self, az):
+        migrations = 0
+        return True if migrations > 0 else False
         pass
 
     def send_to_azmigrate(self, vm_d, host_destiny, az, order_hosts=False, order_vms=False):
@@ -510,15 +512,14 @@ class Chave(BaseAlgorithm):
     def best_host(self, vm, az, recursive=False) -> Tuple[Union[PhysicalMachine, None], list]:
         false_motive = []
         for host in az.host_list:
-            # 1st, select regular host
+            # Doc: 1st, select regular host
             if host.cpu >= vm.get_vcpu() and host.ram >= vm.get_vram():
-                self.logger.info("{}\t Best host for {}-{} (vcpu:{}) is {} (cpu:{}). ovcCount:{}, tax:{} hasOvc? {}."
-                                 "".format(az.az_id, vm.get_id(), vm.type, vm.get_vcpu(), host.get_id(), host.cpu,
-                                           host.overcom_count, host.actual_overcom, host.has_overcommitting))
+                self.logger.info("{}\t Best host for {}-{} (vcpu:{}) is {} (cpu:{})".format(
+                    az.az_id, vm.get_id(), vm.type, vm.get_vcpu(), host.get_id(), host.cpu))
                 return host, false_motive
             else:
-                false_motive.append("Regular_Host")
-            # 2nd, try make overcommitting
+                false_motive.append("Regular")
+            # Doc: 2nd, try make overcommitting on each host
             if host.can_overcommitting(vm):
                 host.do_overcommitting(vm)
                 self.logger.info("{}\t Overcom for {} (vcpu:{}), is {} (cpu:{}). Overcom cnt:{}, actual:{}, has:{}.".
@@ -526,38 +527,40 @@ class Chave(BaseAlgorithm):
                                         host.overcom_count, host.actual_overcom, host.has_overcommitting))
                 return host, false_motive
             else:
-                false_motive.append("Overcommitting")
+                false_motive.append("Cant_Overcom")
 
-        # if outside the loop, we can have a problem, but we still can:
-        # 3rd, If our trace is marked as not real, we can create hosts on demand
+        # Doc: When outside the loop, we can have a problem, but we still can:
+        # Doc: 3rd, If our trace is marked as not real, we can create hosts on demand
         if self.sla.g_trace_class() != "REAL":
             self.logger.warning("{}\t Not found existing best host in len:{} for place {}. Lets create a new host."
                                 " \n {}\n{}".format(az.az_id, len(az.host_list), vm.get_id(), vm, az))
             if self.api.create_new_host(az.az_id, host_state=HOST_ON):
                 for new_host in az.host_list:
                     if new_host.cpu >= vm.get_vcpu() and new_host.ram >= vm.get_vram():
-                        self.logger.info("OK! After create new host, for {} (vcpu:{}) is {} (cpu:{}). ovcCount:{}, "
-                                         "tax:{} hasOvc? {}.".format(vm.get_id(), vm.get_vcpu(), new_host.get_id(),
-                                                                     new_host.cpu, new_host.overcom_count,
-                                                                     new_host.actual_overcom,
-                                                                     new_host.has_overcommitting))
+                        self.logger.info("OK! After create new host, for {} (vcpu:{}) is {} (cpu:{})".format(
+                            vm.get_id(), vm.get_vcpu(), new_host.get_id(), new_host.cpu))
+                        info = "add_new_host: {}".format(new_host.get_id())
+                        self.set_rejection_for("add_new_host", 5, info, az.lc_id, vm.pool_id, vm.az_id, vm.vm_id)
                         return new_host, false_motive
                 # if out of loop:
                 false_motive.append("Resource_New_Host")
             else:
                 false_motive.append("Create_New_Host")
         else:
-            false_motive.append("Trace_Real")
-        #  4th We can force one consolidation and recursive to find a best host
-        if not recursive:
+            false_motive.append("Trace_Class")
+        #  Doc: 4th We can force one consolidation and recursive to find a best host
+        if recursive is False:
             if self.can_consolidate(az):
-                self.do_consolidation(az)
+                self.do_consolidation(az, who_call="Best_Host")
                 self.best_host(vm, az, recursive=True)
-            # 5th or if VM is a replica, we can force choose other AZ
-            elif vm.type is REPLICA:
-                azlist = self.api.get_localcontroller_from_lcid(az.lc_id).az_list
+            # Doc: 5th or if VM is a replica, we can choose other AZ
+            if vm.type is REPLICA:
+                azlist = list(self.api.get_localcontroller_from_lcid(az.lc_id).az_list)
                 # Todo: para remover bloco em 'best_az_for..' basta:
-                # del azlist.remove(az)
+                try:
+                    azlist.remove(az)
+                except Exception as e:
+                    self.logger.exception(e)
                 other_az = self.best_az_for_replica(vm, azlist, is_forced=True, az_forced=az)
                 if other_az is not None:
                     if not recursive:
@@ -652,12 +655,11 @@ class Chave(BaseAlgorithm):
                                 info = "Best Host try:{}, bh:{}".format(tryes, len(info_bh))
                                 self.set_rejection_for("replication", 3, info, lc_id, pool_id, az.az_id, vm_r.vm_id)
                                 tryes += 1
-                        else:
-                            # Best az for replica is None
+                        else:  # Best az for replica is None
                             info = "Best AZ try:{}".format(tryes)
                             self.set_rejection_for("replication", 2, info, lc_id, pool_id, vm_r.az_id, vm_r.vm_id)
-                    else:
-                        pass  # vm_replica not in this LC azs
+                    else:  # vm_replica not in this LC azs
+                        pass
                     # Todo: create other opportunities for replication:
                     # 0 Reject
                     # 1 Accept replicas in same AZ -> calculate final availability

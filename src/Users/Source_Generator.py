@@ -1,14 +1,15 @@
 # GVT = Global Virtual Time
 
 
-import statistics
-from collections import OrderedDict
-import numpy as np
-import math
-import sys
-import os
 import argparse
 import collections
+import os
+import statistics
+import sys
+from collections import OrderedDict
+
+import numpy as np
+
 
 # TODO: perm = permutations([1, 2, 3])
 # for i in list(perm): print i

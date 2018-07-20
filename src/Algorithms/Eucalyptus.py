@@ -1,11 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import threading
 import time
-import math
-from Users.SLAHelper import *
+
 from Algorithms import BaseAlgorithm
+from Users.SLAHelper import *
 
 
 class Eucalyptus(BaseAlgorithm):

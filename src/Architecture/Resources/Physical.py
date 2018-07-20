@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys
-import traceback
-import re
 import math
-from Users.SLAHelper import *
+import re
+import sys
+from collections import OrderedDict
+
 from Architecture.Resources.EnergyMonitor import *
+from Users.SLAHelper import *
 
 
 class PhysicalMachine(object):
