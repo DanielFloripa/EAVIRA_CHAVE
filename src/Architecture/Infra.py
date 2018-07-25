@@ -85,7 +85,7 @@ class AvailabilityZone(Infrastructure):
         self.availability = ha.get('this_az')  # first line from file
         # Qual percentual de um host em relação ao numero total de cores?:
         self.max_cpu_available = self.azNodes * self.azCores
-        self.frag_min = float(self.azCores) / float(self.max_cpu_available)
+        self.frag_min = float(self.azCores) / float(self.max_cpu_available)  # or 1/azNodes
         self.op_dict = ops
         self.ha_dict = ha
         self.vms_dict = vms
@@ -188,7 +188,7 @@ class AvailabilityZone(Infrastructure):
         Fragmentation caused by unused space on active hosts
         The result represents how many hosts of the total in AZ we can
             deactivate if we do not have these 'spaces'
-        :return: float percentual fragmentation
+        :return: float percentual_fragmentation
         """
         remaining_cpu = 0
         for host in self.host_list:

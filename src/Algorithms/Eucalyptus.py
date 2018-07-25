@@ -81,7 +81,8 @@ class Eucalyptus(BaseAlgorithm):
             for az in self.api.get_az_list():
                 self.placement(az)
                 self.sla.metrics.set(az.az_id, 'energy_l',
-                                     (self.global_time, az.get_az_energy_consumption2(), "",))
+                                     (self.global_time, az.get_az_energy_consumption2(),
+                                      str(az.fragmentation()),))
                 self.sla.metrics.set(az.az_id, 'az_load_l',
                                      (self.global_time, az.get_az_load(), "",))
                                       # az.print_hosts_distribution(level='MIN'),

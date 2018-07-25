@@ -19,14 +19,15 @@
 # matrix_db[[11,1]] or matrix_db[["EUCA","AZ1"]] or matrix_db["EUCA",] or matrix_db[,"AZ1"]
 
 ############################## 0.0) LIBRARIES AND PACKAGES ####
-install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org")
+install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org", quiet=TRUE)
 library("fmsb")
 library("ggplot2")
 library("DBI")
 ############################## 0.1) MAIN PARAMETERS AND DIRS #################################
 # Get the parameter: # date = commandArgs(trailingOnly=TRUE)
-date = "18.07.03-14.44.35/" # labp2d
-pwd <- "/home/daniel/output/"
+date = "18.07.22-21.41.45/"
+pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
+#pwd <- "/home/daniel/output/"
 path = commandArgs(trailingOnly=TRUE)
 test_l <- c("CHAVE_CF_L:None_O:False_C:False_R:False", "CHAVE_CF_L:None_O:False_C:False_R:True",
             "CHAVE_LOCK_L:False_O:False_C:True_R:False", "CHAVE_LOCK_L:False_O:False_C:True_R:True",
@@ -214,7 +215,7 @@ for(az in this_az){
                      rgb(1.0, 0.2, 0.7, tranp) )
     #colors_in=c( rgb(0.0,0.0,0.9,0.3),rgb(0.9,0.0,0.0,0.3),rgb(0.9,0.9,0.0,0.3),rgb(0.0,0.6,0.2,0.3),rgb(0.5,0.2,1.0,0.3),rgb(0.0,0.9,0.8,0.3),rgb(0.7,0.8,0.2,0.3))
     line_type=c(1, 2, 4, 5, 6, 7, 8)
-    mypdf<-paste0("../Plots/radar_", toString(az), ".pdf")
+    mypdf<-paste0("../radar_", toString(az), ".pdf")
     pdf(mypdf, title=mypdf, width = 9, height = 6)
     radarchart( data, axistype=1, 
                 #custom polygon
@@ -236,8 +237,6 @@ this_test <-c("EUCA", "Max_HA", "Place_HA", "Lock_Rand_HA")
 this_query <- c(q_replic_attend, q_cons, q_ener, q_avg_load, q_reject)
 
 radar2 <- function(az, azmat){
-    az<-"AZ1"
-    
     fun_g_query <- function(test, query){
         db<-matrix_db[[test, az]]
         resp<-dbGetQuery(db, query)
@@ -270,7 +269,7 @@ radar2 <- function(az, azmat){
                  rgb(0.9,0.9,0.0,0.4),
                  rgb(0.0,0.6,0.2,0.4) )
     line_type=c(1,2,3,4)
-    pdf(paste0("radar_", toString(az), ".pdf"), width = 9, height = 5)
+    pdf(paste0("../radar2_", toString(az), ".pdf"), width = 9, height = 5)
     radarchart( data, axistype=1, 
                 #custom polygon
                 pcol=colors_border , pfcol=colors_in , plwd=line_type , plty=line_type,
@@ -286,10 +285,10 @@ radar2 <- function(az, azmat){
     dev.off()
 }
 
-print("Executing radar chart:")
+print("Executing (23) radar2:")
 for(az in AZ_names[1:6]){
     print(az)
-    radar(az)
+    radar2(az)
 }
 
 ############################## 0.6) BASIC QUERIES ###############
@@ -329,10 +328,15 @@ this_test <-c("EUCA", "Max_HA", "Place_HA", "Lock_Rand_HA")
 this_query <- c(q_replic_attend, qs_cons, q_ener, q_avg_load, q_reject)
 az="AZ1"; azid=1
 
-radar <- function(az){
+radar3 <- function(az){
+  az<-"AZ1"
     fun_g_query <- function(test, query){
         db<-matrix_db[[test, az]]
-        return(dbGetQuery(db, query))
+        res<-dbGetQuery(db, query)
+        if(length(res[[1]]) == 0){
+          res<-replicate(length(this_test), 0)
+        }
+        return(res)
     }
     h_av <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[1], length(this_test)))))
     cons <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[2], length(this_test)))))
@@ -377,7 +381,7 @@ radar <- function(az){
 print("Executing radar chart:")
 for(az in AZ_names[1:6]){
     print(az)
-    radar(az)
+    radar3(az)
 }
 ######################## DISCONNECT in main func ######################
 for(con in az_con_list){

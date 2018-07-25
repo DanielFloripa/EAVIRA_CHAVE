@@ -239,8 +239,11 @@ class PhysicalMachine(object):
             return True
         if self.has_virtual_resources() and self.power_state is HOST_ON:
             return False
-        self.logger.error("OOOPS: {} Resources: {} is on? {} ".format(
-                             self.host_id, self.has_virtual_resources(), self.power_state))
+        if self.power_state is HOST_OFF:
+            self.logger.info("{} Already off. Has Resources? ".format(self.host_id, self.has_virtual_resources()))
+        else:
+            self.logger.error("Undeffined Power_state: {} Resources: {}".format(
+                self.power_state, self.has_virtual_resources()))
         return False
 
     def remove_resources(self, vcpu, vram):

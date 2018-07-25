@@ -4,20 +4,25 @@
 #### Avalable at dscar.ga/chave             ###
 ###############################################
 ############################## 0.0) LIBRARIES AND PACKAGES ####
-install.packages(c("RSQLite", "ggplot2", "fmsb", "dplyr"),repos = "http://cran.us.r-project.org")#, "plyr","reshape2")
-library("dplyr")
-library("fmsb")
-library("ggplot2")
-library(DBI)
+#install.packages(c("RSQLite", "ggplot2", "fmsb", "dplyr"),repos = "http://cran.us.r-project.org", quiet=TRUE)
+library("dplyr", quietly=TRUE)
+library("fmsb", quietly=TRUE)
+library("ggplot2", quietly=TRUE)
+library("DBI", quietly=TRUE)
 ############################## 0.1) MAIN PARAMETERS AND DIRS #################################
 # Get the parameter:
 path = commandArgs(trailingOnly=TRUE)
-date = "18.07.03-14.44.35/"
-#date = "18.07.02-22.55.25/"
-pwd <- "/home/daniel/output/"
-#pwd <- "/media/debian/"
-#pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
-test <- "EUCA_CF_L:None_O:False_C:False_R:False/"
+
+if(length(path) == 0 ){
+  date = "18.07.22-21.41.45/"
+  #pwd <- "/home/daniel/output/"
+  #pwd <- "/media/debian/"
+  pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
+  rdef <- paste0(toString(pwd), toString(date), toString("results/"))
+} else{
+  rdef <- paste0(toString(path), toString("results/"))
+}
+#test <- "EUCA_CF_L:None_O:False_C:False_R:False/"
 #test <- "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:False/"
 
 test_l <- c("EUCA_CF_L:None_O:False_C:False_R:False",
@@ -33,8 +38,6 @@ test_l <- c("EUCA_CF_L:None_O:False_C:False_R:False",
             "CHAVE_CF_L:None_O:False_C:False_R:True")
 
 main<-function(test){
-  #rdef <- paste0(toString(pwd), toString(date[1]), toString("results/"))
-  rdef <- paste0(toString(path), toString("results/"))
   root <- paste0(toString(rdef), toString(test))
   ############################## 0.2) CHOOSE THE DIRECTORY #####################
   #print(root)
@@ -330,12 +333,11 @@ main<-function(test){
       i<-i+1
   }
   
-  fun_frequency2<-function(){
+  outro_fun_frequency2<-function(){
       ggplot(diamonds, aes(price, stat(density), colour = cut)) +
           geom_freqpoly(binwidth = 500)
   }
-  
-  fun_todo<-function(){
+  outr_fun_todo<-function(){
       dfMAX<-data.frame(
           cMAXx=c(MAXx, MAXx2, MAXx3),
           cMAXy=c(MAXy, MAXy2, MAXy3),
@@ -353,7 +355,7 @@ main<-function(test){
           #
           geom_point(data=dfMAX, aes(x=cMAXx, y=cMAXy, color=cols, pch=pch, fill=fcols), size=3)
   }
-  fun_ecdf_ggplot<-function(){
+  outro_ecdf_ggplot<-function(){
       x1<-dbGetQuery(con1, q_az_load_val_0_gvt)
       cdf1<-ecdf(x1$val_0)
       dat1 <- data.frame(
@@ -412,7 +414,7 @@ main<-function(test){
       ggsave("2.2-CDF_All_AZs_ggplot.pdf", cdff, width = 9, height = 5, scale = 1)
   }
   #CDF: FUNCIONA MAS NÃO É GGPLOT
-  cdf_default<-function(){
+  outro_cdf_default<-function(){
       pdf_nameCDF <- paste0(toString("2.2-CDF_AZs_default"), toString(".pdf"))
       pdf(pdf_nameCDF, width=7, height=5)
       plot(cdf6, verticals=TRUE, do.points=FALSE, xlim=1.0)
@@ -423,7 +425,7 @@ main<-function(test){
       plot(cdf1, verticals=TRUE, do.points=FALSE, add=TRUE, col='blue')
       dev.off()
   }
-  outroCDF<-function(){
+  outro_CDF<-function(){
       df_cdf1 <- data.frame(AZ1 = x1$val_0)
       df_cdf1 <- melt(df_cdf1)
       df_cdf1 <- ddply(df_cdf1, AZ1, transform, ecd=ecdf(value)(value))
@@ -462,7 +464,7 @@ main<-function(test){
   }
   
   ############################## 23) RADAR / SPIDER ##################
-  print("In the next file databaseRadar.R")
+  #print("In the next file databaseRadar.R")
   #source(databaseRadar.R, local = TRUE)
   ############################## 24) SNAPSHOTS ###############
   ############################## 25) TRIGGERS EACH ################
@@ -470,6 +472,11 @@ main<-function(test){
   q_trigger_energy = "SELECT ai, (energy_0 - energy_f) as Efficiency FROM consol_d"
   
   fun_trigger_each<-function(con, i){
+      if(test == "EUCA_CF_L:None_O:False_C:False_R:False" ||
+         test == "CHAVE_CF_L:None_O:False_C:False_R:False" ||
+         test == "CHAVE_CF_L:None_O:False_C:False_R:True"){
+        return(0)
+      }
       tt <-dbGetQuery(con, q_trigger_energy)
       az <- paste0(toString("AZ"), toString(i))    
       df_trig1 <- data.frame(
@@ -492,6 +499,11 @@ main<-function(test){
   q_trigger_energy = "SELECT ai, (1-(energy_f/energy_0))*100 as Efficiency FROM consol_d" # where energy_0-energy_f > 1"
   i=1;con=con1
   fun_trigger_histogram<-function(con, i){
+      if(test == "EUCA_CF_L:None_O:False_C:False_R:False" ||
+         test == "CHAVE_CF_L:None_O:False_C:False_R:False" ||
+         test == "CHAVE_CF_L:None_O:False_C:False_R:True"){
+        return(0)
+      }
       az <- paste0(toString("AZ"), toString(i))
       pdf_trig <- function(x){
           return(paste0(toString("26-Trigger_"), toString(az), toString(x), toString(".pdf")))
@@ -523,7 +535,19 @@ main<-function(test){
       }
       #
       levs <- c(seq(from=0, to=100, by=5))
-      wf <- table(cut(qq$Efficiency, levs, right = FALSE))
+      cond <- tryCatch({
+         wf <- table(cut(qq$Efficiency, levs, right = FALSE))
+      },
+      error=function(cond){
+        message("ERROR")
+      },
+      warning=function(cond){
+        message("WARNING")
+      },
+      finnaly={
+        print("OK!")
+      })
+      #wf <- table(cut(qq$Efficiency, levs, right = FALSE))
       df <- as.data.frame(wf)
       df<- df %>% mutate(Var1 = c(seq(from=5, to=100, by=5)))
       plt_trig1<-ggplot(data=df, aes(x=Freq, y=Var1)) + #, stat="identity", fill="blue", alpha=0.9) +
@@ -534,12 +558,18 @@ main<-function(test){
       ggsave(pdf_trig("_Histogr_"), plt_trig1, width = 9, height = 5, scale = 1)
   }
   n<-1
+  print("Running: 26) fun_trigger_histogram()")
   for (con in az_con_list){
       fun_trigger_histogram(con, n)
       n<-n+1
   }
   ############################## 2.7) TRIGGERS ALL ################
   fun_trigger_line_all<-function(){
+      if(test == "EUCA_CF_L:None_O:False_C:False_R:False" ||
+         test == "CHAVE_CF_L:None_O:False_C:False_R:False" ||
+         test == "CHAVE_CF_L:None_O:False_C:False_R:True"){
+        return(0)
+      }
       q_trigger = "SELECT count(val_0), gvt FROM consol_d"
       q_trigger_energy = "SELECT ai, (1-(energy_f/energy_0))*100 as Efficiency FROM consol_d"
       
@@ -583,7 +613,8 @@ main<-function(test){
       plt_trig
       ggsave("27-Trigger_consol_ALL.pdf", plt_trig, width = 9, height = 5, scale = 1)
   }
-  fun_trigger_line_all
+  print("Running: 27) trigger_line_all")
+  fun_trigger_line_all()
   ######################## DISCONNECT in main func ######################
   dbDisconnect(con1)
   dbDisconnect(con2)
@@ -592,14 +623,13 @@ main<-function(test){
   dbDisconnect(con5)
   dbDisconnect(con6)
   #dbDisconnect(con7)
-  
-
 
 }
 for (test in test_l){
+    print(paste0(toString("Running: "), toString(test)))
     main(test)
 } 
-
+ #quit()
 ############################## 2.7) THEORETICAL (Numb. of AZs / Regions) ######
 
 ############################## 3.1) QUERY ENERGY #############################

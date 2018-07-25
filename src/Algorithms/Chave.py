@@ -94,7 +94,6 @@ class Chave(BaseAlgorithm):
                     self.global_time, time.strftime("%H:%M:%S"), elapsed, memory))
                 self.sla.metrics.set('global', 'lap_time_l', (self.global_time, elapsed, "Status:{}".format(memory)))
                 start = time.time()
-                # print(self.sla.feedback_operator(self.global_time))
             self.remove_finished_azs()
             # Doc: At the end, increment the clock with the window_time:
             self.global_time += self.window_time
@@ -527,6 +526,7 @@ class Chave(BaseAlgorithm):
     #############################################
     def best_host(self, vm, az, recursive=False) -> Tuple[Union[PhysicalMachine, None], list]:
         false_motive = []
+        # Todo: Tentar ordenar o host_list pelo uso! Comparar com execuções anteriores
         for host in az.host_list:
             # Doc: 1st, select regular host
             if host.cpu >= vm.get_vcpu() and host.ram >= vm.get_vram():
