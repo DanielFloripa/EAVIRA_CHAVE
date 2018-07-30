@@ -17,7 +17,7 @@
 # matrix_db[[11,1]] or matrix_db[["EUCA","AZ1"]] or matrix_db["EUCA",] or matrix_db[,"AZ1"]
 
 ############################## 0.0) LIBRARIES AND PACKAGES ####
-install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org", quiet=TRUE)
+# install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org", quiet=TRUE)
 library("fmsb")
 library("ggplot2")
 library("DBI")

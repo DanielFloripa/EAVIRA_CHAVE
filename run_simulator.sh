@@ -146,6 +146,7 @@ sleep 30
 if [ ${PLOT} == true ]; then
 	pushd .
 	cd ${CS_PROJ_ROOT}/Plots/
+	sudo R -f install.R
 	R -f database.R  ${CS_OUTPUT_PATH}
 	R -f databaseRadar.R ${CS_OUTPUT_PATH}
 	popd
