@@ -1,5 +1,5 @@
 
-Test status from CircleCI: [![CircleCI](https://circleci.com/gh/DanielFloripa/CHAVE-Sim.svg?style=svg)](https://circleci.com/gh/DanielFloripa/CHAVE-Sim)
+Test status from CircleCI: [![CircleCI](https://circleci.com/gh/DanielFloripa/CHAVE-Sim.svg?style=svg)](https://circleci.com/gh/DanielFloripa/EAVIRA_CHAVE)
 
 ## Research Project
 # CHAVE: Consolidation with High-Availability on Virtualized Environments
