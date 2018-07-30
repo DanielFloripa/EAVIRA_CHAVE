@@ -36,8 +36,8 @@ CONSOLID_ALGO=( 'LOCK'  'MAX' ) #  'MIN' ) # 'ha' )
 WITH_CONSOLID=( 'False' 'True' )
 WITH_OVERCOMM=( 'False' )
 ENABLE_REPLIC=( 'False' 'True' )
-LOCK_CASE=( 'RANDOM' 'False' 'True' 'None' )
-WT=('100' '2' '101')  # Window time means: ('min' 'step' 'max')
+LOCK_CASE=( 'RANDOM' 'False' 'None' ) #'True'
+WT=('1' '2' '2')  # Window time means: ('min' 'step' 'max')
 
 # TODO: implemetar um criador de AZs e regioes
 # AZ_2_REGIONS=('HA' 'LB' 'BF')

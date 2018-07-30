@@ -360,10 +360,8 @@ class AvailabilityZone(Infrastructure):
         # host_cons_dict = dict()
         for host in self.host_list:
             if host.power_state:
-                host_cons = host.get_energy_consumption()
-                _sum += host_cons
-                # host_cons_dict[host.host_id] = host_cons
-        return _sum  # , host_cons_dict
+                _sum = host.get_energy_consumption()
+        return _sum
 
     def get_az_watt_hour(self):
         total_az_hour = 0
@@ -392,54 +390,6 @@ class AvailabilityZone(Infrastructure):
         except ZeroDivisionError:
             ret = 0
         return ret
-
-    # Warning: deprecated
-    def take_snapshot_for(self, key_list, global_time, metric_d=None, energy=None):
-        """
-        Take a snapshot collect informations from metric_dand put them on the metrics
-        :param energy: Optional float
-        :param key_list: List of keys used in Metrics Class
-        :param metric_d: Dictionary with values related to key_list
-        :param global_time: The time where the snapshot are taken
-        :return: bool
-        """
-        pass
-        '''ret = False
-        if energy is None:
-            energy = self.get_az_energy_consumption2()
-        # Note: old 'energy_acum_l'
-        if 'energy_l' in key_list:
-            if not self.sla.metrics.update(self.az_id, 'energy_l', 'val_0', energy, global_time):
-                self.sla.metrics.set(self.az_id, 'energy_l', (global_time, energy, "cant update"))
-            return True
-        if metric_d is not None:
-            if 'energy_0' in metric_d.keys() and 'energy_f' in metric_d.keys():
-                #try:
-                #    en_met = metric_d['energy_0']
-                #except KeyError:
-                #    self.logger.error("Problem on pop energy {}: ".format(metric_d))
-                #    pass
-                #else:
-                #    if en_met is None:
-                if metric_d['energy_0'] is None:
-                    metric_d['energy_0'] = energy
-                if metric_d['energy_f'] is None:
-                    metric_d['energy_f'] = energy
-            for k, v in metric_d.items():
-                if k not in columns_m_dict.keys():
-                    self.logger.error("Error in keys {} {}".format(k, metric_d.keys()))
-                    sys.exit(1)
-                if (isinstance(v, str) or isinstance(v, int) or isinstance(v, float)) and v is not None:
-                    pass
-                else:
-                    self.logger.error("Problem on k:{} v:{} tp:{} who call?:{}: ".format(
-                        k, v, type(v), inspect.stack()[1][3]))
-                    sys.exit(1)
-            for key in key_list:
-                if key in all_metrics_l:
-                    if self.sla.metrics.set(self.az_id, key, tuple(metric_d.values())):
-                        ret = True
-        return ret'''
 
     def print_hosts_distribution(self, level=None) -> str:
         """

@@ -10,9 +10,7 @@
 #3     Unlock       ?   ?   ?   ?   ?   ?   ?     
 #4     Unlock_HA    ?   ?   ?   ?   ?   ?   ?     
 #5     Lock_Rand    ?   ?   ?   ?   ?   ?   ?     
-#6     Lock_Rand_HA ?   ?   ?   ?   ?   ?   ?     
-#7     Locked       ?   ?   ?   ?   ?   ?   ?     
-#8     Locked_HA    ?   ?   ?   ?   ?   ?   ?     
+#6     Lock_Rand_HA ?   ?   ?   ?   ?   ?   ?      
 #9     Max          ?   ?   ?   ?   ?   ?   ?     
 #10    Max_HA       ?   ?   ?   ?   ?   ?   ?     
 #11    EUCA         ?   ?   ?   ?   ?   ?   ? 
@@ -25,23 +23,29 @@ library("ggplot2")
 library("DBI")
 ############################## 0.1) MAIN PARAMETERS AND DIRS #################################
 # Get the parameter: # date = commandArgs(trailingOnly=TRUE)
-date = "18.07.22-21.41.45/"
-pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
-#pwd <- "/home/daniel/output/"
+
 path = commandArgs(trailingOnly=TRUE)
+
+if(length(path) == 0 ){
+  date = "18.07.03-14.44.35/"
+  pwd <- "/home/daniel/output/"
+  #pwd <- "/media/debian/"
+  #pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
+  root <- paste0(toString(pwd), toString(date), toString("results/"))
+} else{
+  root <- paste0(toString(path), toString("results/"))
+}
+
+
 test_l <- c("CHAVE_CF_L:None_O:False_C:False_R:False", "CHAVE_CF_L:None_O:False_C:False_R:True",
             "CHAVE_LOCK_L:False_O:False_C:True_R:False", "CHAVE_LOCK_L:False_O:False_C:True_R:True",
             "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:False", "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:True",
-            "CHAVE_LOCK_L:True_O:False_C:True_R:False", "CHAVE_LOCK_L:True_O:False_C:True_R:True",
             "CHAVE_MAX_L:None_O:False_C:True_R:False", "CHAVE_MAX_L:None_O:False_C:True_R:True",
             "EUCA_CF_L:None_O:False_C:False_R:False")
-tests_names <- c("Place", "Place_HA", "Unlock", "Unlock_HA", "Lock_Rand", "Lock_Rand_HA",
-                 "Locked", "Locked_HA", "Max", "Max_HA", "EUCA")
+tests_names <- c("P", "P_HA", "C_AA0", "CHA_AA0", "C_AA20", "CHA_AA20", "C_MAX", "CHA_MAX", "EUCA")
 AZ_names = c("AZ1", "AZ2", "AZ3","AZ4","AZ5","AZ6", "Global")
 df_test_name <- data.frame(test_l, tests_names)
 
-#root <- paste0(toString(pwd), toString(date), toString("results/")) #, toString(test))
-root <- paste0(toString(path), toString("results/")) #, toString(test))
 ############################## 0.2) CHOOSE THE DIRECTORY #####################
 out <- tryCatch({
     setwd(root)
@@ -120,11 +124,11 @@ fun_q_select_from_load<-function(metric, table, load){
 }
 
 fun_q_join<-function(metric, table, load, erro){
-    return(paste0("SELECT t.", toString(metric), ", l.val_0 as load FROM ", toString(table), 
+    return(paste0("SELECT ", toString(metric), " FROM ", toString(table), 
                   " as t inner join az_load_l as l on l.gvt=t.gvt and (l.val_0 <= ", 
                   toString(load+erro)," and l.val_0 >= ", toString(load-erro),")"))
 }
-#metric2<-"t.gvt as gvt, t.energy_0, t.energy_f, max(t.energy_0-t.energy_f) as reduc_val, (t.energy_0-t.energy_f)/t.energy_0 as reduc_p, t.val_0 as fals_pos, t.val_f as migrations, l.load as load, t.info as info"
+
 metric2<-"t.gvt as gvt, t.energy_0, t.energy_f, max(t.energy_0-t.energy_f) as reduc_val, (t.energy_0-t.energy_f)/t.energy_0 as reduc_p, t.val_0 as fals_pos, t.val_f as migrations, l.val_0 as load, t.info as info"
 
 ############################### QUERY GENERATOR ####################
@@ -135,56 +139,91 @@ load_all <- c(25.320513,  0.000000, 72.435897,
                 71.471774, 67.439516, 69.758065,
                 64.648438, 64.843750, 66.992188)/100
 #load_objectives <- c(load_all[1], load_all[4], load_all[9], load_all[10], load_all[13], load_all[16])
-load_objectives <- c(load_all[1], load_all[13], load_all[16])
-this_tests_names <- c(tests_names[3:7], tests_names[9:10])
+
 #AZ_names2<-c("AZ2", "AZ3", "AZ4")  # az3 menos pior #this_tests_names<-c("Unlock_HA", "Lock_Rand_HA", "Max_HA")
 
 ###### APENAS PARA consol_d ####
-obj<-1
-AZ_names2 <- c("AZ1","AZ5", "AZ6")
-for (az in AZ_names2){ #[1:6]){ 
-    message(az)
 
-    for(t in this_tests_names){
-        ERR<-0.00
-        consold<-c()
-        ERR_l <- c()
-        melhor<-TRUE
-        to_print = "NA"
-        for(i in seq(1, 999)){
-            qq <- fun_q_join("gvt", "consol_d", load_objectives[obj], ERR)
-            qq2 <- fun_q_join(metric2, "consol_d", load_objectives[obj], ERR)
-            
-            x<-dbGetQuery(matrix_db[[t,az]], qq)
-            l<-length(x$load)
-            if(l == 0){
-                consold<-c()
-                ERR_l <- c()
-                ERR <- ERR + 0.0001
-            }
-            else {
-                ERR_l <- c(ERR_l, ERR)
-                dput(c(t, l, ERR_l, qq2))
-                break
-            }
-        }
+CREATE_QUERIES = FALSE
+if (CREATE_QUERIES == TRUE){
+  load_objectives <- c(load_all[1], load_all[13], load_all[16])
+  this_tests_names <- c(tests_names[3:8])
+  obj<-1
+  AZ_names2 <- AZ_names[1:6] #c("AZ1", "AZ2", "AZ5","AZ6")
+  synk_name <- "../Plots/output.txt"
+  sink(synk_name)
+  for (az in AZ_names2){ #[1:6]){ 
+      if (obj == 1){
+        cat("AZ_ERR_CONS<-data.frame(")
+        cat("\n")
+      }
+      cat(paste0(az, "<-matrix(c("))
+      cat("\n")
+      for(t in this_tests_names){
+          ERR<-0.0001
+          ERR_l <- c()
+          for(i in seq(1, 9999)){
+              qq <- fun_q_join("t.gvt, l.val_0 as load", "consol_d", load_objectives[obj], ERR)
+              qq2 <- fun_q_join(metric2, "consol_d", load_objectives[obj], ERR)
+              x<-dbGetQuery(matrix_db[[t, az]], qq)
+              l<-length(x$load)
+              if(l == 0){
+                  ERR <- ERR + 0.0001
+              }
+              else {
+                  ERR_l <- c(ERR_l, ERR)
+                  cat(c("'", t,"'", ", ", l, ", ",  ERR_l, ", ", "'",qq2,"'"), sep = "", append = TRUE)
+                  if (t != this_tests_names[length(this_tests_names)]){
+                    cat(",\n")
+                  }
+                  break
+              }
+          }
+      }
+      obj<-obj+1
+      cat("), ncol=4, byrow = TRUE)", append = TRUE)
+      if (az != AZ_names2[length(AZ_names2)]){
+        cat(",\n")
+      }
+  }
+  cat(")\n", append = TRUE)
+  colnames_s<-c()
+  for(az in AZ_names2){
+    vv<-","
+    if (az == AZ_names2[length(AZ_names2)]){
+      vv<-""
     }
-    obj<-obj+1
+    colnames_s<- c(colnames_s, paste0("'", az,".alg',","'", az,".qtd',","'", az,".err',","'", az,".query'",vv))
+  }
+  ff<-function(vec){
+    x=""
+    for (e in vec){
+      x<-paste0(x,e)
+    }
+    return(x)
+  }
+  cat("colnames(AZ_ERR_CONS)=(c(", append = TRUE)
+  cat(ff(colnames_s))
+  cat("))\n", append = TRUE) #"colnames(AZ_ERR_CONS)=(c('AZ1.alg', 'AZ1.qtd', 'AZ1.err', 'AZ1.query', 'AZ5.alg','AZ5.qtd', 'AZ5.err', 'AZ5.query', 'AZ6.alg', 'AZ6.qtd', 'AZ6.err', 'AZ6.query'))\n", append = TRUE)
+  cat("rownames(AZ_ERR_CONS)=this_tests_names\n")
+  cat("as.character(AZ_ERR_CONS['CHAVE_MAX','AZ1.err'])\n")
+  sink()
+  sink()
+  source(synk_name, local = TRUE)
 }
-############################## 2.3) GENERAL RADAR CHARTS ##################
-source("/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/Plots/databaseRadar_sources.R")
 
-
-
+############################## 2.2) SNAPSHOTS RADAR CHARTS ##################
+source(synk_name, local = TRUE)
+#source("/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/Plots/databaseRadar_sources.R")
+#c("P", "P_HA", "C_AA0", "CHA_AA0", "C_AA20", "CHA_AA20", "C_MAX", "CHA_MAX", "EUCA")
 print("Executing radar chart:")
-this_az<-c("AZ1", "AZ5","AZ6")
+this_az<-AZ_names2
 for(az in this_az){
-  print(az)
+    print(az)
     qcol<-paste0(az,".query")
     fun_g_query <- function(test, query){
         db<-matrix_db[[test, az]]
         resp<-dbGetQuery(db, query)
-        #dput(resp)
         return(resp)
     }
     snapshots<-c()
@@ -199,36 +238,39 @@ for(az in this_az){
     data <- as.data.frame(matrix( c(load, reducp, energyf , migration , reduc_val), ncol=5))
     ## Metrics:
     colnames(data)=c("Carga (%)" , "Redução (%)", "Energia Total (W)", "Nº Migrações", "Redução (W)")
-    ## Tests:
+    # Tests:
     rownames(data)=this_tests_names
     ## To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
     data=rbind(c(max(load), max(reducp), max(energyf), max(migration), max(reduc_val)), # Max values in range
                c(min(load), min(reducp), min(energyf), min(migration), min(reduc_val)), data)                     # Min values in range
-    par(mar=c(5,4,4,2)+0.1)
+    #mar=c(bottom, left, top, right)
+    par(mar=c(3,4,4,4)+0.1)
     tranp<-1
-    colors_border=c( rgb(0.0, 0.0, 1, tranp), 
-                     rgb(0.9, 0.0, 0.0, tranp), 
-                     rgb(.4, .4, .4, tranp), 
-                     rgb(0.0, 0.6, 0.2, tranp), 
-                     rgb(0.4, 0.2, 0.7, tranp), 
-                     rgb(0.0, 0.9, 0.8, tranp), 
-                     rgb(1.0, 0.2, 0.7, tranp) )
+    colors_border=c( rgb(0.0, 0.0, 1.0, tranp), # blue
+                     rgb(0.0, 0.9, 1.0, tranp), # light blue
+                     rgb(0.9, 0.0, 0.0, tranp), # red
+                     rgb(1.0, 0.7, 0.0, tranp), # orange
+                     rgb(0.1, 0.4, 0.3, tranp), # darkgreen
+                     rgb(0.3, 0.8, 0.1, tranp), # lightgreen
+                     rgb(1.0, 0.2, 0.7, tranp)) # pink
+                     #rgb(0.0, 0.9, 0.8, tranp))
     #colors_in=c( rgb(0.0,0.0,0.9,0.3),rgb(0.9,0.0,0.0,0.3),rgb(0.9,0.9,0.0,0.3),rgb(0.0,0.6,0.2,0.3),rgb(0.5,0.2,1.0,0.3),rgb(0.0,0.9,0.8,0.3),rgb(0.7,0.8,0.2,0.3))
-    line_type=c(1, 2, 4, 5, 6, 7, 8)
+    line_type=c(1, 1, 2, 2, 4, 4, 5)
+    line_pch=c(21, 22, 21, 22, 21, 22, 33)
+    op <- par(cex = 2)
     mypdf<-paste0("../radar_", toString(az), ".pdf")
     pdf(mypdf, title=mypdf, width = 9, height = 6)
     radarchart( data, axistype=1, 
                 #custom polygon
-                pcol=colors_border, plwd=2 , plty=line_type, # , pfcol=colors_in 
+                pcol=colors_border, plwd=5 , plty=line_type, # , pfcol=colors_in 
                 #custom the grid
                 cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=1,
                 #custom labels
                 vlcex=1.2 
     )
     legend(x=1.5, y=1.5, legend = rownames(data[-c(1,2),]), 
-           y.intersp=2, x.intersp=1, bty="n", pch=21, lty =  line_type, lwd = 2,
-           col=colors_border, text.col = "black", cex=1, pt.cex=5,
-           title="Testes")
+           y.intersp=2, x.intersp=1, bty="n", pch=line_pch, lty = line_type, lwd = 3,
+           col=colors_border, text.col = "black", cex=1, pt.cex=5,title="Testes")
     dev.off()
 }
 
@@ -317,11 +359,11 @@ q_reject = "SELECT count(val_0) FROM reject_l"
 
 ########################### 0.7 QUERIES FOR SNAPSHOTS ####################
 fun_q_join<-function(metric, table, load, error){
-    return(paste0("SELECT t.", toString(metric), ", l.val_0 as load FROM ", toString(table), 
+    return(paste0("SELECT ", toString(metric), " FROM ", toString(table), 
                   " as t inner join az_load_l as l on l. gvt=t.gvt and (l.val_0 < ", 
                   toString(load+error)," and l.val_0 > ", toString(load-error),")"))
 }
-qs_cons <- fun_q_join("gvt", "consol_d", load_objectives[1], 0.05)
+qs_cons <- fun_q_join("t.gvt, l.val_0 as load", "consol_d", load_objectives[1], 0.05)
 ############################## 2.4) ONE CASE RADAR CHARTS ##################
 this_test <-c("EUCA", "Max_HA", "Place_HA", "Lock_Rand_HA")
 #this_query <- c(q_replic_attend, q_cons, q_ener, q_avg_load, q_reject)
@@ -346,9 +388,10 @@ radar3 <- function(az){
     
     data <- as.data.frame(matrix( c(h_av,cons,ener,load,slav), ncol=5))
     ## Metrics:
+    #colnames(data)=c("Alta Disp." , "Consolidações", "Consumo Energia", "Carga", "Rejeições")
     colnames(data)=c("Alta Disp." , "Consolidações", "Consumo Energia", "Carga", "Rejeições")
     ## Tests:
-    rownames(data)=this_test
+    rwnames(data)=this_test
     ## To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
     data=rbind(c(max(h_av), max(cons), max(ener), 100, max(slav)), # Max values in range
                c(0, 0, 0, 0, 0), data)                     # Min values in range

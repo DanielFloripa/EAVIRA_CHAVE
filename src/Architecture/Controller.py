@@ -267,7 +267,6 @@ class LocalController(Controller):
     def get_az(self, azid):
         for az in self.az_list:
             if az.az_id == azid:
-                #print 'Found azid', azid
                 return az
         self.logger.error("Not found azid: {}".format(azid))
         return False
@@ -286,41 +285,5 @@ class LocalController(Controller):
         self.logger.error("Not found vm {} in az: {}".format(vmid, azid))
         return False
 
-    def execute_elasticity(self, az, delete_requests, recfg_requests, repl_requests, offline):
-        repl_requests_count = 0
-        recfg_requests_count = 0
-        delete_requests_count = 0
-
-        new_delete_requests = []
-        for delete in delete_requests:
-            delete_requests_count += 1
-            vi = az.get_vi(delete['vi'])
-            if vi != -1:
-                new_vnode = vi.get_virtual_resource(delete['vnode'])
-                if new_vnode != -1:
-                    new_delete_requests.append(new_vnode)
-        az.answer_delete_requests(new_delete_requests)
-
-        new_recfg_requests = []
-        for recfg in recfg_requests:
-            recfg_requests_count += 1
-            vi = az.get_vi(recfg['vi'])
-            if vi != -1:
-                new_vnode = vi.get_virtual_resource(recfg['vnode'])
-                if new_vnode != -1:
-                    recfg['vnode'] = new_vnode
-                    new_recfg_requests.append(recfg)
-
-        new_repl_requests = []
-        for repl in repl_requests:
-            repl_requests_count += 1
-            vi = az.get_vi(repl['vi'])
-            if vi != -1:
-                new_vnode = vi.get_virtual_resource(repl['vnode'])
-                if new_vnode != -1:
-                    new_repl_requests.append(new_vnode)
-
-        # call MM, MBFD and Buyya solutions
-        az.answer_reconfiguration_requests_mbfd(new_recfg_requests)
-        az.answer_replication_requests_mbfd(new_repl_requests)
-
+    def execute_elasticity(self):
+        pass

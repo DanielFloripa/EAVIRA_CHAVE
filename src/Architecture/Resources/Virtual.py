@@ -8,7 +8,7 @@ from Users.SLAHelper import *
 
 
 class VirtualMachine(object):
-    def __init__(self, vm_id, vcpu, vram, av, vtype, host_id, az_id, timestamp, lifetime, lock, logger):
+    def __init__(self, vm_id, vcpu, vram, av, vtype, host_id, az_id, timestamp, lifetime, lock, logger, usage=1.0):
         self.logger = logger
         self.vm_id = vm_id
         self.host_id = host_id
@@ -18,7 +18,7 @@ class VirtualMachine(object):
         self.pool_id = None
         self.is_locked = lock
         self.vcpu = vcpu
-        self.usage = 1.0
+        self.usage = usage
         self.vram = vram
         self.running_time = 0
         self.lifetime = lifetime
