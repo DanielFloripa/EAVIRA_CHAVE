@@ -131,7 +131,8 @@ fun_q_join<-function(metric, table, load, erro){
 
 metric2<-"t.gvt as gvt, t.energy_0, t.energy_f, max(t.energy_0-t.energy_f) as reduc_val, (t.energy_0-t.energy_f)/t.energy_0 as reduc_p, t.val_0 as fals_pos, t.val_f as migrations, l.val_0 as load, t.info as info"
 
-############################### QUERY GENERATOR ####################
+################################ 2.2.0 GENERAL DATA ##############################
+
 load_all <- c(25.320513,  0.000000, 72.435897,
                 28.571429, 29.761905, 17.857143,
                 0.000000,  1.785714,  3.571429,
@@ -144,13 +145,13 @@ load_all <- c(25.320513,  0.000000, 72.435897,
 
 ###### APENAS PARA consol_d ####
 
+synk_name <- "../Plots/output.txt"
+this_tests_names <- c(tests_names[3:8])
+AZ_names2 <- AZ_names[1:6] #c("AZ1", "AZ2", "AZ5","AZ6")
 CREATE_QUERIES = FALSE
 if (CREATE_QUERIES == TRUE){
   load_objectives <- c(load_all[1], load_all[13], load_all[16])
-  this_tests_names <- c(tests_names[3:8])
   obj<-1
-  AZ_names2 <- AZ_names[1:6] #c("AZ1", "AZ2", "AZ5","AZ6")
-  synk_name <- "../Plots/output.txt"
   sink(synk_name)
   for (az in AZ_names2){ #[1:6]){ 
       if (obj == 1){
@@ -212,20 +213,23 @@ if (CREATE_QUERIES == TRUE){
   source(synk_name, local = TRUE)
 }
 
-############################## 2.2) SNAPSHOTS RADAR CHARTS ##################
+############################## 2.2.1) SNAPSHOTS RADAR CHARTS ##################
 source(synk_name, local = TRUE)
 #source("/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/Plots/databaseRadar_sources.R")
 #c("P", "P_HA", "C_AA0", "CHA_AA0", "C_AA20", "CHA_AA20", "C_MAX", "CHA_MAX", "EUCA")
+#pdf(mypdf, title=mypdf); #par(mar=c(4,4,4,4)+3, mfrow = c(3,3)); #mypdf<-"../radar_all.pdf"
+
 print("Executing radar chart:")
-this_az<-AZ_names2
+this_az<-AZ_names[1:2]
 for(az in this_az){
+  az="AZ1"
     print(az)
-    qcol<-paste0(az,".query")
     fun_g_query <- function(test, query){
         db<-matrix_db[[test, az]]
         resp<-dbGetQuery(db, query)
         return(resp)
     }
+    qcol<-paste0(az,".query")
     snapshots<-c()
     snapshots <- c(as.data.frame(mapply(fun_g_query, this_tests_names, as.character(AZ_ERR_CONS[,qcol]))))
     
@@ -234,104 +238,311 @@ for(az in this_az){
     energyf <-sapply(snapshots,'[[',"energy_f")
     migration <-sapply(snapshots,'[[',"migrations")
     reduc_val <-sapply(snapshots,'[[',"reduc_val")
-        
-    data <- as.data.frame(matrix( c(load, reducp, energyf , migration , reduc_val), ncol=5))
+    gvt <-sapply(snapshots,'[[',"gvt")
+    print(gvt)
+    #az1=gvt=1543723, load=%, energy=
+    #az2 gvt=10680920, load=1,19%, energy=848.57
+    
+    
+    data <- as.data.frame(matrix( c(load, energyf , migration , reduc_val, reducp), ncol=5))
     ## Metrics:
-    colnames(data)=c("Carga (%)" , "Redução (%)", "Energia Total (W)", "Nº Migrações", "Redução (W)")
+    #colnames(data)=c("Carga (%)" , "Redução (%)", "Energia Total (W)", "Nº Migrações", "Redução (W)")
+    colnames(data)=c("C(%)" , "ET(W)", "NM(n)", "RE(W)", "RE(%)")
     # Tests:
     rownames(data)=this_tests_names
     ## To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
-    data=rbind(c(max(load), max(reducp), max(energyf), max(migration), max(reduc_val)), # Max values in range
-               c(min(load), min(reducp), min(energyf), min(migration), min(reduc_val)), data)                     # Min values in range
-    #mar=c(bottom, left, top, right)
-    par(mar=c(3,4,4,4)+0.1)
+    data=rbind(c(max(load), max(energyf), max(migration), min(reduc_val), min(reducp)), # Max values in range
+               c(min(load), min(energyf), min(migration), max(reduc_val), max(reducp)), data)                     # Min values in range
+    dput(data)
+    #mar is c(bottom, left, top, right)
+    par(mar=c(3,4,4,5)+0.1)
     tranp<-1
     colors_border=c( rgb(0.0, 0.0, 1.0, tranp), # blue
                      rgb(0.0, 0.9, 1.0, tranp), # light blue
                      rgb(0.9, 0.0, 0.0, tranp), # red
                      rgb(1.0, 0.7, 0.0, tranp), # orange
-                     rgb(0.1, 0.4, 0.3, tranp), # darkgreen
+                     rgb(0.1, 0.5, 0.1, tranp), # darkgreen
                      rgb(0.3, 0.8, 0.1, tranp), # lightgreen
                      rgb(1.0, 0.2, 0.7, tranp)) # pink
                      #rgb(0.0, 0.9, 0.8, tranp))
     #colors_in=c( rgb(0.0,0.0,0.9,0.3),rgb(0.9,0.0,0.0,0.3),rgb(0.9,0.9,0.0,0.3),rgb(0.0,0.6,0.2,0.3),rgb(0.5,0.2,1.0,0.3),rgb(0.0,0.9,0.8,0.3),rgb(0.7,0.8,0.2,0.3))
-    line_type=c(1, 1, 2, 2, 4, 4, 5)
+    line_type=c(1, 5, 1, 5, 1, 5, 1)
     line_pch=c(21, 22, 21, 22, 21, 22, 33)
-    op <- par(cex = 2)
+    line_pch2=c(19, 15, 19, 15, 19, 15, 17)
     mypdf<-paste0("../radar_", toString(az), ".pdf")
-    pdf(mypdf, title=mypdf, width = 9, height = 6)
-    radarchart( data, axistype=1, 
+    pdf(mypdf, title=az, width = 15, height = 10)
+    radarchart( data, axistype=1, title=paste("Testes ",az),
                 #custom polygon
-                pcol=colors_border, plwd=5 , plty=line_type, # , pfcol=colors_in 
+                pcol=colors_border, plwd=5 , plty=line_type, pty=line_pch2, # , pfcol=colors_in 
                 #custom the grid
                 cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=1,
                 #custom labels
-                vlcex=1.2 
+                vlcex=2 
     )
-    legend(x=1.5, y=1.5, legend = rownames(data[-c(1,2),]), 
+    legend(x=-0.9, y=-0.9, legend = rownames(data[-c(1,2),]), horiz=TRUE,
            y.intersp=2, x.intersp=1, bty="n", pch=line_pch, lty = line_type, lwd = 3,
-           col=colors_border, text.col = "black", cex=1, pt.cex=5,title="Testes")
+           col=colors_border, text.col = "black", cex=1.2, pt.cex=4,title=paste("Testes ",az))
     dev.off()
 }
 
-############################## 2.3) GENERAL RADAR CHARTS ##################
-this_test <-c("EUCA", "Max_HA", "Place_HA", "Lock_Rand_HA")
-this_query <- c(q_replic_attend, q_cons, q_ener, q_avg_load, q_reject)
 
-radar2 <- function(az, azmat){
-    fun_g_query <- function(test, query){
-        db<-matrix_db[[test, az]]
-        resp<-dbGetQuery(db, query)
-        #dput(resp)
-        return(resp)
+
+################################ 2.3.0 GENERAL DATA ##############################
+
+
+q_cons <- "SELECT sum(energy_0-energy_f) as reduc_val, count(ai) as trigger, sum(val_f) as migrations, COUNT(CASE WHEN val_0 = 0 then 1 ELSE NULL END) as fals_pos from consol_d"
+q_slav <- "SELECT count(ai) as slav FROM reject_l"
+q_energy<-"SELECT sum(val_0) as energy_reduct FROM energy_l"
+
+#jj_12<-"SELECT sum(c.energy_0 - c.energy_f) as reduc_val, count(c.ai) as trigger, sum(c.val_f) as migrations, count(r.ai) as slav, sum(e.val_0) as energy_reduct FROM consol_d as c INNER JOIN energy_l as e JOIN reject_l as r"
+
+synk_name2 <- "../Plots/output_global.txt"
+this_tests_names <- c(tests_names[3:8])
+AZ_names2 <- AZ_names[1:6]
+CREATE_QUERIES = TRUE
+if (CREATE_QUERIES == TRUE){
+  obj<-1
+  sink(synk_name2)
+  for (az in AZ_names2){ #[1:6]){ 
+    if (az == AZ_names2[1]){
+      cat("AZ_METRIC_global<-data.frame(\n")
     }
-    h_av <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[1], length(this_test)))))
-    cons <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[2], length(this_test)))))
-    ener <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[3], length(this_test)))))
-    load <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[4], length(this_test)))))
-    slav <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[5], length(this_test)))))
-    #fun_g_query(azmat[i,1], azmat[i,4]))
-    
-
-    data <- as.data.frame(matrix( c(h_av, cons, ener, load, slav), ncol=5))
-    ## Metrics:
-    colnames(data)=c("Alta Disp." , "Consolidações", "Consumo Energia", "Carga", "Rejeições")
-    ## Tests:
-    rownames(data)=this_test
-    ## To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
-    data=rbind(c(max(h_av), max(cons), max(ener), 100, max(slav)), # Max values in range
-               c(0, 0, 0, 0, 0), data)                     # Min values in range
-    par(mar=c(5,4,4,2)+0.1)
-    colors_border=c( rgb(0.0,0.0,0.9,0.9),
-                     rgb(0.9,0.0,0.0,0.9),
-                     rgb(0.9,0.9,0.0,0.9),
-                     rgb(0.0,0.6,0.2,0.9) )
-    colors_in=c( rgb(0.0,0.0,0.9,0.4),
-                 rgb(0.9,0.0,0.0,0.4),
-                 rgb(0.9,0.9,0.0,0.4),
-                 rgb(0.0,0.6,0.2,0.4) )
-    line_type=c(1,2,3,4)
-    pdf(paste0("../radar2_", toString(az), ".pdf"), width = 9, height = 5)
-    radarchart( data, axistype=1, 
-                #custom polygon
-                pcol=colors_border , pfcol=colors_in , plwd=line_type , plty=line_type,
-                #custom the grid
-                cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=1,
-                #custom labels
-                vlcex=1.2 
-    )
-    legend(x=1.5, y=1, legend = rownames(data[-c(1,2),]), 
-           y.intersp=2, x.intersp=1, bty="n", pch=20 , 
-           col=colors_border, text.col = "black", cex=1, pt.cex=5,
-           title="Testes")
-    dev.off()
+    cat(paste0(az, "<-matrix(c(\n"))
+    for(t in this_tests_names){
+      cat(c("'", t,"', ", "'",q_cons,"', ", "'",q_slav,"', ", "'",q_energy,"'"), sep = "", append = TRUE)
+      if (t != this_tests_names[length(this_tests_names)]){
+        cat(",\n")
+      }
+    }
+    obj<-obj+1
+    cat("), ncol=4, byrow = TRUE)", append = TRUE)
+    if (az != AZ_names2[length(AZ_names2)]){
+      cat(",\n")
+    }
+  }
+  cat(")\n", append = TRUE)
+  colnames_s<-c()
+  for(az in AZ_names2){
+    vv<-","
+    if (az == AZ_names2[length(AZ_names2)]){
+      vv<-""
+    }
+    colnames_s<- c(colnames_s, paste0("'", az,".alg',","'", az,".q1',","'", az,".q2',","'", az,".q3'",vv))
+  }
+  ff<-function(vec){
+    x=""
+    for (e in vec){
+      x<-paste0(x,e)
+    }
+    return(x)
+  }
+  cat("colnames(AZ_METRIC_global)=(c(", append = TRUE)
+  cat(ff(colnames_s))
+  cat("))\n", append = TRUE) 
+  cat("rownames(AZ_METRIC_global)=this_tests_names\n")
+  cat("as.character(AZ_METRIC_global['CHAVE_MAX','AZ1.q1'])\n")
+  sink()
+  source(synk_name2, local = TRUE)
 }
+
+source(synk_name2, local = TRUE)
+############################## 2.3.1) GENERAL RADAR CHARTS ##################
 
 print("Executing (23) radar2:")
 for(az in AZ_names[1:6]){
-    print(az)
-    radar2(az)
+  print(az)
+  fun_g_query <- function(test, query){
+    db<-matrix_db[[test, az]]
+    resp<-dbGetQuery(db, query)
+    return(resp)
+  }
+  qcol1<-paste0(az,".q1")
+  qcol2<-paste0(az,".q2")
+  qcol3<-paste0(az,".q3")
+  snapshots2<-c()
+  df21 <- data.frame(mapply(fun_g_query, this_tests_names, as.character(AZ_METRIC_global[,qcol1])))
+  df22 <- data.frame(mapply(fun_g_query, this_tests_names, as.character(AZ_METRIC_global[,qcol2])))
+  rownames(df22)="slav"
+  colnames(df22)=this_tests_names
+  df23 <- data.frame(mapply(fun_g_query, this_tests_names, as.character(AZ_METRIC_global[,qcol3])))
+  rownames(df23)="energy_cons"
+  colnames(df23)=this_tests_names
+
+  dff<-rbind(df21, df22, df23)
+  snapshots2<-c(dff)
+  
+  reduc_val <- sapply(snapshots2,'[[',"reduc_val")
+  trigger <- sapply(snapshots2,'[[',"trigger")
+  migrations <-sapply(snapshots2,'[[',"migrations")
+  fals_pos <-sapply(snapshots2,'[[',"fals_pos")
+  slav <-sapply(snapshots2,'[[',5)
+  energy_cons <-sapply(snapshots2,'[[',6)/1e6  # Transf to MegaWatts
+  
+  data <- as.data.frame(matrix( c(reduc_val, trigger, migrations , fals_pos , slav, energy_cons), ncol=6))
+  ## Metrics:
+  colnames(data)=c("Red(W)", "Trig(n)" , "Mig(n)", "FPos(n)", "Slav(n)", "ET(W)")
+  # Tests:
+  rownames(data)=this_tests_names
+  data=rbind(c(min(reduc_val), max(trigger), max(migrations), max(fals_pos), max(slav), max(energy_cons)), # Max values in range
+             c(max(reduc_val), min(trigger), min(migrations), min(fals_pos), min(slav), min(energy_cons)), data) # Min values in range
+  #mar is c(bottom, left, top, right)
+  par(mar=c(3,4,4,5)+0.1)
+  tranp<-1
+  colors_border=c( rgb(0.0, 0.0, 1.0, tranp), # blue
+                   rgb(0.0, 0.9, 1.0, tranp), # light blue
+                   rgb(0.9, 0.0, 0.0, tranp), # red
+                   rgb(1.0, 0.7, 0.0, tranp), # orange
+                   rgb(0.1, 0.5, 0.1, tranp), # darkgreen
+                   rgb(0.3, 0.8, 0.1, tranp), # lightgreen
+                   rgb(1.0, 0.2, 0.7, tranp)) # pink
+  #rgb(0.0, 0.9, 0.8, tranp))
+  #colors_in=c( rgb(0.0,0.0,0.9,0.3),rgb(0.9,0.0,0.0,0.3),rgb(0.9,0.9,0.0,0.3),rgb(0.0,0.6,0.2,0.3),rgb(0.5,0.2,1.0,0.3),rgb(0.0,0.9,0.8,0.3),rgb(0.7,0.8,0.2,0.3))
+  line_type=c(1, 5, 1, 5, 1, 5, 1)
+  line_pch=c(21, 22, 21, 22, 21, 22, 33)
+  line_pch2=c(19, 15, 19, 15, 19, 15, 17)
+  mypdf<-paste0("../gen_radar_", toString(az), ".pdf")
+  pdf(mypdf, title=az, width = 12, height = 7)
+  radarchart( data, axistype=1, title=paste("Testes ",az),
+              #custom polygon
+              pcol=colors_border, plwd=5 , plty=line_type, pty=line_pch2, # , pfcol=colors_in 
+              #custom the grid
+              cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=1,
+              #custom labels
+              vlcex=2 
+  )
+  #legend(x=1.5, y=1, legend = rownames(data[-c(1,2),]), # horiz=TRUE,
+  #       y.intersp=2, x.intersp=1, bty="n", pch=line_pch, lty = line_type, lwd = 3,
+  #       col=colors_border, text.col = "black", cex=1.2, pt.cex=4,title=paste("Testes ",az))
+  dev.off()
 }
+
+
+
+
+################################ 2.4.0 GENERAL DATA ##############################
+
+
+synk_name3 <- "../Plots/output_global2.txt"
+this_tests_names <- c(tests_names[8:9])
+AZ_names2 <- AZ_names[1:6]
+CREATE_QUERIES = TRUE
+if (CREATE_QUERIES == TRUE){
+  obj<-1
+  sink(synk_name3)
+  for (az in AZ_names2){ #[1:6]){ 
+    if (az == AZ_names2[1]){
+      cat("AZ_METRIC_global<-data.frame(\n")
+    }
+    cat(paste0(az, "<-matrix(c(\n"))
+    for(t in this_tests_names){
+      cat(c("'", t,"', ", "'",q_cons,"', ", "'",q_slav,"', ", "'",q_energy,"'"), sep = "", append = TRUE)
+      if (t != this_tests_names[length(this_tests_names)]){
+        cat(",\n")
+      }
+    }
+    obj<-obj+1
+    cat("), ncol=4, byrow = TRUE)", append = TRUE)
+    if (az != AZ_names2[length(AZ_names2)]){
+      cat(",\n")
+    }
+  }
+  cat(")\n", append = TRUE)
+  colnames_s<-c()
+  for(az in AZ_names2){
+    vv<-","
+    if (az == AZ_names2[length(AZ_names2)]){
+      vv<-""
+    }
+    colnames_s<- c(colnames_s, paste0("'", az,".alg',","'", az,".q1',","'", az,".q2',","'", az,".q3'",vv))
+  }
+  ff<-function(vec){
+    x=""
+    for (e in vec){
+      x<-paste0(x,e)
+    }
+    return(x)
+  }
+  cat("colnames(AZ_METRIC_global)=(c(", append = TRUE)
+  cat(ff(colnames_s))
+  cat("))\n", append = TRUE) 
+  cat("rownames(AZ_METRIC_global)=this_tests_names\n")
+  cat("as.character(AZ_METRIC_global['CHAVE_MAX','AZ1.q1'])\n")
+  sink()
+  sink()
+  source(synk_name3, local = TRUE)
+}
+
+source(synk_name3, local = TRUE)
+############################## 2.4.1) GENERAL EUCA RADAR CHARTS ##################
+
+print("Executing (24) radar:")
+for(az in AZ_names[1:6]){
+  print(az)
+  fun_g_query <- function(test, query){
+    db<-matrix_db[[test, az]]
+    resp<-dbGetQuery(db, query)
+    return(resp)
+  }
+  qcol1<-paste0(az,".q1")
+  qcol2<-paste0(az,".q2")
+  qcol3<-paste0(az,".q3")
+  snapshots2<-c()
+  df21 <- data.frame(mapply(fun_g_query, this_tests_names, as.character(AZ_METRIC_global[,qcol1])))
+  df22 <- data.frame(mapply(fun_g_query, this_tests_names, as.character(AZ_METRIC_global[,qcol2])))
+  rownames(df22)="slav"
+  colnames(df22)=this_tests_names
+  df23 <- data.frame(mapply(fun_g_query, this_tests_names, as.character(AZ_METRIC_global[,qcol3])))
+  rownames(df23)="energy_cons"
+  colnames(df23)=this_tests_names
+  
+  dff<-rbind(df21, df22, df23)
+  snapshots2<-c(dff)
+  
+  reduc_val <- sapply(snapshots2,'[[',"reduc_val")
+  trigger <- sapply(snapshots2,'[[',"trigger")
+  migrations <-sapply(snapshots2,'[[',"migrations")
+  fals_pos <-sapply(snapshots2,'[[',"fals_pos")
+  slav <-sapply(snapshots2,'[[',5)
+  energy_cons <-sapply(snapshots2,'[[',6)/1e6  # Transf to MegaWatts
+  
+  data <- as.data.frame(matrix( c(reduc_val, trigger, migrations , fals_pos , slav, energy_cons), ncol=6))
+  ## Metrics:
+  colnames(data)=c("Red(W)", "Trig(n)" , "Mig(n)", "FPos(n)", "Slav(n)", "ET(W)")
+  # Tests:
+  rownames(data)=this_tests_names
+  data=rbind(c(min(reduc_val), max(trigger), max(migrations), max(fals_pos), max(slav), max(energy_cons)), # Max values in range
+             c(max(reduc_val), min(trigger), min(migrations), min(fals_pos), min(slav), min(energy_cons)), data) # Min values in range
+  #mar is c(bottom, left, top, right)
+  par(mar=c(3,4,4,5)+0.1)
+  tranp<-1
+  colors_border=c( rgb(0.0, 0.0, 1.0, tranp), # blue
+                   rgb(0.0, 0.9, 1.0, tranp), # light blue
+                   rgb(0.9, 0.0, 0.0, tranp), # red
+                   rgb(1.0, 0.7, 0.0, tranp), # orange
+                   rgb(0.1, 0.5, 0.1, tranp), # darkgreen
+                   rgb(0.3, 0.8, 0.1, tranp), # lightgreen
+                   rgb(1.0, 0.2, 0.7, tranp)) # pink
+  #rgb(0.0, 0.9, 0.8, tranp))
+  #colors_in=c( rgb(0.0,0.0,0.9,0.3),rgb(0.9,0.0,0.0,0.3),rgb(0.9,0.9,0.0,0.3),rgb(0.0,0.6,0.2,0.3),rgb(0.5,0.2,1.0,0.3),rgb(0.0,0.9,0.8,0.3),rgb(0.7,0.8,0.2,0.3))
+  line_type=c(1, 5, 1, 5, 1, 5, 1)
+  line_pch=c(21, 22, 21, 22, 21, 22, 33)
+  line_pch2=c(19, 15, 19, 15, 19, 15, 17)
+  mypdf<-paste0("../gen_final_radar_", toString(az), ".pdf")
+  pdf(mypdf, title=az, width = 12, height = 7)
+  radarchart( data, axistype=1, title=paste("Testes ",az),
+              #custom polygon
+              pcol=colors_border, plwd=5 , plty=line_type, pty=line_pch2, # , pfcol=colors_in 
+              #custom the grid
+              cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=1,
+              #custom labels
+              vlcex=2 
+  )
+  #legend(x=1.5, y=1, legend = rownames(data[-c(1,2),]), # horiz=TRUE,
+  #       y.intersp=2, x.intersp=1, bty="n", pch=line_pch, lty = line_type, lwd = 3,
+  #       col=colors_border, text.col = "black", cex=1.2, pt.cex=4,title=paste("Testes ",az))
+  dev.off()
+}
+
 
 ############################## 0.6) BASIC QUERIES ###############
 # h_av: <- c(0, 20, 40)        # em percentual de requisições
@@ -356,76 +567,6 @@ q_energy_load <- 'SELECT val_0 FROM energy_l WHERE gvt=(SELECT gvt FROM az_load_
 # reject/slav: <- c(0, 3, 9)          # quantidade de rejeições
 q_reject = "SELECT count(val_0) FROM reject_l"
 
-
-########################### 0.7 QUERIES FOR SNAPSHOTS ####################
-fun_q_join<-function(metric, table, load, error){
-    return(paste0("SELECT ", toString(metric), " FROM ", toString(table), 
-                  " as t inner join az_load_l as l on l. gvt=t.gvt and (l.val_0 < ", 
-                  toString(load+error)," and l.val_0 > ", toString(load-error),")"))
-}
-qs_cons <- fun_q_join("t.gvt, l.val_0 as load", "consol_d", load_objectives[1], 0.05)
-############################## 2.4) ONE CASE RADAR CHARTS ##################
-this_test <-c("EUCA", "Max_HA", "Place_HA", "Lock_Rand_HA")
-#this_query <- c(q_replic_attend, q_cons, q_ener, q_avg_load, q_reject)
-this_query <- c(q_replic_attend, qs_cons, q_ener, q_avg_load, q_reject)
-az="AZ1"; azid=1
-
-radar3 <- function(az){
-  az<-"AZ1"
-    fun_g_query <- function(test, query){
-        db<-matrix_db[[test, az]]
-        res<-dbGetQuery(db, query)
-        if(length(res[[1]]) == 0){
-          res<-replicate(length(this_test), 0)
-        }
-        return(res)
-    }
-    h_av <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[1], length(this_test)))))
-    cons <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[2], length(this_test)))))
-    ener <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[3], length(this_test)))))
-    load <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[4], length(this_test)))))
-    slav <- c(as.double(mapply(fun_g_query, this_test, rep(this_query[5], length(this_test)))))
-    
-    data <- as.data.frame(matrix( c(h_av,cons,ener,load,slav), ncol=5))
-    ## Metrics:
-    #colnames(data)=c("Alta Disp." , "Consolidações", "Consumo Energia", "Carga", "Rejeições")
-    colnames(data)=c("Alta Disp." , "Consolidações", "Consumo Energia", "Carga", "Rejeições")
-    ## Tests:
-    rwnames(data)=this_test
-    ## To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
-    data=rbind(c(max(h_av), max(cons), max(ener), 100, max(slav)), # Max values in range
-               c(0, 0, 0, 0, 0), data)                     # Min values in range
-    par(mar=c(5,4,4,2)+0.1)
-    colors_border=c( rgb(0.0,0.0,0.9,0.9),
-                     rgb(0.9,0.0,0.0,0.9),
-                     rgb(0.9,0.9,0.0,0.9),
-                     rgb(0.0,0.6,0.2,0.9) )
-    colors_in=c( rgb(0.0,0.0,0.9,0.4),
-                 rgb(0.9,0.0,0.0,0.4),
-                 rgb(0.9,0.9,0.0,0.4),
-                 rgb(0.0,0.6,0.2,0.4) )
-    line_type=c(1,2,3,4)
-    pdf(paste0("radar_", toString(az), ".pdf"), width = 9, height = 5)
-    radarchart( data, axistype=1, 
-                #custom polygon
-                pcol=colors_border , pfcol=colors_in , plwd=line_type , plty=line_type,
-                #custom the grid
-                cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=1,
-                #custom labels
-                vlcex=1.2 
-    )
-    legend(x=1.5, y=1, legend = rownames(data[-c(1,2),]), 
-           y.intersp=2, x.intersp=1, bty="n", pch=20 , 
-           col=colors_border, text.col = "black", cex=1, pt.cex=5,
-           title="Testes")
-    dev.off()
-}
-
-print("Executing radar chart:")
-for(az in AZ_names[1:6]){
-    print(az)
-    radar3(az)
-}
 ######################## DISCONNECT in main func ######################
 for(con in az_con_list){
     dbDisconnect(con)

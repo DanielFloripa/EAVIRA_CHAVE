@@ -4,7 +4,8 @@ source chave.conf
 
 if [ "$1" == "install" ]; then
 	CS_INSTALL
-fi
+    exit
+COMMIT=$1
 
 mkdir -p ${CS_LOG_PATH} 2> /dev/null
 mkdir -p ${CS_DATA_PATH} 2> /dev/null
@@ -132,6 +133,7 @@ _NOW=`date +${CS_DP}`
 SIM_RESULT="This simulation ended at ${_NOW} and took ${_END} seconds."
 echo -e "${_RED}\n\t ${SIM_RESULT}  ${_NC}"
 echo -e ${SIM_RESULT} >> "${CS_OUTPUT_PATH}/simulation_resume.txt"
+echo -e ${COMMIT} >> "${CS_OUTPUT_PATH}/simulation_resume.txt"
 popd > /dev/null
 
 #if [ "${USER}" == "ubuntu" ]; then
