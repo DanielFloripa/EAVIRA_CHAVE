@@ -5,6 +5,7 @@ source chave.conf
 if [ "$1" == "install" ]; then
 	CS_INSTALL
     exit
+fi
 COMMIT=$1
 
 mkdir -p ${CS_LOG_PATH} 2> /dev/null
@@ -186,21 +187,3 @@ exit
 #        rm -rf logs/*
 #    fi
 #fi
-
-
-    for TEST in ${TEST_LIST[@]}; do
-        if [ "$TEST" == "EUCA" ]; then
-		echo -e "Executing: $TEST"
-             ${PARALLEL} --bar ${CS_PY} __init__.py -nit ${NIT[@]} -in ${SRC_LIST[@]} -az ${AZ_CONF[@]} -ha ${SRC_LIST_PLUS[@]} -alg "EUCA" -wt {1} ::: $(seq ${WT[0]} ${WT[1]} ${WT[2]}) :::
-        else
-		echo "Executing: "$TEST
-            ${PARALLEL} --bar ${CS_PY} __init__.py -nit ${NIT[@]} -in ${SRC_LIST[@]} -az ${AZ_CONF[@]} -ha ${SRC_LIST_PLUS[@]} -alg ${TEST} -ca {1} -ff {2}  -wt {3} -lock {4} -ovc {5} -cons {6} -repl {7} ::: \
-                ${CONSOLID_ALGO[@]} ::: \
-                ${FF_LIST[@]} ::: \
-                $(seq ${WT[0]} ${WT[1]} ${WT[2]}) ::: \
-                ${LOCK_CASE[@]} ::: \
-                ${WITH_OVERCOMM[@]} ::: \
-                ${WITH_CONSOLID[@]} ::: \
-                ${ENABLE_REPLIC[@]} :::
-        fi
-    done
