@@ -1,6 +1,7 @@
 
-Test status from CircleCI: [![CircleCI](https://circleci.com/gh/DanielFloripa/EAVIRA_CHAVE.svg?style=svg)](https://circleci.com/gh/DanielFloripa/EAVIRA_CHAVE)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://www.python.org)
+
+Test status from CircleCI: [![CircleCI](https://circleci.com/gh/DanielFloripa/EAVIRA_CHAVE.svg?style=svg)](https://circleci.com/gh/DanielFloripa/EAVIRA_CHAVE)
 [![shields](https://img.shields.io/badge/Update-yes-green.svg)](https://github.com/danielfloripa/eavira_chave/graphs/commit-activity)
 
 ## Research Project
