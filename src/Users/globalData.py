@@ -22,7 +22,7 @@ k_dicts = ['consol_d',  # OK!
 columns_d = ('gvt', 'energy_0', 'energy_f', 'val_0', 'val_f', 'hosts_0', 'hosts_f', 'info')
 len_d = len(k_dicts)
 
-k_info = ["basic_info", "vm_history"]
+k_info = ["abasic_info", "avm_history"]
 columns_basic_info = ("max_gvt", "nodes", "cores", "noperations", "availabiliy", "trace_dir", "frag_class", "az_select", "trace_class", "ai")  # pk: ai
 columns_vm_hist = ("vm_id", "gvt_start", "gvt_end",  "host_place", "vcpu", "vtype", "req_avail", "lock_migr", "lifetime", "migrations", "reject_code")  # pk: vm_id
 

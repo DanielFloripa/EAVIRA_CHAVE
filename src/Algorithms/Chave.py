@@ -116,7 +116,7 @@ class Chave(BaseAlgorithm):
                         if self.place(vm, b_host, az):
                             self.have_new_max_host_on(az)
                             self.vms_in_execution_d[az_id][vm.vm_id] = vm
-                            self.sla.metrics.update(az_id, "vm_history", "host_place", b_host.host_id, "vm_id", vm.vm_id)
+                            self.sla.metrics.update(az_id, "avm_history", "host_place", b_host.host_id, "vm_id", vm.vm_id)
                             # Todo: Change this to accept overcom
                             # tax = 0  # b_host.check_overcom()
                             # if tax > 1:  # or vm.in_overcomm_host:
@@ -497,7 +497,7 @@ class Chave(BaseAlgorithm):
                             az.az_id, vm.vm_id, h_origin, host.host_id, host.cpu))
                         suc += 1
                         # Todo: change this to `metrics.incr_1()`
-                        self.sla.metrics.update(az.az_id, "vm_history", "migrations", 1, "vm_id", vm.vm_id)
+                        self.sla.metrics.update(az.az_id, "avm_history", "migrations", 1, "vm_id", vm.vm_id)
                         break
                     else:
                         fail += 1

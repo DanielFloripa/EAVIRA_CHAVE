@@ -65,7 +65,7 @@ class Demand(object):
                          col[6]: self.sla.g_frag_class(),
                          col[7]: self.sla.g_az_selection(),
                          col[8]: self.sla.g_trace_class()}
-            if self.sla.metrics.set(azid, "basic_info", tuple(db_info_d.values()), tuple(db_info_d.keys())):
+            if self.sla.metrics.set(azid, "abasic_info", tuple(db_info_d.values()), tuple(db_info_d.keys())):
                 self.sla.logger.debug("Created basic_info for {}".format(azid))
 
     def __get_availab_from_source(self, source_file):
@@ -169,7 +169,7 @@ class Demand(object):
                     db_hist_d = {col[0]: this_vm_id, col[1]: vm_to_stop.timestamp, col[2]: timestamp, col[3]: host,
                                  col[4]: vcpu, col[5]: vtype, col[6]: av_vm, col[7]: lock, col[8]: lifetime2, col[9]: 0,
                                  col[10]: -1}
-                    if self.sla.metrics.set(az_id, "vm_history", tuple(db_hist_d.values()),
+                    if self.sla.metrics.set(az_id, "avm_history", tuple(db_hist_d.values()),
                                             tuple(db_hist_d.keys())) is False:
                         self.sla.logger.error("Problem on add hist for {}".format(this_vm_id))
             # Note: Se tiver algo, entao sobrou alguma vm
