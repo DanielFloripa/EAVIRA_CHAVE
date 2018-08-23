@@ -254,17 +254,19 @@ def get_required_replicas(a, ha=None, downtime=None):
     #else:
     return replicas
 
+
 def set_av_for_az(av_min, av_max):
     # av_mean = float((av_min + av_max) / 2.0)
     if monte_carlo():
         return np.random.uniform(av_min, av_max)
     return av_min
 
+
 def monte_carlo():
     radius = 1
     x = np.random.rand(2)
     # Funcao retorna 21% de probabilidade
-    # Area externa de 1/4 do circulo x^2+y^2
+    # Area externa de 1/4 do circulo x^2 + y^2
     if (x[0]**2)+(x[1]**2) >= radius:
         return True
     return False

@@ -65,7 +65,7 @@ cd src
 RUN_S=`date +%s`
 # --tmpdir /media/debian/logs  -j16
 if [ ${CS_isAWS} == true ]; then
-    ${PARALLEL} --bar ${CS_PY} __init__.py -nit ${NIT[@]} -in ${SRC_LIST[@]} -az ${AZ_CONF[@]} -ha ${SRC_LIST_PLUS[@]}  -alg {1} -ca {2} -ff {3}  -wt {4} -lock {5} -ovc {6} -cons {7} -repl {8}  ::: \
+    ${PARALLEL} --bar ${CS_PY} main.py -nit ${NIT[@]} -in ${SRC_LIST[@]} -az ${AZ_CONF[@]} -ha ${SRC_LIST_PLUS[@]}  -alg {1} -ca {2} -ff {3}  -wt {4} -lock {5} -ovc {6} -cons {7} -repl {8}  ::: \
         ${TEST_LIST[@]} ::: \
         ${CONSOLID_ALGO[@]} ::: \
         ${FF_LIST[@]} ::: \
