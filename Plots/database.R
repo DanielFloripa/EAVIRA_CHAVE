@@ -4,25 +4,26 @@
 #### Avalable at dscar.ga/chave                ####
 ###################################################
 ############################## 0.0) LIBRARIES AND PACKAGES ####
-#install.packages(c("RSQLite", "ggplot2", "fmsb", "dplyr"),repos = "http://cran.us.r-project.org", quiet=TRUE)
+#install.packages(c("RSQLite", "ggplot2", "fmsb", "dplyr", "ggrepel"),repos = "http://cran.us.r-project.org", quiet=TRUE)
 library("dplyr", quietly=TRUE)
 library("fmsb", quietly=TRUE)
 library("ggplot2", quietly=TRUE)
 library("DBI", quietly=TRUE)
+library("ggrepel", quietly=TRUE)
 ############################## 0.1) MAIN PARAMETERS AND DIRS #################################
 # Get the parameter:
 path = commandArgs(trailingOnly=TRUE)
 
 if(length(path) == 0 ){
-  date = "18.07.22-21.41.45/"
-  #pwd <- "/home/daniel/output/"
+  date = "18.07.21-17.18.46/"
+  pwd <- "/home/daniel/output/"
   #pwd <- "/media/debian/"
-  pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
+  #pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
   rdef <- paste0(toString(pwd), toString(date), toString("results/"))
 } else{
   rdef <- paste0(toString(path), toString("results/"))
 }
-#test <- "EUCA_CF_L:None_O:False_C:False_R:False/"
+test <- "EUCA_CF_L:None_O:False_C:False_R:False/"
 #test <- "CHAVE_LOCK_L:RANDOM_O:False_C:True_R:False/"
 
 test_l <- c("EUCA_CF_L:None_O:False_C:False_R:False",
@@ -259,7 +260,7 @@ main<-function(test){
       i<-i+1
   }
   ############################## 22) Probability Frequency az_load ###############################
-  # i<-6; con_az<-con6
+  # i<-1; con_az<-con1
   load_objectives <-c()
   i<-1
   print("Running (22) Prob Frequency")
@@ -302,17 +303,22 @@ main<-function(test){
       MAXx3 <- MAX_xy3$Var1
       MAXy3 <- MAX_xy3$Freq
       lab_max3 <- paste0(toString("3ª -> P("),toString(MAXy3),toString(") de carga em "),toString(MAXx3),toString("%"))
-      
+      labels_max <- c(lab_max, lab_max2, lab_max3)
       load_objectives <-c(load_objectives, MAXx, MAXx2, MAXx3)
-      cols=c("red", "blue", "magenta")
+      cols=c("red", "blue", "darkgreen")
       fcols=c("white", "white", "white")
       pch=c(21, 22, 23)
       lty=c(1, 2, 4)
-      hjust=c(just(MAXx), just(MAXx2),just(MAXx3))
-      vjust=c(0,1,-0.3)
-  
+      # AZ1:
+      hjust=c(just(MAXx)+1, just(MAXx2)+0.5,just(MAXx3))
+      vjust=c(-0.1, -0.1, -0.1)
+      # AZ2:
+      #hjust=c(just(MAXx)+1, just(MAXx2)+1,just(MAXx3)+1)
+      #vjust=c(1, -0.1, 1.1)
+      
       pdf_freq <- paste0(toString("22-Frequency_AZ"), toString(i), toString(".pdf"))
-      plt_freq <- ggplot(data=tf, aes(x=Var1, y=Freq, group = 1, ymax=0.2, xmax=100)) +
+      plt_freq <- ggplot(data=tf, aes(x=Var1, y=Freq, group = 1, ymax=0.2, xmax=100), cex=3) +
+        theme(text = element_text(size=20)) +
           geom_line()+
           geom_point(size=0.7)+
           #
@@ -320,153 +326,25 @@ main<-function(test){
           geom_hline(yintercept=MAXy2, color=cols[2], lty=lty[2], size=1) +
           geom_hline(yintercept=MAXy3, color=cols[3], lty=lty[3], size=1) +
           #
-          geom_label(aes(MAXx, MAXy, label=lab_max, vjust = vjust[1], hjust = hjust[1]), nudge_x = 1,  size = 4, colour = cols[1]) +
-          geom_label(aes(MAXx2, MAXy2, label=lab_max2, vjust = vjust[2], hjust = hjust[2]), nudge_x = 1, size = 4, colour = cols[2]) +
-          geom_label(aes(MAXx3, MAXy3, label=lab_max3, vjust = vjust[3], hjust = hjust[3]), nudge_x = 1, size = 4, colour = cols[3]) +
+          geom_label(aes(MAXx, MAXy, label=lab_max, vjust = vjust[1], hjust = hjust[1]), nudge_x = 1,  size = 7, colour = cols[1]) +
+          geom_label(aes(MAXx2, MAXy2, label=lab_max2, vjust = vjust[2], hjust = hjust[2]), nudge_x = 1, size = 7, colour = cols[2]) +
+          geom_label(aes(MAXx3, MAXy3, label=lab_max3, vjust = vjust[3], hjust = hjust[3]), nudge_x = 1, size = 7, colour = cols[3]) +
           #
-          geom_point(aes(MAXx, MAXy), size=3, color=cols[1], pch=pch[1], fill=fcols[1])+
-          geom_point(aes(MAXx2, MAXy2), size=3, color=cols[2], pch=pch[2], fill=fcols[2])+
-          geom_point(aes(MAXx3, MAXy3), size=3, color=cols[3], pch=pch[3], fill=fcols[3])+
+          #geom_label_repel(label=labels_max) + # para evitar overlaping dos labels
+          #
+          geom_point(aes(MAXx, MAXy), size=5, color=cols[1], pch=pch[1], bg = cols[1])+ #, fill=fcols[1])+
+          geom_point(aes(MAXx2, MAXy2), size=5, color=cols[2], pch=pch[2],bg = cols[2])+ #, fill=fcols[2])+
+          geom_point(aes(MAXx3, MAXy3), size=5, color=cols[3], pch=pch[3],bg = cols[3])+ #, fill=fcols[3])+
           #theme(axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
-          labs(title=paste0("Probabilidade de ocorrência de cargas na AZ",toString(i)), x ="Carga (%)",y ="Probabilidade (0~1)")
+          #title=paste0("Probabilidade de ocorrência de cargas na AZ",toString(i))
+          labs(x ="Carga (%)",y ="Probabilidade (0~1)")
       ggsave(pdf_freq, plt_freq, width = 9, height = 5, scale = 1)
-      i<-i+1
-  }
-  
-  outro_fun_frequency2<-function(){
-      ggplot(diamonds, aes(price, stat(density), colour = cut)) +
-          geom_freqpoly(binwidth = 500)
-  }
-  outr_fun_todo<-function(){
-      dfMAX<-data.frame(
-          cMAXx=c(MAXx, MAXx2, MAXx3),
-          cMAXy=c(MAXy, MAXy2, MAXy3),
-          clab_max=c(lab_max,lab_max2,lab_max3),
-          cols=c("red", "blue", "magenta"),
-          fcols=c("black", "black", "black"),
-          pch=c(21, 22, 23),
-          lty=c(1, 2, 4),
-          hjust=c(just(MAXx), just(MAXx2),just(MAXx3)),
-          vjust=c(0,1,0)
-      )
-      geom_hline(data=dfMAX, aes(yintercept=cMAXy, color=cols)) +
-          #
-          geom_label(data=dfMAX, aes(x=cMAXx, y=cMAXy, label=clab_max, vjust = vjust, hjust = hjust, colour = cols), nudge_x = 1,  size = 4) +
-          #
-          geom_point(data=dfMAX, aes(x=cMAXx, y=cMAXy, color=cols, pch=pch, fill=fcols), size=3)
-  }
-  outro_ecdf_ggplot<-function(){
-      x1<-dbGetQuery(con1, q_az_load_val_0_gvt)
-      cdf1<-ecdf(x1$val_0)
-      dat1 <- data.frame(
-          Load1=x1$val_0,
-          gvt1=x1$gvt
-      )
-      x2<-dbGetQuery(con2, q_az_load_val_0_gvt)
-      cdf2<-ecdf(x2$val_0)
-      dat2 <- data.frame(
-          Load2=x2$val_0,
-          gvt2=x2$gvt
-      )
-      x3<-dbGetQuery(con3, q_az_load_val_0_gvt)
-      cdf3<-ecdf(x3$val_0)
-      dat3 <- data.frame(
-          Load3=x3$val_0,
-          gvt3=x3$gvt
-      )
-      x4<-dbGetQuery(con4, q_az_load_val_0_gvt)
-      cdf4<-ecdf(x4$val_0)
-      dat4 <- data.frame(
-          Load4=x4$val_0,
-          gvt4=x4$gvt
-      )
-      x5<-dbGetQuery(con5, q_az_load_val_0_gvt)
-      cdf5<-ecdf(x5$val_0)
-      dat5 <- data.frame(
-          Load5=x5$val_0,
-          gvt5=x5$gvt
-      )
-      x6<-dbGetQuery(con6, q_az_load_val_0_gvt)
-      cdf6<-ecdf(x6$val_0)
-      dat6 <- data.frame(
-          Load6=x6$val_0,
-          gvt6=x6$gvt
-      )
-      
-      df_global <- data.frame(
-          #key =c("AZ1", "AZ2", "AZ3","AZ4","AZ5","AZ6"),
-          key=c(
-              rep("AZ1", nrow(x1)),
-              rep("AZ2", nrow(x2)),
-              rep("AZ3", nrow(x3)),
-              rep("AZ4", nrow(x4)),
-              rep("AZ5", nrow(x5)),
-              rep("AZ6", nrow(x6))),
-          value=c(
-              x1$val_0,
-              x2$val_0,
-              x3$val_0,
-              x4$val_0,
-              x5$val_0,
-              x6$val_0))
-      cdff<-ggplot(df_global, aes(value, colour=key)) + 
-          stat_ecdf(geo = "step")
-      ggsave("2.2-CDF_All_AZs_ggplot.pdf", cdff, width = 9, height = 5, scale = 1)
-  }
-  #CDF: FUNCIONA MAS NÃO É GGPLOT
-  outro_cdf_default<-function(){
-      pdf_nameCDF <- paste0(toString("2.2-CDF_AZs_default"), toString(".pdf"))
-      pdf(pdf_nameCDF, width=7, height=5)
-      plot(cdf6, verticals=TRUE, do.points=FALSE, xlim=1.0)
-      lot(cdf5, verticals=TRUE, do.points=FALSE, add=TRUE, col='red')
-      plot(cdf4, verticals=TRUE, do.points=FALSE, add=TRUE, col='orange')
-      plot(cdf3, verticals=TRUE, do.points=FALSE, add=TRUE, col='green')
-      plot(cdf2, verticals=TRUE, do.points=FALSE, add=TRUE, col='pink')
-      plot(cdf1, verticals=TRUE, do.points=FALSE, add=TRUE, col='blue')
-      dev.off()
-  }
-  outro_CDF<-function(){
-      df_cdf1 <- data.frame(AZ1 = x1$val_0)
-      df_cdf1 <- melt(df_cdf1)
-      df_cdf1 <- ddply(df_cdf1, AZ1, transform, ecd=ecdf(value)(value))
-      df_cdf2 <- data.frame(AZ2 = x2$val_0)
-      #df_cdf2 <- melt(df_cdf2)
-      #df_cdf2 <- ddply(df_cdf2, (.variables), transform, ecd=ecdf(value)(value))
-      df_cdf3 <- data.frame(AZ3 = x3$val_0)
-      #df_cdf3 <- melt(df_cdf3)
-      #df_cdf3 <- ddply(df_cdf3, (.variable), transform, ecd=ecdf(value)(value))
-      df_cdf4 <- data.frame(AZ4 = x4$val_0)
-      #df_cdf4 <- melt(df_cdf4)
-      #df_cdf4 <- ddply(df_cdf4, (.variable), transform, ecd=ecdf(value)(value))
-      df_cdf5 <- data.frame(AZ5 = x5$val_0)
-      #df_cdf5 <- melt(df_cdf5)
-      #df_cdf5 <- ddply(df_cdf5, (.variable), transform, ecd=ecdf(value)(value))
-      df_cdf6 <- data.frame(AZ6 = x6$val_0)
-      #df_cdf6 <- melt(df_cdf6)
-      #df_cdf6 <- ddply(df_cdf6, (.variable), transform, ecd=ecdf(value)(value))
-      
-      cdff <- ggplot() +
-          stat_ecdf(data=df_cdf1, aes(x=value, colour=variable)) +
-          stat_ecdf(data=df_cdf2, aes(x=value, colour=variable)) +
-          stat_ecdf(data=df_cdf3, aes(x=value, colour=variable)) +
-          stat_ecdf(data=df_cdf4, aes(x=value, colour=variable)) +
-          stat_ecdf(data=df_cdf5, aes(x=value, colour=variable)) +
-          stat_ecdf(data=df_cdf6, aes(x=value, colour=variable)) +
-      #    scale_fill_manual("AZs") + #, values=c('red', 'darkgreen', 'blue', 'magenta', 'orange', 'black')) +
-      #    theme(legend.position="right")+
-          theme(legend.title=element_blank()) +
-          labs(title="CDF - Cumulative Distribution Function",
-               x ="Load",
-               y = "CDF(x)",
-               fill='AZs:' ) +
-          xlim(0,1)
-      ggsave("03-CDF_All_AZs.pdf", cdff, width = 9, height = 5, scale = 1)
+      #i<-i+1
   }
   
   ############################## 23) RADAR / SPIDER ##################
   #print("In the next file databaseRadar.R")
   #source(databaseRadar.R, local = TRUE)
-  ############################## 24) SNAPSHOTS ###############
   ############################## 25) TRIGGERS EACH ################
   q_trigger = "SELECT count(val_0), gvt FROM consol_d"
   q_trigger_energy = "SELECT ai, (energy_0 - energy_f) as Efficiency FROM consol_d"

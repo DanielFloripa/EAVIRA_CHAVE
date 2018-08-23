@@ -240,7 +240,6 @@ def get_downtime(ha):
 def get_required_replicas(a, ha=None, downtime=None):
     if ha is None:
         ha = 0.99999
-
     if downtime is not None:
         ha = get_ha_tax(downtime)
     else:
@@ -265,7 +264,7 @@ def monte_carlo():
     radius = 1
     x = np.random.rand(2)
     # Funcao retorna 21% de probabilidade
-    # Area externa de 1/4 do circulo
+    # Area externa de 1/4 do circulo x^2+y^2
     if (x[0]**2)+(x[1]**2) >= radius:
         return True
     return False

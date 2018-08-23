@@ -806,7 +806,7 @@ class Chave(BaseAlgorithm):
             vm_replica.pool_id = pool_id
             replicas_join = [vm_replica]
             self.replication_pool_d[lc_id][pool_id] = {CRITICAL: [az, vm], REPLICA: replicas_join}
-            ''' Todo: Refazer futuramente pra suportat multiplas réplicas
+            ''' Todo: Refazer futuramente pra suportar multiplas réplicas
             number_of_replicas = self.sla.get_required_replicas(az.availability, ha=vm.availab)
             # Todo: desfazer isso e arrumar no codigo
             if number_of_replicas > 2:

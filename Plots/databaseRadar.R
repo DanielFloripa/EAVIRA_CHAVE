@@ -11,11 +11,10 @@
 #4     Unlock_HA    ?   ?   ?   ?   ?   ?   ?     
 #5     Lock_Rand    ?   ?   ?   ?   ?   ?   ?     
 #6     Lock_Rand_HA ?   ?   ?   ?   ?   ?   ?      
-#9     Max          ?   ?   ?   ?   ?   ?   ?     
-#10    Max_HA       ?   ?   ?   ?   ?   ?   ?     
-#11    EUCA         ?   ?   ?   ?   ?   ?   ? 
+#7     Max          ?   ?   ?   ?   ?   ?   ?     
+#8     Max_HA       ?   ?   ?   ?   ?   ?   ?     
+#9     EUCA         ?   ?   ?   ?   ?   ?   ? 
 # matrix_db[[11,1]] or matrix_db[["EUCA","AZ1"]] or matrix_db["EUCA",] or matrix_db[,"AZ1"]
-
 ############################## 0.0) LIBRARIES AND PACKAGES ####
 # install.packages(c("RSQLite", "ggplot2", "fmsb"),repos = "http://cran.us.r-project.org", quiet=TRUE)
 library("fmsb")
@@ -27,7 +26,7 @@ library("DBI")
 path = commandArgs(trailingOnly=TRUE)
 
 if(length(path) == 0 ){
-  date = "18.07.03-14.44.35/"
+  date = "18.07.21-17.18.46/"
   pwd <- "/home/daniel/output/"
   #pwd <- "/media/debian/"
   #pwd <- "~/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/output/"
@@ -89,9 +88,10 @@ for (folder in local_tests){
         }
     }
 }
-matrix_db <- matrix(data=az_con_list, byrow=TRUE, nrow = length(local_tests), ncol = length(AZ_names), dimnames = list(tests_names, AZ_names))
+matrix_db <- matrix(data=az_con_list, byrow=TRUE, nrow = length(local_tests), 
+                    ncol = length(AZ_names), dimnames = list(tests_names, AZ_names))
 dbListTables(matrix_db[[1,1]])
-dbListTables(matrix_db[["EUCA","AZ1"]])
+dbListTables(matrix_db[["EUCA","AZ6"]])
 ############################## 0.6) BASIC QUERIES ###############
 q_info_str <- "SELECT count(val_0) FROM {} WHERE INSTR(info, 'substring') > 0" # or use the LIKE operator
 
@@ -139,18 +139,16 @@ load_all <- c(25.320513,  0.000000, 72.435897,
                 8.333333,  0.000000, 33.333333,
                 71.471774, 67.439516, 69.758065,
                 64.648438, 64.843750, 66.992188)/100
-#load_objectives <- c(load_all[1], load_all[4], load_all[9], load_all[10], load_all[13], load_all[16])
-
-#AZ_names2<-c("AZ2", "AZ3", "AZ4")  # az3 menos pior #this_tests_names<-c("Unlock_HA", "Lock_Rand_HA", "Max_HA")
+load_objectives <- c(load_all[1], load_all[4], load_all[9], load_all[10], load_all[13], load_all[16])
 
 ###### APENAS PARA consol_d ####
 
 synk_name <- "../Plots/output.txt"
 this_tests_names <- c(tests_names[3:8])
-AZ_names2 <- AZ_names[1:6] #c("AZ1", "AZ2", "AZ5","AZ6")
+AZ_names2 <- AZ_names[1:6]
 CREATE_QUERIES = FALSE
 if (CREATE_QUERIES == TRUE){
-  load_objectives <- c(load_all[1], load_all[13], load_all[16])
+  #load_objectives <- c(load_all[1], load_all[4]) #, load_all[13], load_all[16])
   obj<-1
   sink(synk_name)
   for (az in AZ_names2){ #[1:6]){ 
@@ -161,15 +159,15 @@ if (CREATE_QUERIES == TRUE){
       cat(paste0(az, "<-matrix(c("))
       cat("\n")
       for(t in this_tests_names){
-          ERR<-0.0001
+          ERR<-0.01
           ERR_l <- c()
-          for(i in seq(1, 9999)){
+          for(i in seq(1, 99)){
               qq <- fun_q_join("t.gvt, l.val_0 as load", "consol_d", load_objectives[obj], ERR)
               qq2 <- fun_q_join(metric2, "consol_d", load_objectives[obj], ERR)
               x<-dbGetQuery(matrix_db[[t, az]], qq)
               l<-length(x$load)
               if(l == 0){
-                  ERR <- ERR + 0.0001
+                  ERR <- ERR + 0.01
               }
               else {
                   ERR_l <- c(ERR_l, ERR)
@@ -203,6 +201,7 @@ if (CREATE_QUERIES == TRUE){
     }
     return(x)
   }
+  tests_names[9]
   cat("colnames(AZ_ERR_CONS)=(c(", append = TRUE)
   cat(ff(colnames_s))
   cat("))\n", append = TRUE) #"colnames(AZ_ERR_CONS)=(c('AZ1.alg', 'AZ1.qtd', 'AZ1.err', 'AZ1.query', 'AZ5.alg','AZ5.qtd', 'AZ5.err', 'AZ5.query', 'AZ6.alg', 'AZ6.qtd', 'AZ6.err', 'AZ6.query'))\n", append = TRUE)
@@ -217,12 +216,11 @@ if (CREATE_QUERIES == TRUE){
 source(synk_name, local = TRUE)
 #source("/home/daniel/Dropbox/UDESC/Mestrado/Pratico/CHAVE-Sim/Plots/databaseRadar_sources.R")
 #c("P", "P_HA", "C_AA0", "CHA_AA0", "C_AA20", "CHA_AA20", "C_MAX", "CHA_MAX", "EUCA")
-#pdf(mypdf, title=mypdf); #par(mar=c(4,4,4,4)+3, mfrow = c(3,3)); #mypdf<-"../radar_all.pdf"
 
 print("Executing radar chart:")
-this_az<-AZ_names[1:2]
+this_az<-AZ_names[1:6]
 for(az in this_az){
-  az="AZ1"
+    #az="AZ1"
     print(az)
     fun_g_query <- function(test, query){
         db<-matrix_db[[test, az]]
@@ -240,6 +238,16 @@ for(az in this_az){
     reduc_val <-sapply(snapshots,'[[',"reduc_val")
     gvt <-sapply(snapshots,'[[',"gvt")
     print(gvt)
+    #myEUCA = c()
+    #for(i in range(1,length(this_tests_names))){
+    #  queryEn = paste0("select val_0 as energy from energy_l where gvt=", gvt[[this_tests_names[i]]])
+    #  queryL = paste0("select val_0 as load from az_load_l where gvt=", gvt[[this_tests_names[i]]])
+    #  EN_EUCA = fun_g_query("EUCA", queryEn)
+    #  L_EUCA = fun_g_query("EUCA", queryL)
+    #  myEUCA <- c(myEUCA, EN_EUCA, L_EUCA)
+    #}
+    
+    
     #az1=gvt=1543723, load=%, energy=
     #az2 gvt=10680920, load=1,19%, energy=848.57
     
@@ -247,7 +255,7 @@ for(az in this_az){
     data <- as.data.frame(matrix( c(load, energyf , migration , reduc_val, reducp), ncol=5))
     ## Metrics:
     #colnames(data)=c("Carga (%)" , "Redução (%)", "Energia Total (W)", "Nº Migrações", "Redução (W)")
-    colnames(data)=c("C(%)" , "ET(W)", "NM(n)", "RE(W)", "RE(%)")
+    colnames(data)=c("C(%)" , "T(W)", "N(n)", "RE(W)", "RE(%)")
     # Tests:
     rownames(data)=this_tests_names
     ## To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
@@ -270,7 +278,7 @@ for(az in this_az){
     line_pch=c(21, 22, 21, 22, 21, 22, 33)
     line_pch2=c(19, 15, 19, 15, 19, 15, 17)
     mypdf<-paste0("../radar_", toString(az), ".pdf")
-    pdf(mypdf, title=az, width = 15, height = 10)
+    pdf(mypdf, title=az, width = 12, height = 7)
     radarchart( data, axistype=1, title=paste("Testes ",az),
                 #custom polygon
                 pcol=colors_border, plwd=5 , plty=line_type, pty=line_pch2, # , pfcol=colors_in 
@@ -279,9 +287,9 @@ for(az in this_az){
                 #custom labels
                 vlcex=2 
     )
-    legend(x=-0.9, y=-0.9, legend = rownames(data[-c(1,2),]), horiz=TRUE,
-           y.intersp=2, x.intersp=1, bty="n", pch=line_pch, lty = line_type, lwd = 3,
-           col=colors_border, text.col = "black", cex=1.2, pt.cex=4,title=paste("Testes ",az))
+    #legend(x=-0.9, y=-0.9, legend = rownames(data[-c(1,2),]), horiz=TRUE,
+    #       y.intersp=2, x.intersp=1, bty="n", pch=line_pch, lty = line_type, lwd = 3,
+    #       col=colors_border, text.col = "black", cex=1.2, pt.cex=4) #,title=paste("Testes ",az))
     dev.off()
 }
 
@@ -380,7 +388,7 @@ for(az in AZ_names[1:6]){
   
   data <- as.data.frame(matrix( c(reduc_val, trigger, migrations , fals_pos , slav, energy_cons), ncol=6))
   ## Metrics:
-  colnames(data)=c("Red(W)", "Trig(n)" , "Mig(n)", "FPos(n)", "Slav(n)", "ET(W)")
+  colnames(data)=c("RE(W)", "Tr(n)" , "M(n)", "FP(n)", "SLAV(n)", "T(W)")
   # Tests:
   rownames(data)=this_tests_names
   data=rbind(c(min(reduc_val), max(trigger), max(migrations), max(fals_pos), max(slav), max(energy_cons)), # Max values in range
@@ -416,12 +424,7 @@ for(az in AZ_names[1:6]){
   dev.off()
 }
 
-
-
-
 ################################ 2.4.0 GENERAL DATA ##############################
-
-
 synk_name3 <- "../Plots/output_global2.txt"
 this_tests_names <- c(tests_names[8:9])
 AZ_names2 <- AZ_names[1:6]
