@@ -1,12 +1,17 @@
 #!/bin/bash
+
 clear
+
+source venv36/bin/activate
 source chave.conf
 
 if [ "$1" == "install" ]; then
 	CS_INSTALL
     exit
+else
+	COMMIT=$1
+	echo -e "Your commit message for this simulations instance is ${COMMIT}"
 fi
-COMMIT=$1
 
 mkdir -p ${CS_LOG_PATH} 2> /dev/null
 mkdir -p ${CS_DATA_PATH} 2> /dev/null

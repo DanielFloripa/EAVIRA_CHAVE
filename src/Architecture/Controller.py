@@ -214,6 +214,7 @@ class LocalController(Controller):
         self.ordered_replicas_dict = OrderedDict()
         self.in_execution_replicas_dict = OrderedDict()
         self.is_az_setted_with_lcid = self.__set_lcid_on_az()
+        self.replication_pool_d = dict()
 
     def __repr__(self):
         return repr([self.lc_id, self.az_list, self.algorithm])

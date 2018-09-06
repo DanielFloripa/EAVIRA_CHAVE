@@ -51,7 +51,7 @@ class Chave(BaseAlgorithm):
                      self.all_op_dict, self.all_ha_dict, self.sla])
 
     #############################################
-    ### Initial and basics
+    # Initial and basics
     #############################################
     def __init_dicts(self):
         for az in self.az_list:
@@ -99,7 +99,7 @@ class Chave(BaseAlgorithm):
             self.global_time += self.window_time
 
     #############################################
-    ### Consolidation: Placement + Migration
+    # Consolidation: Placement + Migration
     #############################################
     def initial_placement(self, az):
         az_id = az.az_id
@@ -207,7 +207,8 @@ class Chave(BaseAlgorithm):
         elif cons_alg == 'HA':
             self.do_consolidation_ha(az)
         else:
-            self.logger.error("Problem on config file! Unknown option: {}".format(cons_alg))
+            self.logger.error("Problem on config file! Unknown option: {} Called by {}".format(
+                cons_alg, who_call))
             exit(1)
         self.logger.info("End: {} {}".format(az.az_id, az.print_hosts_distribution(level='Middle')))
 
@@ -608,7 +609,7 @@ class Chave(BaseAlgorithm):
         return False
 
     #############################################
-    ### Replication
+    # Replication
     #############################################
     def region_replication(self, lc_obj):
         lc_id = lc_obj.lc_id
@@ -827,7 +828,8 @@ class Chave(BaseAlgorithm):
         return False
 
     #############################################
-    ### Miscelaneous
+
+    # Miscelaneous
     #############################################
     """
     def get_last_number_of_migrations(self):
